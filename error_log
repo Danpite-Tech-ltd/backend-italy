@@ -1,0 +1,20 @@
+[25-Aug-2025 18:43:21 UTC] PHP Warning:  require(/home/signatur/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:43:21 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/signatur/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php84/usr/share/pear:/opt/alt/php84/usr/share/php:/usr/share/pear:/usr/share/php') in /home/signatur/public_html/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:44:10 UTC] PHP Warning:  require(/home/signatur/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:44:10 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/signatur/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php84/usr/share/pear:/opt/alt/php84/usr/share/php:/usr/share/pear:/usr/share/php') in /home/signatur/public_html/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:44:20 UTC] PHP Warning:  require(/home/signatur/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:44:20 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/signatur/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php84/usr/share/pear:/opt/alt/php84/usr/share/php:/usr/share/pear:/usr/share/php') in /home/signatur/public_html/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:46:21 UTC] PHP Warning:  require(/home/signatur/public_html/vendor/autoload.php): Failed to open stream: No such file or directory in /home/signatur/public_html/index.php on line 13
+[25-Aug-2025 18:46:21 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/signatur/public_html/vendor/autoload.php' (include_path='.:/opt/alt/php84/usr/share/pear:/opt/alt/php84/usr/share/php:/usr/share/pear:/usr/share/php') in /home/signatur/public_html/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/signatur/public_html/index.php on line 13
