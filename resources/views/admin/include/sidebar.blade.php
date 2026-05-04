@@ -143,11 +143,11 @@
                                     href="{{ route('admin.child-category.index') }}">Child Category</a></li>
                         @endcan --}}
 
-                        {{-- @can('View Brand')
+                        @can('View Brand')
                             <li class="nav-item"><a
                                     class="nav-link @if ($currentRouteName == 'admin.brand.index') active @endif"
                                     href="{{ route('admin.brand.index') }}">Brand</a></li>
-                        @endcan --}}
+                        @endcan
 
 
 

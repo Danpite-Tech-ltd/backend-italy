@@ -224,7 +224,7 @@
                                 </div>
                             </div>
 
-                            {{-- <div class="col-sm-4">
+                            <div class="col-sm-4">
                                 <div class="form-group mb-3">
                                     <label for="category_id" class="form-label">Brands</label>
                                     <select id="brand_id"
@@ -243,7 +243,7 @@
                                     </span>
                                     @enderror
                                 </div>
-                            </div> --}}
+                            </div>
 
 
                             <!-- col-end -->
