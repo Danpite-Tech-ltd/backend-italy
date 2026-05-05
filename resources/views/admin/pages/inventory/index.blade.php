@@ -18,28 +18,27 @@
         </div>
     </div>
     <div class="row">
-        @forelse($productByCategory as $key => $products)
-        <div class="col-xl-3 col-md-6 mb-4">
-            <!-- card -->
-            <div class="card card-h-100 shadow">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4 text-center  rounded">
-                            <i class="fas fa-cart-plus h2"></i>
-                        </div>
+        @forelse($categories as $category)
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card card-h-100 shadow">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-4 text-center rounded">
+                                <i class="fas fa-cart-plus h2"></i>
+                            </div>
 
-                        <div class="col-8">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">{{ $products->category->name ?? '' }}</span>
-                            <h4 class="mb-3">
-                                <span class="">{{ $products->count() }}</span>
-                            </h4>
+                            <div class="col-8">
+                                <span class="text-muted mb-3 lh-1 d-block text-truncate">
+                                    {{ $category->name }}
+                                </span>
+                                <h4 class="mb-3">
+                                    <span>{{ $category->products_count }}</span>
+                                </h4>
+                            </div>
                         </div>
                     </div>
-
-                </div><!-- end card body -->
+                </div>
             </div>
-        </div>
         @empty
         @endforelse
 
@@ -56,7 +55,7 @@
                         <div class="col-8">
                             <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Products</span>
                             <h4 class="mb-3">
-                                <span class="">{{ $productByCategory->count()}}</span>
+                                <span class="">{{ \App\Models\Product::count() }}</span>
                             </h4>
                         </div>
                     </div>
@@ -74,13 +73,13 @@
                     <div class="table-responsive">
                         <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped" id="adminTable">
                             <thead>
-                            <tr>
-                                <th>Product SKU</th>
-                                <th>Image</th>
-                                <th>Title</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                            </tr>
+                                <tr>
+                                    <th>Product SKU</th>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                </tr>
                             </thead>
                             <tbody>
                             </tbody>
@@ -95,19 +94,20 @@
         <!-- end col -->
     </div>
 
-    {{--    Table Ends--}}
+    {{-- Table Ends--}}
 
 @endsection
 
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
-    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
+    {{--
+    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
 
     <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -162,49 +162,49 @@
                 ],
                 processing: true,
                 serverSide: true,
-                {{--ajax: "{{url('/admin/data')}}",--}}
-                ajax: "{{route('admin.inventory.index')}}",
-                // pageLength: 30,
+                    {{--ajax: "{{url('/admin/data')}}", --}}
+            ajax: "{{route('admin.inventory.index')}}",
+            // pageLength: 30,
 
-                columns: [
+            columns: [
 
-                    {
-                        data: 'SKU',
-                        name: 'SKU',
-                        width: '10%',
+            {
+                data: 'SKU',
+                name: 'SKU',
+                width: '10%',
 
-                    },
+            },
 
-                    {
-                        data: 'proImg',
-                        orderable: false,
-                        searchable: false,
-                        width: '10%',
-                    },
+            {
+                data: 'proImg',
+                orderable: false,
+                searchable: false,
+                width: '10%',
+            },
 
-                    {
-                        data: 'name',
-                        name: 'name',
-                        width: '25%'
-                    },
-                    {
-                        data: 'stock',
-                        width: '45%'
+            {
+                data: 'name',
+                name: 'name',
+                width: '25%'
+            },
+            {
+                data: 'stock',
+                width: '45%'
 
-                    },
+            },
 
-                    {
-                        data: 'status',
-                        orderable: 'false',
-                        searchable: 'false',
-                        width: '10%'
+            {
+                data: 'status',
+                orderable: 'false',
+                searchable: 'false',
+                width: '10%'
 
 
-                    },
-                ]
+            },
+        ]
+                });
+
+
             });
-
-
-        });
     </script>
 @endpush

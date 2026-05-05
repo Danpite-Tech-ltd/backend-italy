@@ -18,30 +18,29 @@
         </div>
     </div>
     <div class="row">
-        @forelse($productByCategory as $key => $products)
-        <div class="col-xl-3 col-md-6 mb-4">
-            <!-- card -->
-            <div class="card card-h-100 shadow">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-4 text-center  rounded">
-                            <i class="fas fa-cart-plus h2"></i>
-                        </div>
-
-                        <div class="col-8">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">{{ $products->category->name ?? '' }}</span>
-                            <h4 class="mb-3">
-                                <span class="">{{ $products->count() }}</span>
-                            </h4>
-                        </div>
+        @forelse($categories as $category)
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-h-100 shadow">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-4 text-center rounded">
+                        <i class="fas fa-cart-plus h2"></i>
                     </div>
 
-                </div><!-- end card body -->
+                    <div class="col-8">
+                        <span class="text-muted mb-3 lh-1 d-block text-truncate">
+                            {{ $category->name }}
+                        </span>
+                        <h4 class="mb-3">
+                            <span>{{ $category->products_count }}</span>
+                        </h4>
+                    </div>
+                </div>
             </div>
         </div>
-        @empty
-        @endforelse
+    </div>
+    @empty
+    @endforelse
 
         <div class="col-xl-3 col-md-6 mb-4">
             <!-- card -->
@@ -56,7 +55,7 @@
                         <div class="col-8">
                             <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Products</span>
                             <h4 class="mb-3">
-                                <span class="">{{ $productByCategory->count()}}</span>
+                                <span class="">{{ \App\Models\Product::where('vendor_id', Auth::guard('vendor')->user()->id)->count()}}</span>
                             </h4>
                         </div>
                     </div>
