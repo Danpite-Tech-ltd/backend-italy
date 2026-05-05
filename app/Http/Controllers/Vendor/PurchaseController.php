@@ -75,7 +75,7 @@ class PurchaseController extends Controller
 
     public function create()
     {
-        $suppliers = Supplier::where('status', 1)->get();
+        $suppliers = Supplier::where('vendor_id', Auth::guard('vendor')->user()->id)->where('status', 1)->get();
         $vendors = Vendor::where('status', 'approved')->get();
 
         return view('vendor.pages.purchase.create', compact('suppliers', 'vendors'));
@@ -96,6 +96,7 @@ class PurchaseController extends Controller
                 )
                 ->join('products', 'products.id', '=', 'productvariants.product_id')
                 ->leftJoin('productcolors', 'productcolors.id', '=', 'productvariants.productcolor_id')
+                ->where('products.vendor_id', Auth::guard('vendor')->user()->id)
                 ->where('name', 'like', '%' . $request['q'] . '%')->get();
         } else {
             $type0 = DB::table('productvariants')
@@ -109,10 +110,13 @@ class PurchaseController extends Controller
                 )
                 ->join('products', 'products.id', '=', 'productvariants.product_id')
                 ->leftJoin('productcolors', 'productcolors.id', '=', 'productvariants.productcolor_id')
+                ->where('products.vendor_id', Auth::guard('vendor')->user()->id)
                 ->where('name', 'like', '%' . $request['q'] . '%')->get();
         }
 
         $products = $type0;
+
+        $product = [];
 
         foreach ($products as $item) {
 
