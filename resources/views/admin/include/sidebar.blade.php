@@ -267,7 +267,7 @@
 
 
         {{--    Customer Support Ticket System Manage    --}}
-        <li class="nav-item @if (request()->routeIs('admin.coupon.*')) active @endif">
+        <li class="nav-item @if (request()->routeIs('admin.ticket.*')) active @endif">
             <a class="nav-link" data-toggle="collapse" href="#ticket-system" aria-expanded="false"
                 aria-controls="ticket-system">
                 <i class="typcn typcn-headphones menu-icon"></i>
@@ -275,13 +275,13 @@
                 <i class="typcn typcn-chevron-right menu-arrow"></i>
             </a>
 
-            <div class="collapse @if (request()->routeIs('admin.coupon.*')) show @endif" id="ticket-system">
+            <div class="collapse @if (request()->routeIs('admin.ticket.*')) show @endif" id="ticket-system">
                 <ul class="nav flex-column sub-menu">
 
 
 
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.coupon.index') active @endif"
-                            href="{{ route('admin.coupon.index') }}">Ticket System List</a></li>
+                            href="{{ route('admin.ticket.index') }}">Ticket System List</a></li>
 
 
 

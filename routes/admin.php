@@ -47,6 +47,7 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WpaymentController;
 use App\Http\Controllers\Admin\WsaleController;
 use App\Http\Controllers\Admin\WsalestockController;
+use App\Http\Controllers\Admin\TicketController;
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -258,5 +259,13 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Branch Setup
     Route::resource('branches', BranchController::class)->names('branch');
     Route::post('/branch/change-status', [BranchController::class, 'changeBranchStatus'])->name('branch.status');
+
+        // ticket route
+    Route::get('ticket/manage', [TicketController::class, 'index'])->name('ticket.index');
+    Route::get('ticket/edit/{ticket_id}', [TicketController::class, 'edit'])->name('ticket.edit');
+    Route::post('ticket/replay/{ticketdetails_id}', [TicketController::class, 'ticketdetails_replay'])->name('ticket.replay');
+    
+    Route::post('ticket/inactive', [TicketController::class, 'inactive'])->name('ticket.inactive');
+    Route::post('ticket/active', [TicketController::class, 'active'])->name('ticket.active');
 
 });
