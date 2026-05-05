@@ -254,6 +254,7 @@
                                 <div class="form-group mb-3">
                                     <label for="product_type_id" class="form-label">Product Type</label>
                                     <select class="form-control" id="product_type_id" name="product_type_id">
+                                        <option value="">Select..</option>
                                         @forelse($productTypes as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }}</option>
                                         @empty

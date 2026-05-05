@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\FrontendController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +21,18 @@ Route::get('/send-birthday-emails', [APIController::class, 'sendBirthdayEmails']
 Route::post('/register', [AuthController::class, 'userRegister'])->name('user.register');
 Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login');
 
-Route::middleware('auth:sanctum')->name('api.')->group(function(){
+Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
+
+    // ticket
+    Route::post('/ticket-store', [TicketController::class, 'ticket_store'])->name('ticket.store');
+    Route::get('/ticket-list', [TicketController::class, 'ticket_list'])->name('ticket.list');
+    Route::get('/ticket-replay-list/{ticket_id}', [TicketController::class, 'ticket_reply_list'])->name('ticket.replay.list');
+    Route::post('/ticket-replay-submit', [TicketController::class, 'ticket_reply_submit'])->name('ticket.replay.submit');
+
 });
 
-Route::name('api.')->group(function(){
+Route::name('api.')->group(function () {
     // basics info data
     Route::get('/settings', [FrontendController::class, 'settings']);
 
