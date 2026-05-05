@@ -2,7 +2,7 @@
 @extends('vendor.layouts.master')
 
 @section('content')
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-6 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
@@ -12,21 +12,22 @@
                     <p class="card-description">
                         Request your withdrawl amount
                     </p>
-                    <form class="forms-sample" method="POST" action="">
+                    <form class="forms-sample" method="POST" action="{{ route('vendor.bank.withdraw.submit') }}">
                         @csrf
-
-
-
-
-
 
 
                         <input type="text" name="vendor_id" value="{{ Auth::guard('vendor')->user()->id }}" hidden>
 
                         <div class="form-group">
-                            <label for="withdraw_amount">Withdraw Amount</label>
-                            <input type="number" class="form-control" id="withdraw_amount" name="withdraw_amount"
+                            <label for="amount">Withdraw Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount"
                                 placeholder="Enter Withdraw Amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Note (optional)</label>
+                            <textarea type="text" class="form-control" id="note" name="note"
+                                placeholder="Enter Note" rows="4">
+                            </textarea>
                         </div>
 
 
