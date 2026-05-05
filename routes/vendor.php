@@ -54,6 +54,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
             ->name('vendor.bank.update');
        Route::get('/vendor/withdraw', [BankSetupController::class, 'withdraw'])
             ->name('bank.withdraw');
+       Route::post('/vendor/withdraw/submit', [BankSetupController::class, 'withdrawSubmit'])->name('bank.withdraw.submit');
     });
 
     Route::resource('/products', ProductController::class)->names('product');
