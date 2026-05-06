@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\FrontendController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/ticket-list', [TicketController::class, 'ticket_list'])->name('ticket.list');
     Route::get('/ticket-replay-list/{ticket_id}', [TicketController::class, 'ticket_reply_list'])->name('ticket.replay.list');
     Route::post('/ticket-replay-submit', [TicketController::class, 'ticket_reply_submit'])->name('ticket.replay.submit');
+
+    //User Dashboard
+    Route::get('/dashboard-overview', [DashboardController::class, 'dashboardOverview']);
 
 });
 
