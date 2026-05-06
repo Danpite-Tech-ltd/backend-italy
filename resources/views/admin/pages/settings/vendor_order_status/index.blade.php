@@ -32,7 +32,7 @@
                 <div class="card-header">
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="card-title mb-0">Shipping Charge List</h4>
+                        <h4 class="card-title mb-0">Vendor Order Status List</h4>
                         {{--                                                       @can('Create Admin')--}}
                         {{--                                                       @if(Auth::guard('admin')->user()->can('Create Admin'))--}}
                         <button class="btn btn-md btn-secondary" data-bs-toggle="modal"
@@ -53,7 +53,7 @@
                                 <th>SL</th>
                                 <th>Status Name</th>
                                 <th>Status</th>
-{{--                                <th>Action</th>--}}
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -75,16 +75,16 @@
 
                                     </td>
 
-{{--                                    <td>--}}
-{{--                                        <div class="d-flex gap-3">--}}
-{{--                                            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editAdminModal{{ $status->id }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>--}}
-{{--                                            <form method="post" id="delete-form-{{$status->id}}" action="{{ route('admin.order-status.destroy',$status->id) }}">--}}
-{{--                                                @csrf--}}
-{{--                                                @method('delete')--}}
-{{--                                                <button type="submit" class="btn btn-sm btn-danger" ><i class="fas fa-trash"></i></button>--}}
-{{--                                            </form>--}}
-{{--                                        </div>--}}
-{{--                                    </td>--}}
+                                    <td>
+                                        <div class="d-flex gap-3">
+                                            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#editAdminModal{{ $status->id }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                            <!-- <form method="post" id="delete-form-{{$status->id}}" action="{{ route('admin.vendor-order-status.destroy',$status->id) }}">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="btn btn-sm btn-danger" ><i class="fas fa-trash"></i></button>
+                                            </form> -->
+                                        </div>
+                                    </td>
                                 </tr>
 
                                 {{--    Edit Categories Modal--}}
@@ -97,9 +97,10 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form name="form2" method="post" action="{{ route('admin.order-status.update',$status->id) }}" enctype="multipart/form-data">
+                                                <form name="form2" method="post" action="{{ route('admin.vendor-order-status.update',$status->id) }}" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
+                                                    <input type="hidden" name="status_id" value="{{ $status->id }}">
                                                     <div class="mb-3">
                                                         <label for="Name" class="col-form-label">Status Name</label>
                                                         <input type="text" class="form-control" name="status_name" value="{{ $status->status_name ?? '' }}" required>
@@ -149,11 +150,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Order Status</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Add Vendor Order Status</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form name="form" method="post" action="{{ route('admin.order-status.store') }}"
+                    <form name="form" method="post" action="{{ route('admin.vendor-order-status.store') }}"
                           enctype="multipart/form-data">
                         @csrf
 
