@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class InventoryController extends Controller
@@ -14,7 +16,7 @@ class InventoryController extends Controller
 
         if (request()->ajax()) {
 
-            $products = Product::with('productvariants:id,product_id,productcolor_id,sale_price,total_stock,available_stock,sold_stock,variant_name',
+            $products = Product::where('vendor_id', Auth::guard('vendor')->user()->id)->with('productvariants:id,product_id,productcolor_id,sale_price,total_stock,available_stock,sold_stock,variant_name',
                 'productvariants.productcolor:id,color_name')->latest();
 
         return DataTables::eloquent($products)
@@ -63,10 +65,14 @@ class InventoryController extends Controller
             ->addIndexColumn()
             ->make(true);
     }
+        
+        $categories = Category::withCount([
+            'products' => function ($q) {
+                $q->where('vendor_id', Auth::guard('vendor')->user()->id);
+            }
+        ])->get();
 
-        $productByCategory = Product::with('category')->get();
-
-        return view('vendor.pages.inventory.index', compact('productByCategory'));
+        return view('vendor.pages.inventory.index', compact('categories'));
     }
 
 }

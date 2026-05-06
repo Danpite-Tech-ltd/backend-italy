@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\cr;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -77,9 +78,10 @@ class InventoryController extends Controller implements HasMiddleware
             ->make(true);
     }
 
-        $productByCategory = Product::with('category')->get();
+        $categories = Category::withCount('products')->get();
 
-        return view('admin.pages.inventory.index', compact('productByCategory'));
+
+        return view('admin.pages.inventory.index', compact('categories'));
     }
 
     /**
