@@ -191,7 +191,7 @@
                             <th>Customer info</th>
                             <th>Products</th>
                             <th>Total</th>
-                            <th>Customer Notes</th>
+                            <!-- <th>Customer Notes</th> -->
                             <th>Payment Method</th>
                             <th>Status</th>
                             {{--                                <th>Assigned to</th>--}}
@@ -334,11 +334,11 @@
                         width: '5%'
 
                     },
-                    {
-                        data: 'customer_note',
-                        className: 'text-center align-top',
-                        width: '15%'
-                    },
+                    //{
+                      //  data: 'customer_note',
+                     //   className: 'text-center align-top',
+                      //  width: '15%'
+                    // },
                     {
                         data: 'payment_method',
                         className: 'text-center align-top',

@@ -10,6 +10,6 @@ class VendorOrderStatus extends Model
 
     public function vendororders()
     {
-        return $this->hasMany(VendorOrder::class);
+         return $this->hasMany(VendorOrder::class, 'vendor_order_status_id');
     }
 }

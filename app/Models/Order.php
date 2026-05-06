@@ -12,7 +12,10 @@ class Order extends Model
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
-
+    public function vendorOrders()
+    {
+        return $this->hasMany(VendorOrder::class);
+    }
 
     public function courier()
     {
