@@ -650,6 +650,7 @@
                     'admin.basic-info.index',
                     'admin.shipping-charge.index',
                     'admin.order-status.index',
+                    'admin.vendor-order-status.index',
                     'admin.pixel.index',
                     'admin.tag.index')) active @endif">
                 <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false"
@@ -680,6 +681,9 @@
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.order-status.index') active @endif"
                                     href="{{ route('admin.order-status.index') }}">Order Status</a></li>
                         @endcan
+
+                        <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.vendor-order-status.index') active @endif"
+                        href="{{ route('admin.vendor-order-status.index') }}">Verdor Order Status</a></li>
 
                         @can('Pixel')
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.pixel.index') active @endif"

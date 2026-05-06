@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderStatusController;
+use App\Http\Controllers\Admin\VendorOrderStatusController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -196,6 +197,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('/basic-infos', BasicInfoController::class)->names('basic-info');
     Route::resource('/pixels', PixelController::class)->names('pixel');
     Route::resource('/pages', PageController::class)->names('page');
+    Route::resource('/vendor-order-statuses', VendorOrderStatusController::class)->names('vendor-order-status');
     Route::resource('/order-statuses', OrderStatusController::class)->names('order-status');
     Route::resource('shipping-charges', ShippingChargeController::class)->names('shipping-charge');
     Route::resource('/tags', TagController::class)->names('tag');
