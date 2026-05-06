@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
+use App\Models\VendorOrderStatus;
 use App\Models\ShippingCharge;
 use App\Models\User;
 use Brian2694\Toastr\Facades\Toastr;
@@ -28,7 +29,7 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-      public function index(Request $request)
+    public function index(Request $request)
     {
 
         \Log::info($request->all());
@@ -90,14 +91,14 @@ class OrderController extends Controller
                 ->addColumn('status_select', function ($order) use ($orderStatus) {
                     $html = '';
 
-                        $html .= "<select class='form-select order-status-change' data-id='{$order->id}'>";
+                    $html .= "<select class='form-select order-status-change' data-id='{$order->id}'>";
 
-                        foreach ($orderStatus as $status) {
-                            $selected = $order->order_status_id == $status->id ? 'selected' : '';
-                            $html .= '<option value="' . $status->id . '" ' . $selected . '>' . $status->status_name . '</option>';
-                        }
-                        $html .= '</select>';
-                        return $html;
+                    foreach ($orderStatus as $status) {
+                        $selected = $order->order_status_id == $status->id ? 'selected' : '';
+                        $html .= '<option value="' . $status->id . '" ' . $selected . '>' . $status->status_name . '</option>';
+                    }
+                    $html .= '</select>';
+                    return $html;
 
 
                 })
@@ -124,11 +125,16 @@ class OrderController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-//
+        //
 
 
-
-        $statuses = OrderStatus::where('status', 1)->with('orders')->get();
+        $statuses = VendorOrderStatus::where('status', 1)
+            ->withCount([
+                'vendororders' => function ($q) {
+                    $q->where('vendor_id', Auth::guard('vendor')->user()->id);
+                }
+            ])
+            ->get();
 
         return view('vendor.pages.order.index', compact(
             'statuses'
@@ -184,7 +190,7 @@ class OrderController extends Controller
         //
     }
 
-       public function orderByStatus(string $id)
+    public function orderByStatus(string $id)
     {
         $count = Order::where('order_status_id', $id)->count();
 
@@ -203,7 +209,7 @@ class OrderController extends Controller
         $order->order_status_id = $order_status_id;
         $order->save();
 
-//        $previousStatus = $order->getOriginal('order_status_id');
+        //        $previousStatus = $order->getOriginal('order_status_id');
 
         // If delivered & has affiliate, calculate commission
         if ($order->order_status_id == 4 && $order->affiliate_id) {

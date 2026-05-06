@@ -8,8 +8,8 @@ class VendorOrderStatus extends Model
 {
     protected $guarded = [];
 
-    public function orders()
+    public function vendororders()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(VendorOrder::class);
     }
 }

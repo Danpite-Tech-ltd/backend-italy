@@ -56,7 +56,7 @@
                                 <span
                                     class="text-muted mb-3 lh-1 d-block text-truncate">{{ $status->status_name }}</span>
                                 <h4 class="mb-3">
-                                    <span class="">{{ $status->orders()->count() ?? 0 }}</span>
+                                    <span class="">{{ $status->vendororders_count }}</span>
                                 </h4>
                             </div>
                         </div>
