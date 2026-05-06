@@ -25,6 +25,10 @@ Route::post('/login', [AuthController::class, 'userLogin'])->name('user.login');
 Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::post('/logout', [AuthController::class, 'userLogout'])->name('user.logout');
 
+    // checkout
+    Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
+    Route::get('/order-success/{invoice_id}', [CheckoutController::class, 'orderSuccess']);
+    
     // ticket
     Route::post('/ticket-store', [TicketController::class, 'ticket_store'])->name('ticket.store');
     Route::get('/ticket-list', [TicketController::class, 'ticket_list'])->name('ticket.list');
@@ -77,10 +81,6 @@ Route::name('api.')->group(function () {
 
     // branch
     Route::get('/branch', [FrontendController::class, 'branch']);
-
-    // checkout
-    Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
-    Route::get('/order-success/{invoice_id}', [CheckoutController::class, 'orderSuccess']);
 
     // Vendor Registration
     Route::get('/vendor-login', [AuthController::class, 'vendorLogin'])->name('vendor.register');
