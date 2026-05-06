@@ -69,6 +69,7 @@ Route::name('api.')->group(function () {
     Route::get('/child-category-products/{slug}', [ProductController::class, 'childcategoryProducts']);
     Route::get('/flash-sale', [ProductController::class, 'flashSale']);
     Route::get('/daily-deals', [ProductController::class, 'dailyDeals']);
+    Route::get('/brand-products/{slug}', [ProductController::class, 'brandProducts']);
 
     // checkout
     Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
