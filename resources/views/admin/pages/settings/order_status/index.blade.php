@@ -37,7 +37,7 @@
                         {{--                                                       @if(Auth::guard('admin')->user()->can('Create Admin'))--}}
                         <button class="btn btn-md btn-secondary" data-bs-toggle="modal"
                                 data-bs-target="#createAdminModal">
-                            Add Shipping charge
+                            Add Order Status
                         </button>
                         {{--                                                        @endcan--}}
                         {{--                                                        @endif--}}
