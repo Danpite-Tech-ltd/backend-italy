@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\Subcategory;
+use App\Models\Brand;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -74,6 +75,20 @@ class ProductController extends Controller
         );
     }
 
+    public function brandProducts($slug)
+    {
+        $brand = Brand::where('slug', $slug)->where('status', 1)->firstOrFail();
+
+        $products = Product::where(['status' => 1, 'brand_id' => $brand->id])
+            ->with(['productcolors', 'productvariants'])
+            ->orderBy('id', 'DESC')
+            ->paginate(24);
+
+        return $this->success(
+            message: 'brand Products',
+            data: $products
+        );
+    }
     public function categoryProducts($slug)
     {
         $category = Category::where('slug', $slug)->where('status', 1)->firstOrFail();

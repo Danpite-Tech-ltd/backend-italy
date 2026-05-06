@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
+use App\Models\VendorOrder;
 use App\Models\VendorOrderStatus;
 use App\Models\ShippingCharge;
 use App\Models\User;
@@ -31,103 +32,92 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->ajax()) {
 
-        \Log::info($request->all());
-        if (\request()->ajax()) {
+            $vendorId = Auth::guard('vendor')->id();
 
-            $orderStatus = OrderStatus::where('status', 1)->get();
+            $orderStatus = VendorOrderStatus::where('status', 1)->get();
 
-            $status = $request->query('status', 'all'); // default 'all'
+            $status = $request->query('status', 'all');
 
-            $orders = Order::with(['orderStatus', 'orderProducts', 'customer', 'admin'])
-                ->when($status != 'all', fn($q) => $q->where('order_status_id', $status))
+            $orders = VendorOrder::with([
+                'order.customer',
+                'orderProducts.product'
+            ])
+                ->where('vendor_id', $vendorId)
+                ->when($status != 'all', fn($q) => $q->where('vendor_order_status_id', $status))
                 ->latest();
 
             return DataTables::eloquent($orders)
+
+                // 🧾 Invoice Info
                 ->addColumn('invoice_info', function ($order) {
-                    return '<span class="text-center badge bg-dark mb-2"><p class="imgcbtn">' . $order->invoiceID . '</p></span>
-                            <br>
-                            <p>' . $order->created_at->format('d M Y') . '</p>
-                            <br>
-                            <p">' . $order->created_at->format('h:i A') . '</p>
-                            <br>
-                            <p>' . $order->created_at->diffForHumans() . '</p>';
+
+                    return '<span class="badge bg-dark mb-2">'
+                        . $order->order->invoiceID .
+                        '</span><br>
+
+                    <p>' . $order->order->created_at->format('d M Y') . '</p>
+                    <p>' . $order->order->created_at->format('h:i A') . '</p>
+                    <p>' . $order->order->created_at->diffForHumans() . '</p>';
                 })
+
+                // 🛍️ Product Info (ONLY THIS VENDOR PRODUCTS)
                 ->addColumn('product_info', function ($order) {
 
-                    $productInfo = '';
+                    $html = '';
 
                     foreach ($order->orderProducts as $product) {
 
-                        $productInfo .= '<div class="mb-2">
-                                       <div class="d-flex gap-3">
-                                        <a target="_blank" href="' . route('product-details', $product->product->slug) . '">
-                                            <img src="' . asset($product->product->thumbnail_img) . '" width="60" height="60">
-                                        </a>
+                        $html .= '<div class="mb-3">
+                                <div class="d-flex gap-3">
+                                    <a target="_blank" href="' . route('product-details', $product->product->slug) . '">
+                                        <img src="' . asset($product->product->thumbnail_img) . '" width="60" height="60">
+                                    </a>
 
-                                        <br>
-                                        <div>
-                                        <p>' . $product->quantity . ' x ' . $product->product_name . '</p>
-
-                                        <p style="color:blue;font-size: 18px;"> Colour: ' . $product->color . ' </p>
-
-                                        <p style="font-size: 18px;color:red;font-weight:bold;"> Variant: ' . $product->variant . '</p>
-                                        </div>
-                                        </div>
-                                        <br>';
+                                    <div>
+                                        <p><b>' . $product->quantity . ' x ' . $product->product_name . '</b></p>
+                                        <p style="color:blue;">Colour: ' . $product->color . '</p>
+                                        <p style="color:red;">Variant: ' . $product->variant . '</p>
+                                    </div>
+                                </div>
+                            </div>';
                     }
 
-                    return $productInfo;
+                    return $html;
                 })
-                ->addColumn('customer_info', function ($order) {
-                    return '<p style="font-weight:bold;">' . $order->customer->name . '</p>
-                            <br>
-                            <p>' . $order->customer->email . '</p>
-                            <br>
-                            <p>' . $order->customer->phone . '</p>
-                            <br>
-                            <p>' . $order->customer->address . '</p>';
-                })
-                ->addColumn('status_select', function ($order) use ($orderStatus) {
-                    $html = '';
 
-                    $html .= "<select class='form-select order-status-change' data-id='{$order->id}'>";
+                // 👤 Customer Info
+                ->addColumn('customer_info', function ($order) {
+
+                    $customer = $order->order->customer;
+
+                    return '<p><b>' . $customer->name . '</b></p>
+                        <p>' . $customer->phone . '</p>
+                        <p>' . $customer->address . '</p>';
+                })
+
+                // 🔄 Status Dropdown (Vendor Order Status)
+                ->addColumn('status_select', function ($order) use ($orderStatus) {
+
+                    $html = "<select class='form-select order-status-change' data-id='{$order->id}'>";
 
                     foreach ($orderStatus as $status) {
-                        $selected = $order->order_status_id == $status->id ? 'selected' : '';
-                        $html .= '<option value="' . $status->id . '" ' . $selected . '>' . $status->status_name . '</option>';
+                        $selected = optional($order->status)->id == $status->id ? 'selected' : '';
+                        $html .= "<option value='{$status->id}' {$selected}>{$status->status_name}</option>";
                     }
+
                     $html .= '</select>';
+
                     return $html;
-
-
                 })
-                // ->addColumn('action', function ($admin) {
-                //     $editAction = '';
-                //     $deleteAction = '';
 
-
-                //         $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('vendor.order.edit', $admin->id) . '">
-                //                    <i class="fas fa-edit"></i></a>';
-
-
-
-                //         $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
-                //                    data-id="' . $admin->id . '" id="deleteAdminBtn"">
-                //                    <i class="fas fa-trash"></i></a>';
-
-
-
-                //     return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
-                // })
-                ->rawColumns(['invoice_info', 'product_info', 'customer_info', 'status_select', 'action'])
                 ->rawColumns(['invoice_info', 'product_info', 'customer_info', 'status_select'])
                 ->addIndexColumn()
                 ->make(true);
         }
-        //
 
-
+        // 🔢 Status Count (Vendor wise)
         $statuses = VendorOrderStatus::where('status', 1)
             ->withCount([
                 'vendororders' => function ($q) {
@@ -136,9 +126,7 @@ class OrderController extends Controller
             ])
             ->get();
 
-        return view('vendor.pages.order.index', compact(
-            'statuses'
-        ));
+        return view('vendor.pages.order.index', compact('statuses'));
     }
 
 
@@ -199,39 +187,42 @@ class OrderController extends Controller
 
     public function orderStatusChange(Request $request)
     {
-        $order_status_id = $request->order_status_id;
+        $vendorOrderId = $request->order_id; // এটা actually vendor_order id
+        $statusId = $request->order_status_id;
 
-        $order_status = OrderStatus::find($order_status_id)->status_name;
-        $order_id = $request->order_id;
+        // VendorOrder খুঁজে বের করো
+        $vendorOrder = VendorOrder::with('order.orderProducts.product')->findOrFail($vendorOrderId);
 
+        // status update
+        $vendorOrder->vendor_order_status_id = $statusId;
+        $vendorOrder->save();
 
-        $order = Order::find($order_id);
-        $order->order_status_id = $order_status_id;
-        $order->save();
+        // status name
+        $statusName = VendorOrderStatus::find($statusId)?->status_name;
 
         //        $previousStatus = $order->getOriginal('order_status_id');
 
         // If delivered & has affiliate, calculate commission
-        if ($order->order_status_id == 4 && $order->affiliate_id) {
-            $affiliateId = $order->affiliate_id;
+        // if ($order->order_status_id == 4 && $order->affiliate_id) {
+        //     $affiliateId = $order->affiliate_id;
 
-            // Track order products with affiliate commission
-            $totalCommission = $order->orderProducts()->with('product')->get()->sum(function ($orderProduct) {
-                $commissionPerUnit = $orderProduct->product->affiliate_commission ?? 0;
-                return $commissionPerUnit * $orderProduct->quantity;
+        //     // Track order products with affiliate commission
+        //     $totalCommission = $order->orderProducts()->with('product')->get()->sum(function ($orderProduct) {
+        //         $commissionPerUnit = $orderProduct->product->affiliate_commission ?? 0;
+        //         return $commissionPerUnit * $orderProduct->quantity;
 
-            });
+        //     });
 
-            if ($totalCommission > 0) {
-                // Update affiliate account balance
-                $affiliate = User::find($affiliateId);
+        //     if ($totalCommission > 0) {
+        //         // Update affiliate account balance
+        //         $affiliate = User::find($affiliateId);
 
-                if ($affiliate) {
-                    $affiliate->increment('account_balance', $totalCommission);
-                }
-            }
-        }
+        //         if ($affiliate) {
+        //             $affiliate->increment('account_balance', $totalCommission);
+        //         }
+        //     }
+        // }
 
-        return response()->json(['message' => 'Order Status Changed to ' . $order_status], 200);
+        return response()->json(['message' => 'Order Status Changed to ' . $statusName], 200);
     }
 }
