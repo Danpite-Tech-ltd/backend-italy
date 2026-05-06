@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -27,5 +28,17 @@ class DashboardController extends Controller
                 'completeOrders' => $completeOrders
             ],
         ], 200);
+    }
+
+    public function userProfile(){
+        $user_id = Auth()->user()->id;
+
+        $customer = User::where('id', $user_id)->first();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User Profile',
+            'data' => $customer,
+        ]);
     }
 }

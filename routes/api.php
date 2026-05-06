@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     // checkout
     Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
     Route::get('/order-success/{invoice_id}', [CheckoutController::class, 'orderSuccess']);
-    
+
     // ticket
     Route::post('/ticket-store', [TicketController::class, 'ticket_store'])->name('ticket.store');
     Route::get('/ticket-list', [TicketController::class, 'ticket_list'])->name('ticket.list');
@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 
     //User Dashboard
     Route::get('/dashboard-overview', [DashboardController::class, 'dashboardOverview']);
+    Route::get('/user-profile', [DashboardController::class, 'userProfile']);
 
 });
 
