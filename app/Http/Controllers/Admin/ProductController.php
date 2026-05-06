@@ -79,8 +79,7 @@ class ProductController extends Controller implements HasMiddleware
                     }
                     return '';
                 })
-                ->addColumn('product_price',function ($admin)
-                {
+                ->addColumn('product_price', function ($admin) {
                     return $admin->productvariants->first()->sale_price ?? 0;
                 })
 
@@ -98,7 +97,7 @@ class ProductController extends Controller implements HasMiddleware
                                    data-id="' . $admin->id . '" id="deleteAdminBtn"">
                                    <i class="fas fa-trash"></i></a>';
                     }
-                    return '<div class="d-flex gap-3"> ' . $editAction . $deleteAction . '</div>';
+                    return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
                 })
                 ->rawColumns(['action', 'front_status', 'status', 'role'])
                 ->addIndexColumn()
@@ -117,8 +116,8 @@ class ProductController extends Controller implements HasMiddleware
             ->addColumn('action', function ($admin) {
                 $editAction = '';
                 $deleteAction = '';
-//                  $subcategoriesAction = '<a class="editButton btn btn-sm btn-danger" href="'.route('admin.subcategory.index',$admin->id).'">
-//                                   <i class="fas fa-edit"></i></a>';
+                //                  $subcategoriesAction = '<a class="editButton btn btn-sm btn-danger" href="'.route('admin.subcategory.index',$admin->id).'">
+                //                                   <i class="fas fa-edit"></i></a>';
 
                 $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('admin.edit-product-variant', $admin->id) . '" >
                                    <i class="fas fa-edit"></i></a>';
@@ -128,26 +127,25 @@ class ProductController extends Controller implements HasMiddleware
                                    <i class="fas fa-trash"></i></a>';
 
 
-//              if(Auth::guard('admin')->user()->can('Edit Admin')) {
-//
-//                  $editAction= '<a class="editButton btn btn-sm btn-primary" href="javascript:void(0)"
-//                                    data-id="'.$admin->id.'" data-bs-toggle="modal" data-bs-target="#editAdminModal">
-//                                    <i class="fas fa-edit"></i></a>';
-//
-//              }
-//
-//              if(Auth::guard('admin')->user()->can('Delete Admin')) {
-//
-//                  $deleteAction= '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
-//                                    data-id="'.$admin->id.'" id="deleteAdminBtn"">
-//                                    <i class="fas fa-trash"></i></a>';
-//
-//              }
+                //              if(Auth::guard('admin')->user()->can('Edit Admin')) {
+                //
+                //                  $editAction= '<a class="editButton btn btn-sm btn-primary" href="javascript:void(0)"
+                //                                    data-id="'.$admin->id.'" data-bs-toggle="modal" data-bs-target="#editAdminModal">
+                //                                    <i class="fas fa-edit"></i></a>';
+                //
+                //              }
+                //
+                //              if(Auth::guard('admin')->user()->can('Delete Admin')) {
+                //
+                //                  $deleteAction= '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                //                                    data-id="'.$admin->id.'" id="deleteAdminBtn"">
+                //                                    <i class="fas fa-trash"></i></a>';
+                //
+                //              }
 
-                return '<div class="d-flex gap-3"> ' . $editAction . $deleteAction . '</div>';
+                return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
             })
-            ->addColumn('stockInfo',function ($admin)
-            {
+            ->addColumn('stockInfo', function ($admin) {
                 return "<span>Total stock: <span class='font-weight-bold'>$admin->total_stock</span></span><br><br>
                         <span>Available stock: <span class='font-weight-bold'>$admin->available_stock</span></span><br><br>
                         <span>Sold stock: <span class='font-weight-bold'>$admin->sold_stock</span></span>";
@@ -155,7 +153,7 @@ class ProductController extends Controller implements HasMiddleware
             ->addColumn('pro_image', function ($admin) {
                 return '<img src="' . asset($admin->product->thumbnail_img) . '" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">';
             })
-            ->rawColumns(['action', 'pro_image','stockInfo'])
+            ->rawColumns(['action', 'pro_image', 'stockInfo'])
             ->addIndexColumn()
             ->make(true);
     }
@@ -187,7 +185,7 @@ class ProductController extends Controller implements HasMiddleware
     {
         // Get the last product (or null if none exists)
         $lastProduct = Product::latest()->first();
-        $prefix = Category::where('id',$id)->first()->SKU_prefix ?? 'default';
+        $prefix = Category::where('id', $id)->first()->SKU_prefix ?? 'default';
 
         // Generate numeric part
         $nextId = $lastProduct ? $lastProduct->id + 1 : 1;
@@ -202,7 +200,7 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
-//      dd($request->all());
+        //      dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -274,7 +272,6 @@ class ProductController extends Controller implements HasMiddleware
 
 
         return redirect()->route('admin.pro-variant-page', $product->id);
-
     }
 
     public function proVariantPage(string $id)
@@ -309,87 +306,140 @@ class ProductController extends Controller implements HasMiddleware
 
     public function editProductVariant(string $id)
     {
-        $productVariant = Productvariant::find($id);
+        $productVariant = Productvariant::with('product.productcolors', 'product.productvariants', 'productcolor')->findOrFail($id);
+        $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
+        $productColors = Productcolor::where('product_id', $productVariant->product_id)
+        ->get()
+        ->unique('color_name')
+        ->values();
+        $productVariants = Variant::where('status', 1)->get();
 
-        return view('admin.pages.product.edit.variant-info', compact('productVariant'));
+        return view('admin.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productColors', 'productVariants'));
+    }
+
+    public function updateProductVariant(Request $request, string $id)
+    {
+        $productVariant = Productvariant::findOrFail($id);
+
+        $request->validate([
+            'productcolor_id' => 'required|integer',
+            'variant_id' => 'required|integer',
+            'RegularPrice' => 'required|numeric',
+            'Discount' => 'required|numeric',
+        ]);
+
+        $productVariant->productcolor_id = $request->productcolor_id;
+        $productVariant->variant_id = $request->variant_id;
+        $productVariant->regular_price = $request->RegularPrice;
+        $productVariant->sale_price = $request->Discount;
+
+        $variant = Variant::find($request->variant_id);
+        if ($variant) {
+            $productVariant->variant_name = $variant->name;
+        }
+
+        $productVariant->save();
+
+        $productColor = Productcolor::find($request->productcolor_id);
+        if ($productColor) {
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('admin/images/variant/'), $filename);
+                $productColor->Image = 'public/admin/images/variant/' . $filename;
+            }
+
+            if ($request->hasFile('images')) {
+                $imgPaths = [];
+                foreach ($request->file('images') as $key => $img) {
+                    $imgName = time() . '_' . $key . '_' . $img->getClientOriginalName();
+                    $img->move(public_path('admin/images/variant/'), $imgName);
+                    $imgPaths[] = 'public/admin/images/variant/' . $imgName;
+                }
+                $productColor->Images = json_encode($imgPaths);
+            }
+
+            $productColor->save();
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Variant updated successfully']);
     }
 
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, Product $product)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-        'subcategory_id' => 'nullable',
-        'brand_id' => 'nullable',
-        'vendor_id' => 'required',
-        'product_type_id' => 'nullable',
-        'long_description' => 'required',
-        'affiliate_commission' => 'numeric',
-        'thumbnail_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'meta_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable',
+            'brand_id' => 'nullable',
+            'vendor_id' => 'required',
+            'product_type_id' => 'nullable',
+            'long_description' => 'required',
+            'affiliate_commission' => 'numeric',
+            'thumbnail_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'meta_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    $product->name = $request->name;
-    $product->SKU = $request->SKU;
-    $product->category_id = $request->category_id;
-    $product->subcategory_id = $request->subcategory_id ?? null;
-    $product->brand_id = $request->brand_id ?? null;
-    $product->vendor_id = $request->vendor_id ?? null;
-    $product->branch_id = $request->branch_id ?? null;
-    $product->warehouse_id = $request->warehouse_id ?? null;
-    $product->product_type_id = $request->product_type_id ?? null;
+        $product->name = $request->name;
+        $product->SKU = $request->SKU;
+        $product->category_id = $request->category_id;
+        $product->subcategory_id = $request->subcategory_id ?? null;
+        $product->brand_id = $request->brand_id ?? null;
+        $product->vendor_id = $request->vendor_id ?? null;
+        $product->branch_id = $request->branch_id ?? null;
+        $product->warehouse_id = $request->warehouse_id ?? null;
+        $product->product_type_id = $request->product_type_id ?? null;
 
-    $product->short_description = $request->short_description;
-    $product->long_description = $request->long_description;
+        $product->short_description = $request->short_description;
+        $product->long_description = $request->long_description;
 
-    $product->shipping_return_text = $request->shipping_return_text;
-    $product->additional_info_text = $request->additional_info_text;
-    $product->youtube_link = $request->youtube_link;
+        $product->shipping_return_text = $request->shipping_return_text;
+        $product->additional_info_text = $request->additional_info_text;
+        $product->youtube_link = $request->youtube_link;
 
-    $product->meta_title = $request->meta_title;
-    $product->meta_description = $request->meta_description;
-    $product->meta_keywords = $request->meta_keywords;
-    $product->google_schema = $request->google_schema;
-    $product->affiliate_commission = $request->affiliate_commission;
+        $product->meta_title = $request->meta_title;
+        $product->meta_description = $request->meta_description;
+        $product->meta_keywords = $request->meta_keywords;
+        $product->google_schema = $request->google_schema;
+        $product->affiliate_commission = $request->affiliate_commission;
 
- // Thumbnail image
-if ($request->hasFile('thumbnail_img')) {
-    // Delete old file
-    if ($product->thumbnail_img && file_exists(public_path($product->thumbnail_img))) {
-        unlink(public_path($product->thumbnail_img));
-    }
+        // Thumbnail image
+        if ($request->hasFile('thumbnail_img')) {
+            // Delete old file
+            if ($product->thumbnail_img && file_exists(public_path($product->thumbnail_img))) {
+                unlink(public_path($product->thumbnail_img));
+            }
 
-    $file = $request->file('thumbnail_img');
-    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file = $request->file('thumbnail_img');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
-    // Move file to public folder
-    $file->move(public_path('public/admin/upload/products/'), $filename);
+            // Move file to public folder
+            $file->move(public_path('public/admin/upload/products/'), $filename);
 
-    // Save path in DB
-    $product->thumbnail_img = 'public/admin/upload/products/' . $filename;
-}
-
-
-    // **Meta image**
-    if ($request->hasFile('meta_image')) {
-        if ($product->meta_image && file_exists(public_path($product->meta_image))) {
-            unlink(public_path($product->meta_image));
+            // Save path in DB
+            $product->thumbnail_img = 'public/admin/upload/products/' . $filename;
         }
 
-        $file = $request->file('meta_image');
-        $filename = time() . '.' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('admin/upload/products/'), $filename);
-        $product->meta_image = 'admin/upload/products/' . $filename;
+
+        // **Meta image**
+        if ($request->hasFile('meta_image')) {
+            if ($product->meta_image && file_exists(public_path($product->meta_image))) {
+                unlink(public_path($product->meta_image));
+            }
+
+            $file = $request->file('meta_image');
+            $filename = time() . '.' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('admin/upload/products/'), $filename);
+            $product->meta_image = 'admin/upload/products/' . $filename;
+        }
+
+        $product->save();
+
+        return redirect()->route('admin.pro-variant-page', ['id' => $product->id]);
     }
-
-    $product->save();
-
-   return redirect()->route('admin.pro-variant-page', ['id' => $product->id]);
-
-}
 
     /**
      * Remove the specified resource from storage.
@@ -400,7 +450,6 @@ if ($request->hasFile('thumbnail_img')) {
         $product->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Product deleted successfully'], 200);
-
     }
 
 
@@ -482,7 +531,7 @@ if ($request->hasFile('thumbnail_img')) {
 
     public function storeVariant(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $product_id = $request->product_id;
         $time = time();
 
@@ -523,7 +572,6 @@ if ($request->hasFile('thumbnail_img')) {
 
                 $variant->save();
                 $savedVariants[] = $variant;
-
             }
         }
 
@@ -545,5 +593,4 @@ if ($request->hasFile('thumbnail_img')) {
 
         return json_encode($response);
     }
-
 }

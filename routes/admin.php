@@ -29,7 +29,8 @@ use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PixelController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductTypeController;
+use App\Http\Controllers\Admin\VariantController;
+
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SalesReportController;
@@ -40,14 +41,15 @@ use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\TaxVatController;
-use App\Http\Controllers\Admin\VariantController;
-use App\Http\Controllers\Admin\VendorController;
+
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WpaymentController;
 use App\Http\Controllers\Admin\WsaleController;
 use App\Http\Controllers\Admin\WsalestockController;
+use Illuminate\Support\Facades\Route;
 
+Route::middleware('admin')->get('/admin/edit-product-variant/{id}', [ProductController::class, 'editProductVariant'])->name('edit-product-variant');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -67,7 +69,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     //Profile
-    Route::resource('/profiles',ProfileController::class)->names('profile');
+    Route::resource('/profiles', ProfileController::class)->names('profile');
 
     //Admin
     Route::resource('/admins', AdminController::class)->names('admin');
@@ -93,17 +95,17 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/affiliate/affiliate-withdraw/show/{id}', [AffiliateController::class, 'affiliateWithdrawShow'])->name('affiliate-withdraw.show');
 
     //Vendors
-    Route::get('/vendor/create',[VendorController::class,'create_vendor'])->name('vendor.create');
-    Route::post('/vendor/store',[VendorController::class,'vendor_store'])->name('vendor.store');
+    Route::get('/vendor/create', [VendorController::class, 'create_vendor'])->name('vendor.create');
+    Route::post('/vendor/store', [VendorController::class, 'vendor_store'])->name('vendor.store');
 
-    Route::get('/pending/vendors/list', [VendorController::class,'pending_vendor_list'])->name('pending.vendor.list');
-    Route::post('/pending/vendors/status', [VendorController::class,'pending_vendor_status'])->name('pending.vendor.status');
-    Route::get('/pending/vendors/delete/{id}',[VendorController::class, 'pending_vendor_delete'])->name('pending.vendor.delete');
+    Route::get('/pending/vendors/list', [VendorController::class, 'pending_vendor_list'])->name('pending.vendor.list');
+    Route::post('/pending/vendors/status', [VendorController::class, 'pending_vendor_status'])->name('pending.vendor.status');
+    Route::get('/pending/vendors/delete/{id}', [VendorController::class, 'pending_vendor_delete'])->name('pending.vendor.delete');
 
-    Route::get('/approved/vendors/list', [VendorController::class,'approved_vendor_list'])->name('approved.vendor.list');
-    Route::post('/approved/vendors/status', [VendorController::class,'approved_vendor_status'])->name('approved.vendor.status');
-    Route::get('/approved/vendors/edit/{id}',[VendorController::class, 'approved_vendor_edit'])->name('approved.vendor.edit');
-    Route::post('/approved/vendors/update/{id}',[VendorController::class, 'approved_vendor_update'])->name('approved.vendor.update');
+    Route::get('/approved/vendors/list', [VendorController::class, 'approved_vendor_list'])->name('approved.vendor.list');
+    Route::post('/approved/vendors/status', [VendorController::class, 'approved_vendor_status'])->name('approved.vendor.status');
+    Route::get('/approved/vendors/edit/{id}', [VendorController::class, 'approved_vendor_edit'])->name('approved.vendor.edit');
+    Route::post('/approved/vendors/update/{id}', [VendorController::class, 'approved_vendor_update'])->name('approved.vendor.update');
 
     //Users
     Route::resource('/users', UserController::class)->names('user');
@@ -140,13 +142,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
 
     Route::get('/products/create/variant', [ProductController::class, 'createVariant'])->name('product.create.variant');
-    Route::get('/product-colors',[ ProductController::class, 'productColors'])->name('product.color');
-    Route::get('/product-variants',[ ProductController::class, 'productVariants'])->name('product.variant');
+    Route::get('/product-colors', [ProductController::class, 'productColors'])->name('product.color');
+    Route::get('/product-variants', [ProductController::class, 'productVariants'])->name('product.variant');
     Route::get('/variant-products/{id}', [ProductController::class, 'variantProducts'])->name('variant.productlist');
     Route::get('/pro-variant-page/{id}', [ProductController::class, 'proVariantPage'])->name('pro-variant-page');
 
 
     Route::get('/edit-product-variant/{id}', [ProductController::class, 'editProductVariant'])->name('edit-product-variant');
+    Route::post('/product-variant/{id}/update', [ProductController::class, 'updateProductVariant'])->name('product-variant.update');
     Route::delete('/delete-product-variant/{id}', [ProductController::class, 'deleteProductVariant'])->name('delete-product-variant');
 
     //color & variant
@@ -168,10 +171,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('/orders', OrderController::class)->names('order');
     Route::get('/order-by-status/{id}', [OrderController::class, 'orderByStatus'])->name('order.status');
     Route::post('/order-status-change', [OrderController::class, 'orderStatusChange'])->name('order.status-change');
-    Route::post('/steadfast-order-submit',[OrderController::class, 'steadFastOrderSubmit'])->name('steadfast.order-submit');
+    Route::post('/steadfast-order-submit', [OrderController::class, 'steadFastOrderSubmit'])->name('steadfast.order-submit');
 
     //pathao
-    Route::post('order-pathao', [OrderController::class,'pathaoOrderSubmit'])->name('pathao.order-submit');
+    Route::post('order-pathao', [OrderController::class, 'pathaoOrderSubmit'])->name('pathao.order-submit');
     Route::get('/pathao-zone', [OrderController::class, 'pathaoGetZone'])->name('pathaocity');
     Route::get('/pathao-area', [OrderController::class, 'pathaoGetArea'])->name('pathaozone');
 
@@ -258,5 +261,4 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     // Branch Setup
     Route::resource('branches', BranchController::class)->names('branch');
     Route::post('/branch/change-status', [BranchController::class, 'changeBranchStatus'])->name('branch.status');
-
 });

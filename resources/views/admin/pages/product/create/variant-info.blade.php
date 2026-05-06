@@ -1,7 +1,7 @@
 @extends('admin.layout.app')
 
 @push('css')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
     <style>
         div#roleinfo_length {
@@ -38,7 +38,8 @@
         }
 
 
-        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        .nav-pills .nav-link.active,
+        .nav-pills .show>.nav-link {
             color: #fff;
             background-color: #1b1b29 !important;
         }
@@ -86,7 +87,6 @@
         .remove-btn:hover {
             background: rgba(255, 0, 0, 1);
         }
-
     </style>
 @endpush
 
@@ -99,54 +99,54 @@
             <div class="col-12">
                 <div class="card">
 
-                    {{--                    <div class="card-header">--}}
-                    {{--                        <h4 class="card-title text-center mt-4">Product Variant Information</h4>--}}
+                    {{-- <div class="card-header">--}}
+                        {{-- <h4 class="mt-4 text-center card-title">Product Variant Information</h4>--}}
 
-                    {{--                    </div>--}}
+                        {{-- </div>--}}
 
 
-                    <div class="card-body p-4">
+                    <div class="p-4 card-body">
                         <form name="form" id="AddProducts" enctype="multipart/form-data">
                             @csrf
-                            <div class="row border border-light">
+                            <div class="border row border-light">
                                 <div class="card-body">
-                                    <div class="col-lg-12 mb-4">
+                                    <div class="mb-4 col-lg-12">
                                         <div class="card">
-                                            <div class="card-header p-0" id="headingOne">
+                                            <div class="p-0 card-header" id="headingOne">
                                                 <h5 class="mb-0">
                                                     <button type="button" id="collupshead" class="btn btn-link"
-                                                            data-bs-toggle="collapse" data-bs-target="#collapseVariant"
-                                                            aria-expanded="true" aria-controls="collapseOne">
-                                                        <span class="text-uppercase m-0">Color</span>
-                                                        <span class="text-uppercase m-0">+</span>
+                                                        data-bs-toggle="collapse" data-bs-target="#collapseVariant"
+                                                        aria-expanded="true" aria-controls="collapseOne">
+                                                        <span class="m-0 text-uppercase">Color</span>
+                                                        <span class="m-0 text-uppercase">+</span>
                                                     </button>
                                                 </h5>
                                             </div>
 
                                             <div id="collapseVariant" class="collapse show" aria-labelledby="headingOne"
-                                                 data-parent="#accordion">
+                                                data-parent="#accordion">
                                                 <div class="card-body">
                                                     <table id="mediaTable" style="width: 100% !important;"
-                                                           class="table table-bordered table-striped">
+                                                        class="table table-bordered table-striped">
                                                         <thead>
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Color</th>
-                                                            <th>Image</th>
-                                                            <th>Choose File</th>
-                                                            <th>Action</th>
-                                                        </tr>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Color</th>
+                                                                <th>Image</th>
+                                                                <th>Choose File</th>
+                                                                <th>Action</th>
+                                                            </tr>
                                                         </thead>
                                                         <tbody>
                                                         </tbody>
                                                         <tfoot>
-                                                        <tr>
-                                                            <td colspan="5">
-                                                                <select id="mediavariantID" style="width: 100%;">
-                                                                    <option value="">Select Product Color</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                    <select id="mediavariantID" style="width: 100%;">
+                                                                        <option value="">Select Product Color</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
                                                         </tfoot>
 
                                                     </table>
@@ -154,63 +154,63 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card-header p-0" id="headingOne">
+                                    <div class="mb-4 col-lg-6">
+                                        <div class="p-0 card-header" id="headingOne">
                                             <h5 class="mb-0">
                                                 <button type="button" id="collupshead" class="btn btn-link">
-                                                    <span class="text-uppercase m-0">Slider Images (458 X 458) *</span>
+                                                    <span class="m-0 text-uppercase">Slider Images (458 X 458) *</span>
                                                 </button>
                                             </h5>
                                         </div>
 
                                         <div class="mt-4" id="img-wrapper">
-                                            <div class="input-group mb-2">
-                                                <input type="file" class="form-control" id="images"
-                                                    name="images[]" multiple accept="image/*">
+                                            <div class="mb-2 input-group">
+                                                <input type="file" class="form-control" id="images" name="images[]" multiple
+                                                    accept="image/*">
                                             </div>
                                         </div>
 
                                         <div id="img-preview" class="mt-2"></div>
                                     </div>
-                                    <div class="col-lg-12 mb-4">
+                                    <div class="mb-4 col-lg-12">
                                         <div class="card">
-                                            <div class="card-header p-0" id="headingOne">
+                                            <div class="p-0 card-header" id="headingOne">
                                                 <h5 class="mb-0">
                                                     <button type="button" id="collupshead" class="btn btn-link"
-                                                            data-bs-toggle="collapse" data-bs-target="#collapseSize"
-                                                            aria-expanded="true" aria-controls="collapseOne">
-                                                        <span class="text-uppercase m-0">Variant</span>
-                                                        <span class="text-uppercase m-0">+</span>
+                                                        data-bs-toggle="collapse" data-bs-target="#collapseSize"
+                                                        aria-expanded="true" aria-controls="collapseOne">
+                                                        <span class="m-0 text-uppercase">Variant</span>
+                                                        <span class="m-0 text-uppercase">+</span>
                                                     </button>
                                                 </h5>
                                             </div>
 
                                             <div id="collapseSize" class="collapse show" aria-labelledby="headingOne"
-                                                 data-parent="#accordion">
+                                                data-parent="#accordion">
                                                 <div class="card-body">
                                                     <table id="sizeTable" style="width: 100% !important;"
-                                                           class="table table-bordered table-striped">
+                                                        class="table table-bordered table-striped">
                                                         <thead>
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Size</th>
-                                                            <th>Regular Price</th>
-                                                            <th>Sale Price</th>
-                                                            <th>Stock</th>
-                                                            <th>Trash</th>
-                                                        </tr>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Size</th>
+                                                                <th>Regular Price</th>
+                                                                <th>Sale Price</th>
+                                                                <th>Stock</th>
+                                                                <th>Trash</th>
+                                                            </tr>
                                                         </thead>
 
                                                         <tbody>
                                                         </tbody>
                                                         <tfoot>
-                                                        <tr>
-                                                            <td colspan="6">
-                                                                <select id="sizevariantID" style="width: 100%;">
-                                                                    <option value="">Select Product Variant</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
+                                                            <tr>
+                                                                <td colspan="6">
+                                                                    <select id="sizevariantID" style="width: 100%;">
+                                                                        <option value="">Select Product Variant</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
                                                         </tfoot>
 
                                                     </table>
@@ -219,7 +219,7 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" id="submit" class="btn btn-primary w-100 text-center">Add
+                                    <button type="button" id="submit" class="text-center btn btn-primary w-100">Add
                                         Variant
                                     </button>
                                 </div>
@@ -227,7 +227,7 @@
                             </div>
                             <input type="hidden" name="product_id" id="productID" value="{{ $id }}">
                         </form>
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
                     </div>
                 </div>
@@ -242,21 +242,19 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped"
-                                   id="adminTable">
+                            <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped" id="adminTable">
                                 <thead>
-                                <tr>
-                                    <th>SL</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Color</th>
-                                    <th>Variant</th>
-                                    <th>Stock</th>
-                                    <th>Purchase Price</th>
-                                    <th>Regular Price</th>
-                                    <th>Sale Price</th>
-                                    <th>Action</th>
-                                </tr>
+                                    <tr>
+                                        <th>SL</th>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Color</th>
+                                        <th>Variant</th>
+                                        <th>Stock</th>
+                                        <th>Regular Price</th>
+                                        <th>Sale Price</th>
+                                        <th>Action</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
 
@@ -277,23 +275,18 @@
 
 
 @push('js')
-    <script
-        src="{{asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js')}}"></script>
+    <script src="{{asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js')}}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    {{--    <script src="https://code.jquery.com/jquery-3.7.1.min.js"--}}
-    {{--            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
+    {{--
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" --}} {{--
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            adminTable.ajax.reload();
-        });
-
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -381,7 +374,7 @@
                 contentType: false,
                 processData: false,
 
-                beforeSend: function() {
+                beforeSend: function () {
                     // Show loader
                     $('#loader').removeClass('d-none');
                 },
@@ -391,13 +384,14 @@
                     if (data["status"] === "success") {
                         toastr.success(data["message"]);
                         document.getElementById('AddProducts').reset();
-                      //  adminTable.ajax.reload();
-
+                        if (typeof adminTable !== 'undefined') {
+                            adminTable.ajax.reload();
+                        }
                     } else {
                         toastr.error(data["message"])
                     }
                 },
-                complete: function() {
+                complete: function () {
                     // Hide loader
                     $('#loader').addClass('d-none')
                 },
@@ -506,7 +500,7 @@
         var token = $("input[name='_token']").val();
         let baseAssetUrl = "{{ asset('') }}";
         //Show Data through Datatable
-        let adminTable = $('#adminTable').DataTable({
+        var adminTable = $('#adminTable').DataTable({
 
 
             order: [
@@ -514,7 +508,7 @@
             ],
             processing: true,
             serverSide: true,
-            ajax: "{{ url('/admin/variant-products/'.$id) }}",
+            ajax: "{{ url('/admin/variant-products/' . $id) }}",
             // pageLength: 30,
 
             columns: [
@@ -544,7 +538,7 @@
                     name: 'variant.name',
                 },
                 {
-                  data: 'stockInfo'
+                    data: 'stockInfo'
                 },
                 {
                     data: 'regular_price',
@@ -615,10 +609,10 @@
         })
     </script>
 
-<script>
+    <script>
         let selectedFiles = [];
 
-        document.getElementById('images').addEventListener('change', function(event) {
+        document.getElementById('images').addEventListener('change', function (event) {
             let files = Array.from(event.target.files);
 
             files.forEach(file => {
@@ -634,18 +628,18 @@
         function showPreview(file) {
             let reader = new FileReader();
 
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 let previewDiv = document.createElement('div');
                 previewDiv.classList.add('preview-box');
                 previewDiv.dataset.fileName = file.name;
 
                 previewDiv.innerHTML = `
-                <img src="${e.target.result}" alt="${file.name}">
-                <button type="button" class="remove-btn">&times;</button>
-            `;
+                    <img src="${e.target.result}" alt="${file.name}">
+                    <button type="button" class="remove-btn">&times;</button>
+                `;
 
                 // Remove button event
-                previewDiv.querySelector('.remove-btn').addEventListener('click', function() {
+                previewDiv.querySelector('.remove-btn').addEventListener('click', function () {
                     previewDiv.remove();
                     removeFile(file);
                 });
