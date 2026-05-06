@@ -36,10 +36,11 @@ Route::name('api.')->group(function () {
     // basics info data
     Route::get('/settings', [FrontendController::class, 'settings']);
 
-    // category data
+    // category & brand data
     Route::get('/categories', [FrontendController::class, 'categories']);
     Route::get('/subcategories-by-category/{slug}', [FrontendController::class, 'subcategoriesByCategory']);
     Route::get('/childcategories-by-subcategory/{slug}', [FrontendController::class, 'childcategoriesBySubCategory']);
+    Route::get('/brands', [FrontendController::class, 'brands']);
 
     // slider
     Route::get('/mainslider', [FrontendController::class, 'main_sliders']);

@@ -13,6 +13,7 @@ use App\Models\ShippingCharge;
 use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Tag;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Trait\ApiResponse;
 
@@ -40,6 +41,15 @@ class FrontendController extends Controller
     }
 
     // categories data
+    public function brands()
+    {   
+        $brands = Brand::where('status', 1)->get();
+
+        return $this->success(
+            message: 'All brands data.',
+            data: $brands
+        );
+    }
     public function categories()
     {   
         $categories = Category::where('status', 1)->where('front_status', 1)->get();
