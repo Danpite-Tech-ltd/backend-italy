@@ -71,6 +71,9 @@ Route::name('api.')->group(function () {
     Route::get('/daily-deals', [ProductController::class, 'dailyDeals']);
     Route::get('/brand-products/{slug}', [ProductController::class, 'brandProducts']);
 
+    // branch
+    Route::get('/branch', [FrontendController::class, 'branch']);
+
     // checkout
     Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
     Route::get('/order-success/{invoice_id}', [CheckoutController::class, 'orderSuccess']);

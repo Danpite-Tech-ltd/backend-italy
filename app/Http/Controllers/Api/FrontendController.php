@@ -14,6 +14,7 @@ use App\Models\Slider;
 use App\Models\Subcategory;
 use App\Models\Tag;
 use App\Models\Brand;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Trait\ApiResponse;
 
@@ -48,6 +49,15 @@ class FrontendController extends Controller
         return $this->success(
             message: 'All brands data.',
             data: $brands
+        );
+    }
+
+    public function branch(){
+        $branc = Branch::where('status', 1)->get();
+
+        return $this->success(
+            message: 'All branc data.',
+            data: $branc
         );
     }
     public function categories()
