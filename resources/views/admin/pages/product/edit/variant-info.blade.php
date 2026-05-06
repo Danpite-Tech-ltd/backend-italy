@@ -1,7 +1,6 @@
 @extends('admin.layout.app')
 
 @push('css')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
     <style>
         div#roleinfo_length {
@@ -28,21 +27,11 @@
             color: black;
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #444;
-            line-height: 15px !important;
-        }
-
-        .select2-container .select2-selection--single {
-            height: 40px;
-        }
-
-
-        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        .nav-pills .nav-link.active,
+        .nav-pills .show>.nav-link {
             color: #fff;
             background-color: #1b1b29 !important;
         }
-
     </style>
 @endpush
 
@@ -54,116 +43,172 @@
             <div class="col-12">
                 <div class="card">
 
-                                        <div class="card-header">
-                                            <h4 class="card-title text-center mt-4">Edit <span class="fw-bolder text-primary">{{ $productVariant->product->name }}</span> for Color <span class="fw-bolder text-primary">({{ $productVariant->productcolor->color_name }})</span> Variant <span class="fw-bolder text-primary">({{ $productVariant->variant_name }})</span></h4>
-                                        </div>
+                    <div class="card-header">
+                        <h4 class="mt-4 text-center card-title">Edit <span
+                                class="fw-bolder text-primary">{{ $productVariant->product->name }}</span> for Color <span
+                                class="fw-bolder text-primary">({{ $productVariant->productcolor->color_name }})</span>
+                            Variant <span class="fw-bolder text-primary">({{ $productVariant->variant_name }})</span></h4>
+                    </div>
 
 
-                    <div class="card-body p-4">
+                    <div class="p-4 card-body">
                         <form name="form" id="AddProducts" enctype="multipart/form-data">
                             @csrf
-                            <div class="row border border-light">
+                            <div class="border row border-light">
                                 <div class="card-body">
-                                    <div class="col-lg-12 mb-4">
+                                    <div class="mb-4 col-lg-12">
                                         <div class="card">
-                                            <div class="card-header p-0" id="headingOne">
+                                            <div class="p-0 card-header" id="headingOne">
                                                 <h5 class="mb-0">
                                                     <button type="button" id="collupshead" class="btn btn-link"
-                                                            data-bs-toggle="collapse" data-bs-target="#collapseVariant"
-                                                            aria-expanded="true" aria-controls="collapseOne">
-                                                        <span class="text-uppercase m-0">Color</span>
-                                                        <span class="text-uppercase m-0">+</span>
+                                                        data-bs-toggle="collapse" data-bs-target="#collapseVariant"
+                                                        aria-expanded="true" aria-controls="collapseOne">
+                                                        <span class="m-0 text-uppercase">Color</span>
+                                                        <span class="m-0 text-uppercase">+</span>
                                                     </button>
                                                 </h5>
                                             </div>
 
                                             <div id="collapseVariant" class="collapse show" aria-labelledby="headingOne"
-                                                 data-parent="#accordion">
+                                                data-parent="#accordion">
                                                 <div class="card-body">
                                                     <table id="mediaTable" style="width: 100% !important;"
-                                                           class="table table-bordered table-striped">
+                                                        class="table table-bordered table-striped">
                                                         <thead>
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Color</th>
-                                                            <th>Image</th>
-                                                            <th>Choose File</th>
-                                                            <th>Action</th>
-                                                        </tr>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Color</th>
+                                                                <th>Image</th>
+                                                                <th>Choose File</th>
+                                                            </tr>
                                                         </thead>
                                                         <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <input type="text" id="mediaID"
+                                                                        style="width:80px;border: none;color: black;"
+                                                                        value="{{ $productVariant->productcolor->id }}"
+                                                                        readonly>
+                                                                </td>
+                                                                <td>
+                                                                    <select name="productcolor_id" id="productcolorID" class="form-control">
+                                                                        @foreach($productColors as $color)
+                                                                            @php
+                                                                                $normalizedImage = str_replace(['public/', 'public\\'], '', $color->image);
+                                                                                $sliderImages = collect(json_decode($color->images, true) ?: [])->map(function ($img) {
+                                                                                    return asset(str_replace(['public/', 'public\\'], '', $img));
+                                                                                })->all();
+                                                                            @endphp
+                                                                            <option value="{{ $color->id }}"
+                                                                                data-image="{{ asset($normalizedImage) }}"
+                                                                                data-images='@json($sliderImages)'
+                                                                                {{ $color->id == $productVariant->productcolor_id ? 'selected' : '' }}>
+                                                                                {{ $color->color_name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <img id="currentColorImage"
+                                                                        src="{{ asset($productVariant->productcolor->image) }}"
+                                                                        style="width:50px">
+                                                                </td>
+                                                                <td><input type="file" id="image" class="form-control"></td>
+                                                            </tr>
                                                         </tbody>
-                                                        <tfoot>
-                                                        <tr>
-                                                            <td colspan="5">
-                                                                <select id="mediavariantID" style="width: 100%;">
-                                                                    <option value="">Select Product Color</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        </tfoot>
-
                                                     </table>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 mb-4">
-                                        <div class="card-header p-0" id="headingOne">
+                                    <div class="mb-4 col-lg-12">
+                                        <div class="p-0 card-header" id="headingOne">
                                             <h5 class="mb-0">
                                                 <button type="button" id="collupshead" class="btn btn-link">
-                                                    <span class="text-uppercase m-0">Slider Images</span>
+                                                    <span class="m-0 text-uppercase">Slider Images</span>
                                                 </button>
                                             </h5>
                                         </div>
                                         <div class="mt-4">
-                                            <input type="file" class="form-control" id="images" name="images[]" required
-                                                   multiple>
+                                            <input type="file" class="form-control" id="images" name="images[]" multiple>
+                                        </div>
+                                        <div class="mt-3">
+                                            <label class="form-label">Current Slider Images</label>
+                                            <div id="current-image-preview" class="mt-2"
+                                                style="display:flex; flex-wrap:wrap; gap:10px;">
+                                                @if($productVariant->productcolor && $productVariant->productcolor->images)
+                                                    @foreach(json_decode($productVariant->productcolor->images, true) as $slideImg)
+                                                        <div style="width:80px; position:relative;">
+                                                            <img src="{{ asset($slideImg) }}"
+                                                                style="width:100%; height:80px; object-fit:cover; border:1px solid #ddd; border-radius:5px;">
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
 
                                         <div id="image-preview" class="mt-2"
-                                             style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                                            style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
                                     </div>
-                                    <div class="col-lg-12 mb-4">
+                                    <div class="mb-4 col-lg-12">
                                         <div class="card">
-                                            <div class="card-header p-0" id="headingOne">
+                                            <div class="p-0 card-header" id="headingOne">
                                                 <h5 class="mb-0">
                                                     <button type="button" id="collupshead" class="btn btn-link"
-                                                            data-bs-toggle="collapse" data-bs-target="#collapseSize"
-                                                            aria-expanded="true" aria-controls="collapseOne">
-                                                        <span class="text-uppercase m-0">Variant</span>
-                                                        <span class="text-uppercase m-0">+</span>
+                                                        data-bs-toggle="collapse" data-bs-target="#collapseSize"
+                                                        aria-expanded="true" aria-controls="collapseOne">
+                                                        <span class="m-0 text-uppercase">Variant</span>
+                                                        <span class="m-0 text-uppercase">+</span>
                                                     </button>
                                                 </h5>
                                             </div>
 
                                             <div id="collapseSize" class="collapse show" aria-labelledby="headingOne"
-                                                 data-parent="#accordion">
+                                                data-parent="#accordion">
                                                 <div class="card-body">
                                                     <table id="sizeTable" style="width: 100% !important;"
-                                                           class="table table-bordered table-striped">
+                                                        class="table table-bordered table-striped">
                                                         <thead>
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Size</th>
-                                                            <th>Regular Price</th>
-                                                            <th>Sale Price</th>
-                                                            <th>Stock</th>
-                                                            <th>Trash</th>
-                                                        </tr>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Size</th>
+                                                                <th>Regular Price</th>
+                                                                <th>Sale Price</th>
+                                                                <th>Stock</th>
+                                                            </tr>
                                                         </thead>
 
                                                         <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <input type="text" id="sizeID"
+                                                                        style="width:80px;border: none;color: black;"
+                                                                        value="{{ $productVariant->variant_id }}" readonly>
+                                                                </td>
+                                                                <td>
+                                                                    <select name="variant_id" id="variantID" class="form-control">
+                                                                        @foreach($productVariants as $variantOption)
+                                                                            <option value="{{ $variantOption->id }}"
+                                                                                @if($variantOption->id == $productVariant->variant_id) selected="selected" @endif>
+                                                                                {{ $variantOption->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </td>
+                                                                <td><input type="text" name="RegularPrice" id="RegularPrice"
+                                                                        class="form-control" style="width:120px;float:left;"
+                                                                        value="{{ $productVariant->regular_price }}"></td>
+                                                                <td><input type="text" name="Discount" id="Discount"
+                                                                        class="form-control" style="width:120px;float:left;"
+                                                                        value="{{ $productVariant->sale_price }}"></td>
+                                                                <td><span id="total">Total:
+                                                                        {{ $productVariant->total_stock }}
+                                                                        pics<br>Available:
+                                                                        {{ $productVariant->available_stock }} pics<br>Sold:
+                                                                        {{ $productVariant->sold_stock }} pics<br></span>
+                                                                </td>
+                                                            </tr>
                                                         </tbody>
-                                                        <tfoot>
-                                                        <tr>
-                                                            <td colspan="6">
-                                                                <select id="sizevariantID" style="width: 100%;">
-                                                                    <option value="">Select Product Variant</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        </tfoot>
 
                                                     </table>
                                                 </div>
@@ -171,15 +216,17 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" id="submit" class="btn btn-primary w-100 text-center">Add
+                                    <button type="button" id="submit" class="text-center btn btn-primary w-100">Edit
                                         Variant
                                     </button>
                                 </div>
 
                             </div>
-{{--                            <input type="hidden" name="product_id" id="productID" value="{{ $id }}">--}}
+                            <input type="hidden" name="product_id" id="productID" value="{{ $productVariant->product_id }}">
+                            <input type="hidden" name="product_variant_id" id="productVariantID"
+                                value="{{ $productVariant->id }}">
                         </form>
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
                     </div>
                 </div>
@@ -191,23 +238,17 @@
 
 
 @push('js')
-    <script
-        src="{{asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js')}}"></script>
+    <script src="{{asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js')}}"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    {{--    <script src="https://code.jquery.com/jquery-3.7.1.min.js"--}}
-    {{--            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
+    {{--
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" --}} {{--
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            adminTable.ajax.reload();
-        });
-
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -216,192 +257,91 @@
         var token = $("input[name='_token']").val();
 
         $(document).on("click", "#submit", function () {
+            var mediaRow = $("#mediaTable tbody tr");
+            var sizeRow = $("#sizeTable tbody tr");
 
-
-            var color = [];
-            var colorCount = 0;
-            $("#mediaTable tbody tr").each(function (index, value) {
-                var currentRow = $(this);
-                var obj = {};
-                obj.mediaID = currentRow.find("#mediaID").val();
-                obj.color = currentRow.find("#color").val();
-                obj.image = currentRow.find("#image")[0].files[0];
-                color.push(obj);
-                colorCount++;
-            });
-
-            var variant = [];
-            var variantCount = 0;
-            $("#sizeTable tbody tr").each(function (index, value) {
-                var currentRow = $(this);
-                var obj = {};
-                obj.sizeID = currentRow.find("#sizeID").val();
-                obj.size = currentRow.find("#size").val();
-                obj.RegularPrice = currentRow.find("#RegularPrice").val();
-                obj.Discount = currentRow.find("#Discount").val();
-                variant.push(obj);
-                variantCount++;
-            });
-
-
-            if (variantCount == 0) {
+            if (mediaRow.length === 0) {
+                toastr.error('Product Color Should Not Be Empty');
+                return;
+            }
+            if (sizeRow.length === 0) {
                 toastr.error('Product Variant Should Not Be Empty');
                 return;
             }
 
-            if (colorCount == 0) {
-                toastr.error('Product Color Should Not Be Empty');
-                return;
-            }
-            var inpu = document.getElementById('images');
-            var filesCount = inpu.files.length;
-            if (filesCount == 0) {
-                toastr.error('Please Select Atleast One Slider Image');
-                return;
-
-            }
-
-            let productID = $('#productID').val();
-
             var formData = new FormData();
+            formData.append('product_id', $('#productID').val());
+            formData.append('productcolor_id', $('#productcolorID').val());
+            var variantId = $('#variantID').val() || '{{ $productVariant->variant_id }}';
+            formData.append('variant_id', variantId);
+            formData.append('RegularPrice', sizeRow.find('#RegularPrice').val());
+            formData.append('Discount', sizeRow.find('#Discount').val());
 
-            formData.append('product_id', productID);
+            var variantImage = mediaRow.find('#image')[0].files[0];
+            if (variantImage) {
+                formData.append('image', variantImage);
+            }
 
             var fileList = $('#images').get(0).files;
-
             if (fileList.length > 0) {
                 for (let i = 0; i < fileList.length; i += 1) {
                     formData.append('images[]', fileList[i]);
                 }
             }
 
-            variant.forEach((item, index) => {
-                Object.entries(item).forEach(([key, value]) => {
-                    formData.append(`variant[${index}][${key}]`, value);
-                });
-            });
-
-            color.forEach((item, index) => {
-                Object.entries(item).forEach(([key, value]) => {
-                    formData.append(`color[${index}][${key}]`, value);
-                });
-            });
-
-
             $.ajax({
                 type: "POST",
-                url: '{{route('admin.product-variant.store')}}',
+                url: '{{ route('admin.product-variant.update', $productVariant->id) }}',
                 data: formData,
                 contentType: false,
                 processData: false,
 
                 success: function (response) {
-                    var data = JSON.parse(response);
+                    var data = typeof response === 'string' ? JSON.parse(response) : response;
                     if (data["status"] === "success") {
                         toastr.success(data["message"]);
-                        document.getElementById('AddProducts').reset();
-                        adminTable.ajax.reload();
-
                     } else {
-                        toastr.error(data["message"])
+                        toastr.error(data["message"]);
                     }
                 }
+            }).fail(function (xhr) {
+                var message = 'Update failed';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                        message = json.message || message;
+                    } catch (e) {}
+                }
+                toastr.error(message);
             });
 
 
         });
 
+        function renderCurrentSliderImages(images) {
+            var preview = $('#current-image-preview');
+            preview.empty();
 
-        $("#mediavariantID").select2({
-            placeholder: "Select a Product Color",
-            templateResult: function (state) {
-                if (!state.id) {
-                    return state.text;
-                }
-                return $('<span>' + state.text + "</span>");
-            },
-            ajax: {
-                type: 'GET',
-                url: '{{ route('admin.product.color') }}',
-                processResults: function (data) {
-                    return {
-                        results: data.data
-                    };
-                }
-            }
-        }).on("select2:select", function (e) {
-            // Prevent duplicate color rows
-            if ($("#mediaTable tbody tr").length >= 1) {
-                alert("Only one color is allowed.");
-                $(this).val(null).trigger("change");
+            if (!images || images.length === 0) {
+                preview.append('<div style="width:80px; min-height:80px; display:flex; align-items:center; justify-content:center; border:1px solid #ddd; color:#666;">No images</div>');
                 return;
             }
 
-            $("#mediaTable tbody").append(
-                "<tr>" +
-                '<td><input type="text" id="mediaID" style="width:80px;border: none;color: black;" value="' + e.params.data.id + '" disabled></td>' +
-                '<td><input type="text" name="color" id="color" style="width:80px;border: none;color: black;" value="' + e.params.data.text + '" disabled></td>' +
-                '<td><img src="" style="width:50px"></td>' +
-                '<td><input type="file" id="image" class="form-control"></td>' +
-                '<td><button type="button" class="btn btn-sm btn-danger delete-btn"><i class="fa fa-trash"></i></button></td>' +
-                "</tr>"
-            );
+            images.forEach(function (img) {
+                preview.append('<div style="width:80px; position:relative;"><img src="' + img + '" style="width:100%; height:80px; object-fit:cover; border:1px solid #ddd; border-radius:5px;"></div>');
+            });
+        }
 
-            // Disable further selection
-            $(this).prop("disabled", true);
-        });
+        // Removed color change image update
 
-        // Enable back when deleting
-        $(document).on("click", ".delete-btn", function () {
-            $(this).closest("tr").remove();
-            $("#mediavariantID").prop("disabled", false).val(null).trigger("change");
-
-
-        });
-
-        $("#sizevariantID").select2({
-            placeholder: "Select a Product Variant",
-            templateResult: function (state) {
-                if (!state.id) {
-                    return state.text;
-                }
-                var $state = $(
-                    '<span>' +
-                    state.text +
-                    "</span>"
-                );
-                return $state;
-            },
-            ajax: {
-                type: 'GET',
-                url: '{{route('admin.product.variant')}}',
-                processResults: function (data) {
-
-                    // var data = $.parseJSON(data);
-                    console.log(data);
-                    return {
-                        results: data.data
-                    };
-                }
+        $(document).on('change', '#productcolorID', function () {
+            var selectedImage = $(this).find('option:selected').data('image');
+            if (selectedImage) {
+                $('#currentColorImage').attr('src', selectedImage);
             }
-        }).trigger("change").on("select2:select", function (e) {
-            $("#sizeTable tbody").append(
-                "<tr>" +
-                '<td><input type="text" id="sizeID" style="width:80px;border: none;color: black;" value="' + e.params.data.id + '" disabled></td>' +
-                '<td><input type="text" name="size" id="size" style="width:50px;border: none;color: black;" value="' + e.params.data.text + '" disabled> </td>' +
-                '<td><input type="text" name="RegularPrice" id="RegularPrice" class="form-control" style="width:80px;float:left;">  <span id="taka">TK</span></td>' +
-                '<td><input type="text" name="Discount" id="Discount" class="form-control" style="width:80px;float:left;"> <span id="taka">TK</span></td>' +
-                '<td><span id="total">Total: 0 pics<br>Avalable: 0 pics<br>Sold: 0 pics<br></span></td>' +
-                '<td><button type="button" class="btn btn-sm btn-danger delete-btn"><i class="fa fa-trash"></i></button></td>\n' +
-                "</tr>"
-            );
         });
-
-
-        $(document).on("click", ".delete-btn", function () {
-            $(this).closest("tr").remove();
-        });
-
 
     </script>
 

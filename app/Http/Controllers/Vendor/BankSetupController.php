@@ -98,5 +98,7 @@ class BankSetupController extends Controller
         $vendor_withdraw->note = $request->note;
         $vendor_withdraw->status = 'pending';
         $vendor_withdraw->save();
+
+        return redirect()->back()->with('success', 'Your withdrawal request has been submitted successfully.');
     }
 }
