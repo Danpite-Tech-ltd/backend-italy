@@ -1,0 +1,195 @@
+@extends('vendor.layouts.master')
+
+@push('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
+@endpush
+
+
+@section('content')
+
+<div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Pending Product List</h4>
+
+                            <a href="{{ route('vendor.product.create') }}" class="btn btn-md btn-secondary">
+                                Create Product
+                            </a>
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped"
+                               id="adminTable">
+                            <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                 <th>Category</th>
+                                 <th>Vendor</th>
+                                 <th>Price</th>
+                                  <th>Type</th>
+
+
+
+
+
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+
+@endsection
+
+@push('js')
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
+    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
+
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+
+    <!-- Buttons Export (PDF/Print) -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
+    <!-- PDFMake (required for PDF export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            var token = $("input[name='_token']").val();
+            let baseAssetUrl = "{{ asset('') }}";
+            //Show Data through Datatable
+            let adminTable = $('#adminTable').DataTable({
+                autoWidth: false,
+
+                dom: '<"row mb-3"' +
+                    '<"col-md-6 d-flex align-items-center mb-2 mb-md-0"l>' +
+                    '<"col-md-6 d-flex flex-wrap justify-content-md-end gap-2"Bf>' +
+                    '>' +
+                    '<"row"<"col-12"tr>>' +
+                    '<"row mt-3"' +
+                    '<"col-md-5"i>' +
+                    '<"col-md-7"p>' +
+                    '>',
+                buttons: [
+                    {
+                        extend: 'print',
+                        text: 'Print Table',
+                        className: 'btn btn-success btn-sm'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'Download PDF',
+                        className: 'btn btn-danger btn-sm'
+                    },
+                    {extend: 'csv', className: 'btn btn-info btn-sm', text: 'CSV Export'},
+                    {extend: 'excel', className: 'btn btn-success btn-sm', text: 'Excel Export'},
+
+                ],
+
+                order: [
+                    [0, 'asc']
+                ],
+                processing: true,
+                serverSide: true,
+                ajax: "{{route('vendor.pending-products')}}",
+                // pageLength: 30,
+
+                columns: [
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        width: '15%'
+                    },
+                    {
+                        data: 'thumbnail_img',
+                        name: 'thumbnail_img',
+                        render: function (data, type, row) {
+                            return '<img src="' + baseAssetUrl + row.thumbnail_img + '" width="200" height="200" alt="Image">';
+                        },
+                        width: '10%'
+
+
+                    },
+                    {
+                        data: 'name',
+                        name: 'name',
+                        width: '20%'
+                    },
+                {
+                        data: 'category.name',
+                        name: 'category.name',
+                        width: '10%',
+                        render: function (data, type, row) {
+                            return `<span class="badge bg-info"> ${data} </span>`
+                        },
+
+
+                    },
+                    {
+                        data: 'vendor.company_name',
+                        name: 'vendor.company_name',
+                        width: '10%',
+                        render: function (data, type, row) {
+                            return `<span class="badge bg-info"> ${data} </span>`
+                        },
+
+
+                    },
+                    {
+                        data: 'product_price',
+                        width: '10%',
+                        searchable: false,
+                        orderable: false
+                    },
+                     {
+                        data: 'type.name',
+                        render: function (data, type, row) {
+                            return `<span class="badge bg-primary"> ${data} </span>`
+                        },
+                        width: '10%'
+                    },
+
+
+
+
+
+                ]
+            });
+
+
+
+
+        });
+    </script>
+@endpush
+

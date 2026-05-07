@@ -115,6 +115,8 @@
                             href="{{ route('vendor.product.index') }}">Product List</a></li>
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.product.create') active @endif"
                             href="{{ route('vendor.product.create') }}">Product Create</a></li>
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.pending-products') active @endif"
+                            href="{{ route('vendor.pending-products') }}">Pending Product List</a></li>
 
 
 

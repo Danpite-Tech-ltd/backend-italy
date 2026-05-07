@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Validation\Rule;
 
 class WarehouseController extends Controller
 {
@@ -16,23 +17,23 @@ class WarehouseController extends Controller
     {
         if (request()->ajax()) {
 
-        return DataTables::of(Warehouse::query())
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                return '
-                    <a href="'.route('admin.warehouse.edit', $row->id).'" class="btn btn-sm btn-primary">
+            return DataTables::of(Warehouse::query())
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '
+                    <a href="' . route('admin.warehouse.edit', $row->id) . '" class="btn btn-sm btn-primary">
                         Edit
                     </a>
-                    <button class="btn btn-sm btn-danger deleteBranch" data-id="'.$row->id.'">
+                    <button class="btn btn-sm btn-danger deleteWarehouse" data-id="' . $row->id . '">
                         Delete
                     </button>
                 ';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
 
-    return view('admin.warehouse.index');
+        return view('admin.warehouse.index');
     }
 
     /**
@@ -68,7 +69,7 @@ class WarehouseController extends Controller
      */
     public function show(string $id)
     {
-        //
+
     }
 
     /**
@@ -76,7 +77,9 @@ class WarehouseController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $warehouse = Warehouse::find($id);
+
+        return view('admin.warehouse.edit', compact('warehouse'));
     }
 
     /**
@@ -84,7 +87,29 @@ class WarehouseController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $warehouse = Warehouse::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('warehouses')->ignore($warehouse->id),
+            ],
+            'phone' => 'nullable|string|max:20',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('warehouses')->ignore($warehouse->id),
+            ],
+            'address' => 'nullable|string',
+        ]);
+
+        $warehouse->update($data);
+
+        return redirect()->route('admin.warehouse.index')->with('success', 'Warehouse Updated successfully.');
     }
 
     /**
@@ -92,6 +117,20 @@ class WarehouseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $Warehouse = Warehouse::find($id);
+
+        if (!$Warehouse) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Warehouse not found'
+            ], 404);
+        }
+
+        $Warehouse->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Warehouse deleted successfully'
+        ]);
     }
 }
