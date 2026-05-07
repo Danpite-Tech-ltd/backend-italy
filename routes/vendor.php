@@ -62,6 +62,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
     });
 
     Route::resource('/products', ProductController::class)->names('product');
+    Route::get('/pending-products', [ProductController::class, 'pendingProduct'])->name('pending-products');
     Route::get('/pro-variant-page/{id}', [ProductController::class, 'proVariantPage'])->name('pro-variant-page');
     Route::get('/subcategory-by-category/{id}', [ProductController::class, 'getSubCategoryByCategory'])->name('subcategory-by-category');
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
