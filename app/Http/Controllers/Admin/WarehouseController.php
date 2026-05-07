@@ -23,7 +23,7 @@ class WarehouseController extends Controller
                     <a href="'.route('admin.warehouse.edit', $row->id).'" class="btn btn-sm btn-primary">
                         Edit
                     </a>
-                    <button class="btn btn-sm btn-danger deleteBranch" data-id="'.$row->id.'">
+                    <button class="btn btn-sm btn-danger deleteWarehouse" data-id="'.$row->id.'">
                         Delete
                     </button>
                 ';
@@ -92,6 +92,20 @@ class WarehouseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $Warehouse = Warehouse::find($id);
+
+        if (!$Warehouse) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Warehouse not found'
+            ], 404);
+        }
+
+        $Warehouse->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Warehouse deleted successfully'
+        ]);
     }
 }
