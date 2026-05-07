@@ -160,7 +160,7 @@ class CheckoutController extends Controller
                 'shipping_charge_id' => $request->shipping_charge_id,
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
-                'order_status_id' => 1,
+                'vendor_order_status_id' => 1,
                 'subtotal' => 0,
                 'total' => 0,
             ]);

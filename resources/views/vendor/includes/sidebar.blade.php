@@ -169,6 +169,24 @@
                 </ul>
             </div>
         </li>
+        <li class="nav-item @if (request()->routeIs('vendor.sales-reports.*')) active @endif">
+            <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="false" aria-controls="reports">
+                <i class="typcn typcn-shopping-cart menu-icon"></i>
+                <span class="menu-title">Reports</span>
+                <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+
+            <div class="collapse @if (request()->routeIs('vendor.sales-reports.*')) show @endif" id="reports">
+                <ul class="nav flex-column sub-menu">
+
+
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.sales-reports.index') active @endif"
+                            href="{{ route('vendor.sales-reports.index') }}">Sales Report</a></li>
+
+
+                </ul>
+            </div>
+        </li>
 
     </ul>
 

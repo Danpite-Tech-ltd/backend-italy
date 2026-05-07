@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PixelController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\VariantController;
+use App\Http\Controllers\Admin\VendorController;
 
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\RoleController;

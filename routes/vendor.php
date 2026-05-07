@@ -8,6 +8,7 @@ use App\Http\Controllers\Vendor\OrderController;
 use App\Http\Controllers\Vendor\ProductController;
 use App\Http\Controllers\Vendor\PurchaseController;
 use App\Http\Controllers\Vendor\SupplierController;
+use App\Http\Controllers\Vendor\SalesReportController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,6 +44,9 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         //Inventory
         Route::resource('/inventories', InventoryController::class)->names('inventory');
 
+        //Sales Reports
+        Route::resource('/sales-reports', SalesReportController::class)->names('sales-reports');
+
         //Orders
         Route::resource('/orders', OrderController::class)->names('order');
         Route::get('/order-by-status/{id}', [OrderController::class, 'orderByStatus'])->name('order.status');
@@ -52,9 +56,9 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('/banks', BankSetupController::class)->names('bank');
         Route::put('/vendor/bank', [BankSetupController::class, 'update'])
             ->name('vendor.bank.update');
-       Route::get('/vendor/withdraw', [BankSetupController::class, 'withdraw'])
+        Route::get('/vendor/withdraw', [BankSetupController::class, 'withdraw'])
             ->name('bank.withdraw');
-       Route::post('/vendor/withdraw/submit', [BankSetupController::class, 'withdrawSubmit'])->name('bank.withdraw.submit');
+        Route::post('/vendor/withdraw/submit', [BankSetupController::class, 'withdrawSubmit'])->name('bank.withdraw.submit');
     });
 
     Route::resource('/products', ProductController::class)->names('product');

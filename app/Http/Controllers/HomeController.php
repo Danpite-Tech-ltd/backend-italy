@@ -35,6 +35,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        return redirect('admin/login');
         $categories = Category::where('status', 1)->get();
         $popularCategories = Category::where('status', 1)->where('front_status',1)->get();
         $settings = BasicInfo::first();

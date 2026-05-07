@@ -96,6 +96,11 @@ class OrderController extends Controller
                         <p>' . $customer->phone . '</p>
                         <p>' . $customer->address . '</p>';
                 })
+                // 👤 Customer note
+                ->addColumn('customer_note', function ($order) {
+
+                    return '<p><b>' . $order->order->customer_note . '</b></p>';
+                })
 
                 // 🔄 Status Dropdown (Vendor Order Status)
                 ->addColumn('status_select', function ($order) use ($orderStatus) {
@@ -112,11 +117,12 @@ class OrderController extends Controller
                     return $html;
                 })
 
-                ->rawColumns(['invoice_info', 'product_info', 'customer_info', 'status_select'])
+                ->rawColumns(['invoice_info', 'product_info', 'customer_info', 'status_select', 'customer_note'])
                 ->addIndexColumn()
                 ->make(true);
         }
 
+        $allOrderCount = VendorOrder::where('vendor_id', Auth::guard('vendor')->id())->count();
         // 🔢 Status Count (Vendor wise)
         $statuses = VendorOrderStatus::where('status', 1)
             ->withCount([
@@ -126,7 +132,7 @@ class OrderController extends Controller
             ])
             ->get();
 
-        return view('vendor.pages.order.index', compact('statuses'));
+        return view('vendor.pages.order.index', compact('statuses', 'allOrderCount'));
     }
 
 

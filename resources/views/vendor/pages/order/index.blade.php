@@ -39,6 +39,32 @@
     {{-- Table Starts--}}
     <div class="row">
 
+         <div class="col-xl-3 col-md-6 mb-4 status-card" data-status=""
+                 data-status-name="All Orders">
+                <!-- card -->
+
+                <div class="card card-h-100 shadow">
+                    <!-- card body -->
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-4 text-center  rounded">
+                                <i class="fas fa-cart-plus h2"></i>
+                            </div>
+
+                            <div class="col-8">
+                                <span
+                                    class="text-muted mb-3 lh-1 d-block text-truncate">Oll Orders</span>
+                                <h4 class="mb-3">
+                                    <span class="">{{ $allOrderCount }}</span>
+                                </h4>
+                            </div>
+                        </div>
+
+                    </div><!-- end card body -->
+                </div>
+
+            </div>
+
         @forelse($statuses as $status)
             <div class="col-xl-3 col-md-6 mb-4 status-card" data-status="{{ $status->id }}"
                  data-status-name="{{ $status->status_name }}">
@@ -191,7 +217,7 @@
                             <th>Customer info</th>
                             <th>Products</th>
                             <th>Total</th>
-                            <!-- <th>Customer Notes</th> -->
+                            <th>Customer Notes</th>
                             <th>Payment Method</th>
                             <th>Status</th>
                             {{--                                <th>Assigned to</th>--}}
@@ -334,11 +360,11 @@
                         width: '5%'
 
                     },
-                    //{
-                      //  data: 'customer_note',
-                     //   className: 'text-center align-top',
-                      //  width: '15%'
-                    // },
+                    {
+                       data: 'customer_note',
+                       className: 'text-center align-top',
+                       width: '15%'
+                    },
                     {
                         data: 'payment_method',
                         className: 'text-center align-top',
@@ -395,6 +421,7 @@
                 // Update URL without reloading
                 let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?status=" + status;
                 window.history.pushState({path: newUrl}, '', newUrl);
+                
             });
 
 
@@ -471,6 +498,7 @@
                         console.log('error')
                     }
                 })
+                location.reload();
 
             });
 
