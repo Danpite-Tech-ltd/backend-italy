@@ -7,6 +7,7 @@ use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
+use Illuminate\Validation\Rule;
 
 class BranchController extends Controller
 {
@@ -79,7 +80,9 @@ class BranchController extends Controller
      */
     public function edit(string $id)
     {
-        return $id;
+        $branch = Branch::find($id);
+
+        return view('admin.branch.edit', compact('branch'));
     }
 
     /**
@@ -87,7 +90,29 @@ class BranchController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $branch = Branch::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('branches')->ignore($branch->id),
+            ],
+            'phone' => 'nullable|string|max:20',
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('branches')->ignore($branch->id),
+            ],
+            'address' => 'nullable|string',
+        ]);
+
+        $branch->update($data);
+
+        return redirect()->route('admin.branch.index')->with('success', 'Branch updated successfully.');
     }
 
     /**
