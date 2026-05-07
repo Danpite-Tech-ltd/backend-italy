@@ -13,28 +13,28 @@ class BranchController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index()
-{
-    if (request()->ajax()) {
+    public function index()
+    {
+        if (request()->ajax()) {
 
-        return DataTables::of(Branch::query())
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                return '
-                    <a href="'.route('admin.branch.edit', $row->id).'" class="btn btn-sm btn-primary">
+            return DataTables::of(Branch::query())
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '
+                    <a href="' . route('admin.branch.edit', $row->id) . '" class="btn btn-sm btn-primary">
                         Edit
                     </a>
-                    <button class="btn btn-sm btn-danger deleteBranch" data-id="'.$row->id.'">
+                    <button class="btn btn-sm btn-danger deleteBranch" data-id="' . $row->id . '">
                         Delete
                     </button>
                 ';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
 
-    return view('admin.branch.index');
-}
+        return view('admin.branch.index');
+    }
 
 
 
@@ -79,7 +79,7 @@ class BranchController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return $id;
     }
 
     /**
@@ -93,8 +93,22 @@ class BranchController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $branch = Branch::find($id);
+
+        if (!$branch) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Branch not found'
+            ], 404);
+        }
+
+        $branch->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Branch deleted successfully'
+        ]);
     }
 }
