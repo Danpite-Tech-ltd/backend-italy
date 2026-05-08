@@ -23,15 +23,15 @@ class BankSetupController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'bank_name'     => 'required|string|max:255',
-            'branch_name'   => 'required|string|max:255',
-            'account_name'  => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255',
+            'branch_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
             'routing_number' => 'nullable|string|max:255',
-            'iban_number'   => 'nullable|string|max:255',
-            'swift_code'    => 'nullable|string|max:255',
-            'branch_city'   => 'nullable|string|max:255',
-            'country'       => 'nullable|string|max:255',
+            'iban_number' => 'nullable|string|max:255',
+            'swift_code' => 'nullable|string|max:255',
+            'branch_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
         ]);
 
         $bankSetup = new BankSetup();
@@ -53,15 +53,15 @@ class BankSetupController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'bank_name'     => 'required|string|max:255',
-            'branch_name'   => 'required|string|max:255',
-            'account_name'  => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255',
+            'branch_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
             'routing_number' => 'nullable|string|max:255',
-            'iban_number'   => 'nullable|string|max:255',
-            'swift_code'    => 'nullable|string|max:255',
-            'branch_city'   => 'nullable|string|max:255',
-            'country'       => 'nullable|string|max:255',
+            'iban_number' => 'nullable|string|max:255',
+            'swift_code' => 'nullable|string|max:255',
+            'branch_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
         ]);
 
         $bankSetup = BankSetup::where('vendor_id', Auth::guard('vendor')->id())
@@ -74,7 +74,8 @@ class BankSetupController extends Controller
 
     public function withdraw()
     {
-        return view('vendor.bank.withdraw');
+        $balance = Vendor::where('id', Auth::guard('vendor')->id())->first()->balance;
+        return view('vendor.bank.withdraw', compact('balance'));
     }
 
     public function withdrawSubmit(Request $request)
@@ -86,19 +87,47 @@ class BankSetupController extends Controller
         $vendor_id = Auth::guard('vendor')->id();
         $bank = BankSetup::where('vendor_id', $vendor_id)->first();
 
+        if(WalletVendor::where('vendor_id', $vendor_id)->where('status', 'pending')->exists()){
+            return back()->with('error', 'alredy withdraw request ');
+        }
+
         if (!$bank) {
             return back()->with('error', 'Please set up your bank information before requesting a withdrawal.');
         }
+
+        $balance = Vendor::where('id', $vendor_id)->first()->balance;
+        if ($request->amount > $balance) {
+            return back()->with('error', 'You do not have enough balance to make this withdrawal request.');
+        }
+
+
 
         $vendor_withdraw = new WalletVendor();
         $vendor_withdraw->vendor_id = $vendor_id;
         $vendor_withdraw->type = 'withdraw';
         $vendor_withdraw->amount = $request->amount;
         $vendor_withdraw->bank_id = $bank->id;
+        $vendor_withdraw->bank_name = $bank->bank_name;
+        $vendor_withdraw->branch_name = $bank->branch_name;
+        $vendor_withdraw->account_name = $bank->account_name;
+        $vendor_withdraw->account_number = $bank->account_number;
         $vendor_withdraw->note = $request->note;
         $vendor_withdraw->status = 'pending';
         $vendor_withdraw->save();
 
         return redirect()->back()->with('success', 'Your withdrawal request has been submitted successfully.');
+    }
+
+    public function pendingWithdraw(){
+        $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'pending')->latest()->get();
+        return view('vendor.bank.pending_withdraw', compact('withdraw'));
+    }
+    public function approvedWithdraw(){
+        $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'approved')->latest()->get();
+        return view('vendor.bank.approved_withdraw', compact('withdraw'));
+    }
+    public function rejectedWithdraw(){
+        $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'rejected')->latest()->get();
+        return view('vendor.bank.rejected_withdraw', compact('withdraw'));
     }
 }

@@ -188,7 +188,7 @@
                                     <select id=""
                                             class="form-control select2"
                                             value="{{ old('branch_id') }}" name="branch_id">
-                                        <option value="" disabled>Select..</option>
+                                        <option value="" >Select..</option>
                                         @foreach($branches as $value)
                                             <option value="{{$value->id}}"
                                                   @if($product->branch_id == $value->id) selected @endif>{{$value->name}}</option>
@@ -209,7 +209,7 @@
                                     <select id=""
                                             class="form-control select2"
                                             value="{{ old('warehouse_id') }}" name="warehouse_id">
-                                        <option value="" disabled>Select..</option>
+                                        <option value="" >Select..</option>
                                         @foreach($warehouses as $value)
                                             <option value="{{$value->id}}"
                                                   @if($product->warehouse_id == $value->id) selected @endif>{{$value->name}}</option>

@@ -76,8 +76,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if ($currentRouteName == 'admin.approved.vendor.list') active @endif"
-                                    href="{{ route('admin.approved.vendor.list') }}">
+                                <a class="nav-link @if ($currentRouteName == 'admin.withdraw') active @endif"
+                                    href="{{ route('admin.withdraw') }}">
                                     Withdrawls
                                 </a>
                             </li>
@@ -127,6 +127,9 @@
                                     href="{{ route('admin.product.create') }}">Product Create</a></li>
                         @endcan
 
+                        <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.pendingProducts') active @endif"
+                                href="{{ route('admin.pendingProducts') }}">Pending Product List</a></li>
+
                         @can('View Category')
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.category.index') active @endif"
                                     href="{{ route('admin.category.index') }}">Category</a></li>
@@ -137,6 +140,8 @@
                                     href="{{ route('admin.subcategory.index') }}">Subcategory</a></li>
                         @endcan
 
+
+
                         {{-- @can('View Child Category')
                             <li class="nav-item"><a
                                     class="nav-link @if ($currentRouteName == 'admin.child-category.index') active @endif"
@@ -144,8 +149,7 @@
                         @endcan --}}
 
                         @can('View Brand')
-                            <li class="nav-item"><a
-                                    class="nav-link @if ($currentRouteName == 'admin.brand.index') active @endif"
+                            <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.brand.index') active @endif"
                                     href="{{ route('admin.brand.index') }}">Brand</a></li>
                         @endcan
 
@@ -683,7 +687,7 @@
                         @endcan
 
                         <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.vendor-order-status.index') active @endif"
-                        href="{{ route('admin.vendor-order-status.index') }}">Verdor Order Status</a></li>
+                                href="{{ route('admin.vendor-order-status.index') }}">Verdor Order Status</a></li>
 
                         @can('Pixel')
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.pixel.index') active @endif"

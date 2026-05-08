@@ -60,7 +60,8 @@ class ProductController extends Controller implements HasMiddleware
                     $query->select('id', 'name');
                 },
                 'type'
-            ]);
+            ])
+            ->where('status', 1);
 
             return DataTables::eloquent($products)
                 ->addColumn('status', function ($admin) {
@@ -105,6 +106,72 @@ class ProductController extends Controller implements HasMiddleware
         }
 
         return view('admin.pages.product.index');
+    }
+
+
+    public function pendingProducts()
+    {
+        if (request()->ajax()) {
+            $products = Product::with([
+                'category' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'vendor' => function ($query) {
+                    $query->select('id', 'company_name');
+                },
+                'branch' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'warehouse' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'type'
+            ])
+            ->where('status', 0);
+
+            return DataTables::eloquent($products)
+                ->addColumn('status', function ($admin) {
+                    if (Auth::user()->can('Status Product')) {
+                        if ($admin->status == 1) {
+                            return ' <a class="status" id="adminStatus" href="javascript:void(0)"
+                                               data-id="' . $admin->id . '" data-status="' . $admin->status . '"> <i
+                                                        class="fa-solid fa-toggle-on fa-2x"></i>
+                                            </a>';
+                        } else {
+                            return '<a class="status" id="adminStatus" href="javascript:void(0)"
+                                               data-id="' . $admin->id . '" data-status="' . $admin->status . '"> <i
+                                                        class="fa-solid fa-toggle-off fa-2x" style="color: grey"></i>
+                                            </a>';
+                        }
+                    }
+                    return '';
+                })
+                ->addColumn('product_price', function ($admin) {
+                    return $admin->productvariants->first()->sale_price ?? 0;
+                })
+
+
+                ->addColumn('action', function ($admin) {
+                    $editAction = '';
+                    $deleteAction = '';
+
+                    if (Auth::user()->can('Edit Product')) {
+                        $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('admin.product.edit', $admin->id) . '">
+                                   <i class="fas fa-edit"></i></a>';
+                    }
+                    if (Auth::user()->can('Delete Product')) {
+                        $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                                   data-id="' . $admin->id . '" id="deleteAdminBtn"">
+                                   <i class="fas fa-trash"></i></a>';
+                    }
+                    return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
+                })
+                ->rawColumns(['action', 'front_status', 'status', 'role'])
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        return view('admin.pages.product.pendingProducts');
     }
 
 
@@ -309,9 +376,9 @@ class ProductController extends Controller implements HasMiddleware
         $productVariant = Productvariant::with('product.productcolors', 'product.productvariants', 'productcolor')->findOrFail($id);
         $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
         $productColors = Productcolor::where('product_id', $productVariant->product_id)
-        ->get()
-        ->unique('color_name')
-        ->values();
+            ->get()
+            ->unique('color_name')
+            ->values();
         $productVariants = Variant::where('status', 1)->get();
 
         return view('admin.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productColors', 'productVariants'));

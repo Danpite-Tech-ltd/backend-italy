@@ -105,6 +105,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/pending/vendors/status', [VendorController::class, 'pending_vendor_status'])->name('pending.vendor.status');
     Route::get('/pending/vendors/delete/{id}', [VendorController::class, 'pending_vendor_delete'])->name('pending.vendor.delete');
 
+    //withdraw
+    Route::get('/withdraw', [VendorController::class, 'withdraw'])->name('withdraw');
+    Route::post('/withdraw/update-status', [VendorController::class, 'updateWithdrawStatus'])->name('withdraw.update.status');
+
     Route::get('/approved/vendors/list', [VendorController::class, 'approved_vendor_list'])->name('approved.vendor.list');
     Route::post('/approved/vendors/status', [VendorController::class, 'approved_vendor_status'])->name('approved.vendor.status');
     Route::get('/approved/vendors/edit/{id}', [VendorController::class, 'approved_vendor_edit'])->name('approved.vendor.edit');
@@ -139,6 +143,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     //Product
     Route::resource('/products', ProductController::class)->names('product');
+    Route::get('/pending-products', [ProductController::class, 'pendingProducts'])->name('pendingProducts');
     Route::get('/subcategory-by-category/{id}', [SubCategoryController::class, 'getSubCategoryByCategory'])->name('subcategory-by-category');
     Route::get('/child-category-by-subcategory/{id}', [ChildCategoryController::class, 'getChildCategoryBySubCategory'])->name('child-category-by-subcategory');
     Route::post('/product/change-status', [ProductController::class, 'changeProductStatus'])->name('product.status');
@@ -169,7 +174,6 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     //Blog
     Route::resource('/blogs', BlogController::class)->names('blog');
-
     //Orders
     Route::resource('/orders', OrderController::class)->names('order');
     Route::get('/order-by-status/{id}', [OrderController::class, 'orderByStatus'])->name('order.status');
@@ -266,11 +270,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::resource('branches', BranchController::class)->names('branch');
     Route::post('/branch/change-status', [BranchController::class, 'changeBranchStatus'])->name('branch.status');
 
-        // ticket route
+    // ticket route
     Route::get('ticket/manage', [TicketController::class, 'index'])->name('ticket.index');
     Route::get('ticket/edit/{ticket_id}', [TicketController::class, 'edit'])->name('ticket.edit');
     Route::post('ticket/replay/{ticketdetails_id}', [TicketController::class, 'ticketdetails_replay'])->name('ticket.replay');
-    
+
     Route::post('ticket/inactive', [TicketController::class, 'inactive'])->name('ticket.inactive');
     Route::post('ticket/active', [TicketController::class, 'active'])->name('ticket.active');
 
