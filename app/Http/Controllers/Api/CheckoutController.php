@@ -160,7 +160,7 @@ class CheckoutController extends Controller
                 'shipping_charge_id' => $request->shipping_charge_id,
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
-                'vendor_order_status_id' => 1,
+                'order_status_id' => 1,
                 'subtotal' => 0,
                 'total' => 0,
             ]);
@@ -218,6 +218,8 @@ class CheckoutController extends Controller
                         'product_id' => $item['product']->id,
                         'productvariant_id' => $item['variant']->id,
                         'product_name' => $item['product']->name,
+                        'slug' => $item['product']->slug,
+                        'thumbnail_img' => $item['product']->thumbnail_img,
                         'product_SKU' => $item['product']->SKU,
 
                         'product_price' => $item['price'],

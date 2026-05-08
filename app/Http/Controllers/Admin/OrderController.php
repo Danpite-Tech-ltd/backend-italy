@@ -70,8 +70,8 @@ class OrderController extends Controller implements HasMiddleware
 
                         $productInfo .= '<div class="mb-2">
                                        <div class="d-flex gap-3">
-                                        <a target="_blank" href="' . route('product-details', $product->product->slug) . '">
-                                            <img src="' . asset($product->product->thumbnail_img) . '" width="60" height="60">
+                                        <a target="_blank" href="' . route('product-details', $product->slug) . '">
+                                            <img src="' . asset($product->thumbnail_img) . '" width="60" height="60">
                                         </a>
 
                                         <br>
