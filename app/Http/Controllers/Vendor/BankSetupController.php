@@ -107,4 +107,9 @@ class BankSetupController extends Controller
 
         return redirect()->back()->with('success', 'Your withdrawal request has been submitted successfully.');
     }
+
+    public function pendingWithdraw(){
+        $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'pending')->latest()->get();
+        return view('vendor.bank.pending_withdraw', compact('withdraw'));
+    }
 }

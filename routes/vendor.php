@@ -59,6 +59,8 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::get('/vendor/withdraw', [BankSetupController::class, 'withdraw'])
             ->name('bank.withdraw');
         Route::post('/vendor/withdraw/submit', [BankSetupController::class, 'withdrawSubmit'])->name('bank.withdraw.submit');
+        Route::get('/pending-withdraw', [BankSetupController::class, 'pendingWithdraw'])->name('pendingWithdraw');
+        Route::get('/approved-withdraw', [BankSetupController::class, 'approvedWithdraw'])->name('approvedWithdraw');
     });
 
     Route::resource('/products', ProductController::class)->names('product');
