@@ -11,6 +11,9 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
+use App\Models\VendorOrder;
+use App\Models\VendorCommission;
+use App\Models\Vendor;
 use App\Models\ShippingCharge;
 use App\Models\User;
 use Brian2694\Toastr\Facades\Toastr;
@@ -133,7 +136,7 @@ class OrderController extends Controller implements HasMiddleware
                 ->addIndexColumn()
                 ->make(true);
         }
-//
+        //
 
         $steadfastStatus = Courier::where('type', 'steadfast')->where('status', 1)->first();
         $pathaoStatus = Courier::where('type', 'pathao')->where('status', 1)->first();
@@ -141,7 +144,7 @@ class OrderController extends Controller implements HasMiddleware
 
         // Pathao courier data
         if ($pathaoStatus) {
-//            $response = Http::get($pathaoStatus->url . '/api/v1/countries/1/city-list');
+            //            $response = Http::get($pathaoStatus->url . '/api/v1/countries/1/city-list');
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $pathaoStatus->token,
@@ -149,7 +152,7 @@ class OrderController extends Controller implements HasMiddleware
 
             $pathaocities = $response->json();
 
-//            dd($response);
+            //            dd($response);
 
             $response2 = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $pathaoStatus->token,
@@ -158,7 +161,7 @@ class OrderController extends Controller implements HasMiddleware
 
             $pathaostore = $response2->json();
 
-//            dd($pathaostore);
+            //            dd($pathaostore);
         } else {
             $pathaocities = [];
             $pathaostore = [];
@@ -167,7 +170,11 @@ class OrderController extends Controller implements HasMiddleware
         $statuses = OrderStatus::where('status', 1)->with('orders')->get();
 
         return view('admin.pages.order.index', compact(
-            'statuses', 'steadfastStatus', 'pathaoStatus', 'pathaostore', 'pathaocities'
+            'statuses',
+            'steadfastStatus',
+            'pathaoStatus',
+            'pathaostore',
+            'pathaocities'
         ));
     }
 
@@ -195,7 +202,7 @@ class OrderController extends Controller implements HasMiddleware
         DB::beginTransaction();
 
         try {
-//          Create Customer
+            //          Create Customer
             $customer = new Customer();
             $customer->name = $request['data']['customerName'];
             $customer->phone = $request['data']['customerPhone'];
@@ -208,7 +215,7 @@ class OrderController extends Controller implements HasMiddleware
             $customer->save();
 
 
-//          Create Order
+            //          Create Order
             $order = new Order();
             $order->customer_id = $customer->id;
             $order->invoiceID = $order->invoiceGenerator();
@@ -223,7 +230,7 @@ class OrderController extends Controller implements HasMiddleware
             $order->order_status_id = $request['data']['status'];
             $order->save();
 
-//          Create Order Products
+            //          Create Order Products
             foreach ($products as $product) {
                 $orderProduct = new OrderProduct();
                 $orderProduct->order_id = $order->id;
@@ -283,7 +290,7 @@ class OrderController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Order $order)
     {
-//        dd($request->all());
+        //        dd($request->all());
 
         $products = $request['data']['products'];
         $total = $request['data']['total'] ?? 0;
@@ -380,10 +387,45 @@ class OrderController extends Controller implements HasMiddleware
 
 
         $order = Order::find($order_id);
-        $order->order_status_id = $order_status_id;
-        $order->save();
 
-//        $previousStatus = $order->getOriginal('order_status_id');
+
+        //        $previousStatus = $order->getOriginal('order_status_id');
+
+        if ($order_status_id == 4) {
+
+            // এই order এর সব vendor order
+            $vendorOrders = VendorOrder::where('order_id', $order->id)->get();
+
+            foreach ($vendorOrders as $vendorOrder) {
+
+                $vendorId = $vendorOrder->vendor_id;
+
+                $subtotal = $vendorOrder->subtotal;
+
+                // commission
+                $vendor_commission = Vendor::where('id', $vendorId)->first()->commission_value;
+                $commissionPercentage = $vendor_commission;
+
+                $commissionValue = ($subtotal * $commissionPercentage) / 100;
+
+                // vendor পাবে
+                $vendorAmount = $subtotal - $commissionValue;
+
+                // commission save
+                VendorCommission::create([
+                    'vendor_id' => $vendorId,
+                    'vendor_order_id' => $vendorOrder->id,
+                    'commission_percentage' => $commissionPercentage,
+                    'commission_value' => $commissionValue,
+                    'subtotal' => $subtotal,
+                    'amount' => $vendorAmount,
+                ]);
+
+                // vendor balance increment
+                Vendor::where('id', $vendorId)
+                    ->increment('balance', $vendorAmount);
+            }
+        }
 
         // If delivered & has affiliate, calculate commission
         if ($order->order_status_id == 4 && $order->affiliate_id) {
@@ -405,6 +447,9 @@ class OrderController extends Controller implements HasMiddleware
                 }
             }
         }
+
+        $order->order_status_id = $order_status_id;
+        $order->save();
 
         return response()->json(['message' => 'Order Status Changed to ' . $order_status], 200);
     }
@@ -438,20 +483,20 @@ class OrderController extends Controller implements HasMiddleware
                     'Secret-Key' => $courier->secret_key,
                     'Content-Type' => 'application/json'
                 ])->post('https://portal.packzy.com/api/v1/create_order', [
-                    'invoice' => $order->invoiceID,
-                    'recipient_name' => $order->customer->name ?? '',
-                    'recipient_phone' => $order->customer->phone ?? '',
-                    'recipient_address' => $order->customer->address ?? '',
-                    'cod_amount' => $order->total,
-                    'note' => $order->customer_note ?? '',
-                ]);
+                            'invoice' => $order->invoiceID,
+                            'recipient_name' => $order->customer->name ?? '',
+                            'recipient_phone' => $order->customer->phone ?? '',
+                            'recipient_address' => $order->customer->address ?? '',
+                            'cod_amount' => $order->total,
+                            'note' => $order->customer_note ?? '',
+                        ]);
 
                 if ($response->ok() && ($response->json('status') == 200)) {
 
-//
+                    //
                     $data = $response->json();
 
-//                    dd($data);
+                    //                    dd($data);
 
                     $order->update([
                         'courier_id' => $courier->id,
@@ -493,7 +538,7 @@ class OrderController extends Controller implements HasMiddleware
 
     public function pathaoOrderSubmit(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $orders_id = json_decode($request->order_ids, true);
 
         foreach ($orders_id as $order_id) {
@@ -508,24 +553,24 @@ class OrderController extends Controller implements HasMiddleware
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                 ])->post($pathao_info->url . '/aladdin/api/v1/orders', [
-                    'store_id' => $request->pathaostore,
-                    'merchant_order_id' => $order->invoiceID,
-                    'sender_name' => 'Test',
-                    'sender_phone' => $order->customer ? $order->customer->phone : '',
-                    'recipient_name' => $order->customer ? $order->customer->name : '',
-                    'recipient_phone' => $order->customer ? $order->customer->phone : '',
-                    'recipient_address' => $order->customer ? $order->customer->address : '',
-                    'recipient_city' => $request->pathaocity,
-                    'recipient_zone' => $request->pathaozone,
-                    'recipient_area' => $request->pathaoarea,
-                    'delivery_type' => 48,
-                    'item_type' => 2,
-                    'special_instruction' => 'Special note- product must be check after delivery',
-                    'item_quantity' => 1,
-                    'item_weight' => 0.5,
-                    'amount_to_collect' => round($order->total),
-                    'item_description' => 'Special note- product must be check after delivery',
-                ]);
+                            'store_id' => $request->pathaostore,
+                            'merchant_order_id' => $order->invoiceID,
+                            'sender_name' => 'Test',
+                            'sender_phone' => $order->customer ? $order->customer->phone : '',
+                            'recipient_name' => $order->customer ? $order->customer->name : '',
+                            'recipient_phone' => $order->customer ? $order->customer->phone : '',
+                            'recipient_address' => $order->customer ? $order->customer->address : '',
+                            'recipient_city' => $request->pathaocity,
+                            'recipient_zone' => $request->pathaozone,
+                            'recipient_area' => $request->pathaoarea,
+                            'delivery_type' => 48,
+                            'item_type' => 2,
+                            'special_instruction' => 'Special note- product must be check after delivery',
+                            'item_quantity' => 1,
+                            'item_weight' => 0.5,
+                            'amount_to_collect' => round($order->total),
+                            'item_description' => 'Special note- product must be check after delivery',
+                        ]);
             }
             if ($response->status() == '200') {
 

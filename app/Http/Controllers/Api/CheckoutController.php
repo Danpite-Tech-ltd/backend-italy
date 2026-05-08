@@ -204,7 +204,7 @@ class CheckoutController extends Controller
                     'subtotal' => $vendorSubtotal,
                     'delivery_charge' => 0, // optional split later
                     'total' => $vendorSubtotal,
-                    'vendor_order_status_id' => 1,
+                    'vendor_order_status_id' => 1
                 ]);
 
                 /* ===== INSERT PRODUCTS ===== */
