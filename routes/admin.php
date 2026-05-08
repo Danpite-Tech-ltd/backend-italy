@@ -139,6 +139,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     //Product
     Route::resource('/products', ProductController::class)->names('product');
+    Route::get('/pending-products', [ProductController::class, 'pendingProducts'])->name('pendingProducts');
     Route::get('/subcategory-by-category/{id}', [SubCategoryController::class, 'getSubCategoryByCategory'])->name('subcategory-by-category');
     Route::get('/child-category-by-subcategory/{id}', [ChildCategoryController::class, 'getChildCategoryBySubCategory'])->name('child-category-by-subcategory');
     Route::post('/product/change-status', [ProductController::class, 'changeProductStatus'])->name('product.status');
@@ -270,7 +271,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('ticket/manage', [TicketController::class, 'index'])->name('ticket.index');
     Route::get('ticket/edit/{ticket_id}', [TicketController::class, 'edit'])->name('ticket.edit');
     Route::post('ticket/replay/{ticketdetails_id}', [TicketController::class, 'ticketdetails_replay'])->name('ticket.replay');
-    
+
     Route::post('ticket/inactive', [TicketController::class, 'inactive'])->name('ticket.inactive');
     Route::post('ticket/active', [TicketController::class, 'active'])->name('ticket.active');
 
