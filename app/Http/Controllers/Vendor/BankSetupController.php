@@ -23,15 +23,15 @@ class BankSetupController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'bank_name'     => 'required|string|max:255',
-            'branch_name'   => 'required|string|max:255',
-            'account_name'  => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255',
+            'branch_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
             'routing_number' => 'nullable|string|max:255',
-            'iban_number'   => 'nullable|string|max:255',
-            'swift_code'    => 'nullable|string|max:255',
-            'branch_city'   => 'nullable|string|max:255',
-            'country'       => 'nullable|string|max:255',
+            'iban_number' => 'nullable|string|max:255',
+            'swift_code' => 'nullable|string|max:255',
+            'branch_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
         ]);
 
         $bankSetup = new BankSetup();
@@ -53,15 +53,15 @@ class BankSetupController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'bank_name'     => 'required|string|max:255',
-            'branch_name'   => 'required|string|max:255',
-            'account_name'  => 'required|string|max:255',
+            'bank_name' => 'required|string|max:255',
+            'branch_name' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
             'routing_number' => 'nullable|string|max:255',
-            'iban_number'   => 'nullable|string|max:255',
-            'swift_code'    => 'nullable|string|max:255',
-            'branch_city'   => 'nullable|string|max:255',
-            'country'       => 'nullable|string|max:255',
+            'iban_number' => 'nullable|string|max:255',
+            'swift_code' => 'nullable|string|max:255',
+            'branch_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
         ]);
 
         $bankSetup = BankSetup::where('vendor_id', Auth::guard('vendor')->id())
@@ -74,7 +74,8 @@ class BankSetupController extends Controller
 
     public function withdraw()
     {
-        return view('vendor.bank.withdraw');
+        $balance = Vendor::where('id', Auth::guard('vendor')->id())->first()->balance;
+        return view('vendor.bank.withdraw', compact('balance'));
     }
 
     public function withdrawSubmit(Request $request)
@@ -88,6 +89,11 @@ class BankSetupController extends Controller
 
         if (!$bank) {
             return back()->with('error', 'Please set up your bank information before requesting a withdrawal.');
+        }
+
+        $balance = Vendor::where('id', $vendor_id)->first()->balance;
+        if ($request->amount > $balance) {
+            return back()->with('error', 'You do not have enough balance to make this withdrawal request.');
         }
 
         $vendor_withdraw = new WalletVendor();

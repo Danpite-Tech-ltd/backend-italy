@@ -8,10 +8,15 @@
                 <div class="card-body">
 
                     {{-- <h4 class="card-title">Withdrawl Request | {{ $vendor->email ?? 'N/A' }}</h4> --}}
-                    <h4 class="card-title">Withdrawl Request </h4>
-                    <p class="card-description">
-                        Request your withdrawl amount
-                    </p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="card-title">Withdrawl Request </h4>
+                            <p class="card-description">
+                                Request your withdrawl amount
+                            </p>
+                        </div>
+                        <h4 class="card-title">BALANCE: {{ $balance }}</h4>
+                    </div>
                     <form class="forms-sample" method="POST" action="{{ route('vendor.bank.withdraw.submit') }}">
                         @csrf
 
