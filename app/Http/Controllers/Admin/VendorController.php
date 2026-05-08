@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Vendor;
+use App\Models\BankSetup;
+use App\Models\WalletVendor;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -20,29 +22,29 @@ class VendorController extends Controller
     public function vendor_store(Request $request)
     {
         $request->validate([
-            'first_name'        => 'required|string|max:255',
-            'phone'             => 'required|string|max:20|unique:vendors,phone',
-            'email'             => 'required|email|unique:vendors,email',
-            'company_name'      => 'required|string|max:255',
-            'company_address'   => 'required|string|max:255',
-            'country'           => 'required|string',
-            'city'              => 'required|string',
-            'post_code'         => 'required|string|max:20',
-            'password'          => 'required|confirmed|min:6',
+            'first_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20|unique:vendors,phone',
+            'email' => 'required|email|unique:vendors,email',
+            'company_name' => 'required|string|max:255',
+            'company_address' => 'required|string|max:255',
+            'country' => 'required|string',
+            'city' => 'required|string',
+            'post_code' => 'required|string|max:20',
+            'password' => 'required|confirmed|min:6',
         ]);
 
         $vendor = new Vendor();
-        $vendor->first_name      = $request->first_name;
-        $vendor->last_name       = $request->last_name;
-        $vendor->phone           = $request->phone;
-        $vendor->email           = $request->email;
-        $vendor->company_name    = $request->company_name;
+        $vendor->first_name = $request->first_name;
+        $vendor->last_name = $request->last_name;
+        $vendor->phone = $request->phone;
+        $vendor->email = $request->email;
+        $vendor->company_name = $request->company_name;
         $vendor->company_address = $request->company_address;
-        $vendor->country         = Country::find($request->country)->name;
-        $vendor->city            = City::find($request->city)->name;
-        $vendor->post_code       = $request->post_code;
-        $vendor->password        = bcrypt($request->password);
-        $vendor->status          = 'approved';
+        $vendor->country = Country::find($request->country)->name;
+        $vendor->city = City::find($request->city)->name;
+        $vendor->post_code = $request->post_code;
+        $vendor->password = bcrypt($request->password);
+        $vendor->status = 'approved';
         $vendor->save();
 
         return redirect()->route('admin.approved.vendor.list')->with('success', 'Vendor registered successfully!');
@@ -86,7 +88,7 @@ class VendorController extends Controller
                         data-id="' . $vendor->id . '" id="deleteVendorBtn">
                         <i class="fas fa-trash"></i></a>';
 
-                    return '<div class="gap-3 d-flex">' .  $deleteAction . '</div>';
+                    return '<div class="gap-3 d-flex">' . $deleteAction . '</div>';
                 })
                 ->rawColumns(['name', 'email', 'status', 'action'])
                 ->addIndexColumn()
@@ -109,8 +111,8 @@ class VendorController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'status'  => $vendor->status,
-            'id'      => $vendor->id,
+            'status' => $vendor->status,
+            'id' => $vendor->id,
         ]);
     }
 
@@ -187,8 +189,8 @@ class VendorController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'status'  => $vendor->status,
-            'id'      => $vendor->id,
+            'status' => $vendor->status,
+            'id' => $vendor->id,
         ]);
     }
 
@@ -210,5 +212,46 @@ class VendorController extends Controller
         $vendor->save();
 
         return redirect()->route('admin.approved.vendor.list')->with('success', 'Vendor commission updated successfully!');
+    }
+
+    public function withdraw()
+    {
+        $status = request('status', 'pending');
+
+        $pendingCount = WalletVendor::where('status', 'pending')->count();
+        $approvedCount = WalletVendor::where('status', 'approved')->count();
+        $rejectedCount = WalletVendor::where('status', 'rejected')->count();
+
+
+        $withdraws = WalletVendor::where('status', $status)->latest()->get();
+
+        return view('admin.pages.vendor.withdraw', compact('withdraws', 'pendingCount', 'approvedCount', 'rejectedCount', 'status'));
+    }
+
+    public function updateWithdrawStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:wallet_vendors,id',
+            'status' => 'required|in:pending,approved,rejected',
+            'admin_note' => 'nullable|string'
+        ]);
+
+        $withdraw = WalletVendor::find($request->id);
+
+        if ($withdraw->status != 'pending') {
+            return response()->json(['success' => false, 'message' => 'Only pending withdrawals can be updated'], 400);
+        }
+
+        if ($request->status == 'approved') {
+            $vendor = Vendor::find($request->vendor_id);
+            $vendor->decrement('balance', $request->amount);
+            $vendor->save();
+        }
+
+        $withdraw->status = $request->status;
+        $withdraw->admin_note = $request->admin_note;
+        $withdraw->save();
+
+        return response()->json(['success' => true, 'message' => 'Withdrawal status updated successfully']);
     }
 }

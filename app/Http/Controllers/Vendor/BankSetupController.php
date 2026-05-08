@@ -87,6 +87,10 @@ class BankSetupController extends Controller
         $vendor_id = Auth::guard('vendor')->id();
         $bank = BankSetup::where('vendor_id', $vendor_id)->first();
 
+        if(WalletVendor::where('vendor_id', $vendor_id)->where('status', 'pending')->exists()){
+            return back()->with('error', 'alredy withdraw request ');
+        }
+
         if (!$bank) {
             return back()->with('error', 'Please set up your bank information before requesting a withdrawal.');
         }
@@ -96,11 +100,17 @@ class BankSetupController extends Controller
             return back()->with('error', 'You do not have enough balance to make this withdrawal request.');
         }
 
+
+
         $vendor_withdraw = new WalletVendor();
         $vendor_withdraw->vendor_id = $vendor_id;
         $vendor_withdraw->type = 'withdraw';
         $vendor_withdraw->amount = $request->amount;
         $vendor_withdraw->bank_id = $bank->id;
+        $vendor_withdraw->bank_name = $bank->bank_name;
+        $vendor_withdraw->branch_name = $bank->branch_name;
+        $vendor_withdraw->account_name = $bank->account_name;
+        $vendor_withdraw->account_number = $bank->account_number;
         $vendor_withdraw->note = $request->note;
         $vendor_withdraw->status = 'pending';
         $vendor_withdraw->save();

@@ -76,8 +76,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link @if ($currentRouteName == 'admin.approved.vendor.list') active @endif"
-                                    href="{{ route('admin.approved.vendor.list') }}">
+                                <a class="nav-link @if ($currentRouteName == 'admin.withdraw') active @endif"
+                                    href="{{ route('admin.withdraw') }}">
                                     Withdrawls
                                 </a>
                             </li>
