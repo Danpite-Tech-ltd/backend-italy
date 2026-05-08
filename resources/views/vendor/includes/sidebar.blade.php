@@ -96,6 +96,8 @@
                             href="{{ route('vendor.pendingWithdraw') }}">Pending Withdrawls List</a></li>
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.approvedWithdraw') active @endif"
                             href="{{ route('vendor.approvedWithdraw') }}">Approved Withdrawls List</a></li>
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.rejectedWithdraw') active @endif"
+                            href="{{ route('vendor.rejectedWithdraw') }}">Rejected Withdrawls List</a></li>
 
                 </ul>
             </div>

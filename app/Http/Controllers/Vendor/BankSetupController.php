@@ -116,4 +116,8 @@ class BankSetupController extends Controller
         $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'approved')->latest()->get();
         return view('vendor.bank.approved_withdraw', compact('withdraw'));
     }
+    public function rejectedWithdraw(){
+        $withdraw = WalletVendor::where('vendor_id', Auth::guard('vendor')->id())->where('status', 'rejected')->latest()->get();
+        return view('vendor.bank.rejected_withdraw', compact('withdraw'));
+    }
 }
