@@ -61,7 +61,7 @@ class ProductController extends Controller implements HasMiddleware
                 },
                 'type'
             ])
-            ->where('status', 1);
+                ->where('status', 1);
 
             return DataTables::eloquent($products)
                 ->addColumn('status', function ($admin) {
@@ -127,7 +127,7 @@ class ProductController extends Controller implements HasMiddleware
                 },
                 'type'
             ])
-            ->where('status', 0);
+                ->where('status', 0);
 
             return DataTables::eloquent($products)
                 ->addColumn('status', function ($admin) {
@@ -375,13 +375,10 @@ class ProductController extends Controller implements HasMiddleware
     {
         $productVariant = Productvariant::with('product.productcolors', 'product.productvariants', 'productcolor')->findOrFail($id);
         $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
-        $productColors = Productcolor::where('product_id', $productVariant->product_id)
-            ->get()
-            ->unique('color_name')
-            ->values();
+        $colors = Color::where('status', 1)->get();
         $productVariants = Variant::where('status', 1)->get();
 
-        return view('admin.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productColors', 'productVariants'));
+        return view('admin.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productVariants', 'colors'));
     }
 
     public function updateProductVariant(Request $request, string $id)
@@ -389,13 +386,37 @@ class ProductController extends Controller implements HasMiddleware
         $productVariant = Productvariant::findOrFail($id);
 
         $request->validate([
-            'productcolor_id' => 'required|integer',
+            'productcolor_id' => 'required|exists:colors,id',
             'variant_id' => 'required|integer',
             'RegularPrice' => 'required|numeric',
             'Discount' => 'required|numeric',
         ]);
 
-        $productVariant->productcolor_id = $request->productcolor_id;
+        $selectedColor = Color::findOrFail($request->productcolor_id);
+        $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
+        $productColor->color_id = $selectedColor->id;
+        $productColor->color_name = $selectedColor->name;
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('admin/images/variant/'), $filename);
+            $productColor->Image = 'public/admin/images/variant/' . $filename;
+        }
+
+        if ($request->hasFile('images')) {
+            $imgPaths = [];
+            foreach ($request->file('images') as $key => $img) {
+                $imgName = time() . '_' . $key . '_' . $img->getClientOriginalName();
+                $img->move(public_path('admin/images/variant/'), $imgName);
+                $imgPaths[] = 'public/admin/images/variant/' . $imgName;
+            }
+            $productColor->Images = json_encode($imgPaths);
+        }
+
+        $productColor->save();
+
+        $productVariant->productcolor_id = $productColor->id;
         $productVariant->variant_id = $request->variant_id;
         $productVariant->regular_price = $request->RegularPrice;
         $productVariant->sale_price = $request->Discount;
@@ -406,28 +427,6 @@ class ProductController extends Controller implements HasMiddleware
         }
 
         $productVariant->save();
-
-        $productColor = Productcolor::find($request->productcolor_id);
-        if ($productColor) {
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('admin/images/variant/'), $filename);
-                $productColor->Image = 'public/admin/images/variant/' . $filename;
-            }
-
-            if ($request->hasFile('images')) {
-                $imgPaths = [];
-                foreach ($request->file('images') as $key => $img) {
-                    $imgName = time() . '_' . $key . '_' . $img->getClientOriginalName();
-                    $img->move(public_path('admin/images/variant/'), $imgName);
-                    $imgPaths[] = 'public/admin/images/variant/' . $imgName;
-                }
-                $productColor->Images = json_encode($imgPaths);
-            }
-
-            $productColor->save();
-        }
 
         return response()->json(['status' => 'success', 'message' => 'Variant updated successfully']);
     }

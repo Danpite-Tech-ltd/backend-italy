@@ -92,18 +92,10 @@
                                                                 </td>
                                                                 <td>
                                                                     <select name="productcolor_id" id="productcolorID" class="form-control">
-                                                                        @foreach($productColors as $color)
-                                                                            @php
-                                                                                $normalizedImage = str_replace(['public/', 'public\\'], '', $color->image);
-                                                                                $sliderImages = collect(json_decode($color->images, true) ?: [])->map(function ($img) {
-                                                                                    return asset(str_replace(['public/', 'public\\'], '', $img));
-                                                                                })->all();
-                                                                            @endphp
+                                                                        @foreach($colors as $color)
                                                                             <option value="{{ $color->id }}"
-                                                                                data-image="{{ asset($normalizedImage) }}"
-                                                                                data-images='@json($sliderImages)'
-                                                                                {{ $color->id == $productVariant->productcolor_id ? 'selected' : '' }}>
-                                                                                {{ $color->color_name }}
+                                                                                {{ $color->id == $productVariant->productcolor->color_id ? 'selected' : '' }}>
+                                                                                {{ $color->name }}
                                                                             </option>
                                                                         @endforeach
                                                                     </select>

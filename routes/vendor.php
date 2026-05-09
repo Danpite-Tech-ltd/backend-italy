@@ -11,7 +11,6 @@ use App\Http\Controllers\Vendor\SupplierController;
 use App\Http\Controllers\Vendor\SalesReportController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('vendor')->get('/vendor/edit-product-variant/{id}', [ProductController::class, 'editProductVariant'])->name('vendor.edit-product-variant');
 Route::prefix('vendor')->name('vendor.')->group(function () {
     // vendor register
     Route::get('/register', [AuthController::class, 'register'])->name('register');

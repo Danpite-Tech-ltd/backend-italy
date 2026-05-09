@@ -16,7 +16,7 @@
         {{--        <div class="row"> --}}
         {{--            <div class="col-12"> --}}
         {{--                <div class="page-title-box"> --}}
-        {{--                    <h3 class="page-title mb-4 text-center">Product Basic Information</h3> --}}
+        {{--                    <h3 class="mb-4 text-center page-title">Product Basic Information</h3> --}}
         {{--                </div> --}}
         {{--            </div> --}}
         {{--        </div> --}}
@@ -74,7 +74,7 @@
                             @csrf
                             @method('PUT')
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="name" class="form-label">Product Name *</label>
                                     <input type="text" class="form-control" name="name"
                                         value="{{ old('name', $product->name ?? '') }}" id="name" required>
@@ -89,7 +89,7 @@
 
                             <!-- col-end -->
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="SKU" class="form-label">SKU *</label>
                                     <input type="text" class="form-control" name="SKU"
                                         value="{{ old('SKU', $product->SKU ?? '') }}" id="SKU" />
@@ -104,7 +104,7 @@
 
                             <!-- col-end -->
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="category_id" class="form-label">Categories *</label>
                                     <select class="form-control select2" name="category_id" id="category_id" required>
                                         <option value="">Select..</option>
@@ -123,7 +123,7 @@
                             </div>
                             <!-- col end -->
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="subcategory_id" class="form-label">SubCategories (Optional)</label>
                                     <select class="form-control select2" id="subcategory_id" name="subcategory_id"
                                         data-placeholder="Choose ...">
@@ -139,7 +139,7 @@
                             <input type="hidden" id="current_subcategory_id" value="{{ $product->subcategory_id }}">
                             <!-- col end -->
                             {{-- <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="childcategory_id" class="form-label">Child Categories
                                         (Optional)</label>
                                     <select class="form-control select2" id="childcategory_id" name="childcategory_id"
@@ -157,7 +157,7 @@
                             <!-- col end -->
 
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label class="form-label">Vendor</label>
 
                                     <!-- hidden vendor ID (will be submitted) -->
@@ -171,7 +171,7 @@
 
 
                             {{-- <div class="col-sm-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="category_id" class="form-label">Brands</label>
                                     <select id="brand_id"
                                             class="form-control select2"
@@ -194,7 +194,7 @@
 
                             <!-- col-end -->
 
-                            <div class="col-sm-6 mb-3">
+                            <div class="mb-3 col-sm-6">
                                 <label for="thumbnail_img">Thumbnail Image (218 X 218)*</label>
 
                                 <div class="input-group control-group increment">
@@ -219,7 +219,7 @@
 
 
                             <div class="col-sm-4">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="youtube_link" class="form-label">Youtube Video (Optional)</label>
                                     <input type="text" class="form-control" name="youtube_link"
                                         value="{{ old('youtube_link', $product->youtube_link ?? '') }}"
@@ -233,7 +233,7 @@
                             </div>
 
                             <div class="col-sm-4 col-md-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="product_type_id" class="form-label">Product Type</label>
                                     <select class="form-control" id="product_type_id" name="product_type_id">
                                         @forelse($productTypes as $type)
@@ -246,8 +246,8 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                            <div class="col-sm-6 d-none">
+                                <div class="mb-3 form-group">
                                     <label for="product_type_id" class="form-label">Affiliate Commission </label>
                                     <input type="number" class="form-control" name="affiliate_commission"
                                         value="{{ old('affiliate_commission', $product->affiliate_commission ?? 0) }}">
@@ -255,21 +255,21 @@
                             </div>
 
                             <div class="col-lg-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="short_description">Short Description</label>
                                     <textarea name="short_description" id="short_description" rows="3" class="form-control">{{ old('short_description', $product->short_description ?? '') }}</textarea>
                                 </div>
                             </div>
 
                             <div class="col-lg-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="shipping_return_text">Shipping & Returns</label>
                                     <textarea name="shipping_return_text" id="shipping_return_text" rows="3" class="form-control">{{ old('shipping_return_text', $product->shipping_return_text ?? '') }}</textarea>
                                 </div>
                             </div>
 
                             <div class="col-lg-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="long_description">Long Description</label>
                                     <textarea name="long_description" id="long_description" rows="3" class="form-control">{{ old('long_description', $product->long_description ?? '') }}</textarea>
                                 </div>
@@ -277,14 +277,14 @@
 
 
                             <div class="col-lg-12">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="additional_info_text">Additional Information</label>
                                     <textarea name="additional_info_text" id="additional_info_text" rows="3" class="form-control">{{ old('additional_info_text', $product->additional_info_text ?? '') }}</textarea>
                                 </div>
                             </div>
 
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="meta_title" class="form-label">Meta Title</label>
                                     <input type="text" class="form-control" name="meta_title"
                                         value="{{ old('meta_title', $product->meta_title ?? '') }}" id="meta_title" />
@@ -297,7 +297,7 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="meta_description" class="form-label">Meta Description</label>
                                     <input type="text" class="form-control" name="meta_description"
                                         value="{{ old('meta_description', $product->meta_description ?? '') }}"
@@ -311,7 +311,7 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <div class="form-group mb-3">
+                                <div class="mb-3 form-group">
                                     <label for="meta_image" class="form-label">Meta Image</label>
                                     <input type="file" class="form-control" name="meta_image" id="meta_image" />
 
@@ -330,7 +330,7 @@
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 form-group">
                                         <label for="google_schema" class="form-label">Google Schema</label>
 
                                         <textarea class="form-control" name="google_schema" id="google_schema">{{ old('google_schema', $product->google_schema ?? '') }}</textarea>
@@ -343,7 +343,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 justify-content-center d-flex mt-4 w-100">
+                                <div class="mt-4 col-sm-12 justify-content-center d-flex w-100">
                                     <button type="submit" class="btn btn-primary me-2 w-100">Continue</button>
                                 </div>
                             </div>
