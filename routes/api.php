@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -85,4 +86,7 @@ Route::name('api.')->group(function () {
 
     // Vendor Registration
     Route::get('/vendor-login', [AuthController::class, 'vendorLogin'])->name('vendor.register');
+
+    // vendor store
+    Route::get('/vendor-store/{id}', [VendorController::class, 'vendor_store']);
 });

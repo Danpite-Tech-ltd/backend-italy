@@ -59,7 +59,7 @@ class SalesReportController extends Controller implements HasMiddleware
                 ->addColumn('product', function ($order) {
                     $proInfo = '';
                     foreach ($order->orderProducts as $product) {
-                        $proInfo .= $product->product->name . ' (' . $product->quantity . ' x ' . $product->variant . ')<br>';
+                        $proInfo .= $product->product_name . ' (' . $product->quantity . ' x ' . $product->variant . ')<br>';
                     }
 
                     return rtrim($proInfo, '<br>');
