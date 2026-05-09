@@ -145,7 +145,7 @@
                                                 <td><strong>{{ $key + 1 }}</strong></td>
                                                 <td>
                                                     @if ($withdraw->vendor)
-                                                        {{ $withdraw->vendor->first_name ?? 'N/A' }}
+                                                        {{ $withdraw->vendor->company_name ?? 'N/A' }}
                                                     @else
                                                         <span class="text-muted">N/A</span>
                                                     @endif
