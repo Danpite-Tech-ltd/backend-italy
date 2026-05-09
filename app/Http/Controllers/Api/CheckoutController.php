@@ -144,6 +144,8 @@ class CheckoutController extends Controller
         try {
 
             $shippingCharge = ShippingCharge::findOrFail($request->shipping_charge_id);
+            $vat = Vat::firstOrFail();
+            $tax = Tax::firstOrFail();
 
             /* ================= CUSTOMER ================= */
             $customer = Customer::create([
@@ -163,6 +165,8 @@ class CheckoutController extends Controller
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
                 'order_status_id' => 1,
+                'vat_percentage' => $vat->rate,
+                'tax_percentage' => $tax->rate,
                 'subtotal' => 0,
                 'total' => 0,
             ]);
@@ -234,9 +238,14 @@ class CheckoutController extends Controller
             }
 
             /* ================= UPDATE MAIN ORDER ================= */
+            $vat_amount = $totalSubtotal * ($vat->rate / 100);
+            $tax_amount = $totalSubtotal * ($tax->rate / 100);
+
             $order->update([
+                'vat' => $vat_amount,
+                'tax' => $tax_amount,
                 'subtotal' => $totalSubtotal,
-                'total' => $totalSubtotal + $shippingCharge->delivery_charge,
+                'total' => $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount,
             ]);
 
             DB::commit();
@@ -270,7 +279,8 @@ class CheckoutController extends Controller
     }
 
 
-    public function vat(){
+    public function vat()
+    {
         $vat = Vat::select('id', 'rate')->first();
 
         return $this->success(
@@ -278,7 +288,8 @@ class CheckoutController extends Controller
             data: $vat
         );
     }
-    public function tax(){
+    public function tax()
+    {
         $vat = Tax::first('id', 'rate');
 
         return $this->success(
