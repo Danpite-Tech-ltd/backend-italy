@@ -198,6 +198,39 @@ class AuthController extends Controller
         ]);
     }
 
+    public function userUpdatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string|min:6',
+            'new_password' => 'required|confirmed|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+
+                'status' => false,
+                'message' => 'Current password is incorrect',
+            ], 401);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully',
+        ]);
+    }
+
     public function vendorLogin()
     {
 
