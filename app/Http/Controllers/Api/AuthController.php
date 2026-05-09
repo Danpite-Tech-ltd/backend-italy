@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -138,6 +139,63 @@ class AuthController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function profileUpdate(Request $request)
+    {
+        $user = auth()->user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('customers', 'email')->ignore($user->id),
+            ],
+
+            'phone' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('customers', 'phone')->ignore($user->id),
+            ],
+            'address' => 'required|string|min:6',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        $imageName = $user->profile_image;
+
+        if ($request->hasFile('profile_image')) {
+
+            $image = $request->file('profile_image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+            $image->move(public_path('settings/'), $imageName);
+        }
+
+        User::where('id', $user->id)->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'dob' => $request->dob,
+            'profile_image' => $imageName ? 'public/settings/' . $imageName : $user->image
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User Settings Updated',
+        ]);
     }
 
     public function vendorLogin()
