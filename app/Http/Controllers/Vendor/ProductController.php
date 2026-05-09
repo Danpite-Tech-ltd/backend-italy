@@ -310,6 +310,67 @@ class ProductController extends Controller
         return view('vendor.pages.product.edit.basic-info', compact('product', 'categories', 'brands', 'productTypes', 'id', 'vendors'));
     }
 
+    public function editProductVariant(string $id)
+    {
+        $productVariant = Productvariant::with('product.productcolors', 'product.productvariants', 'productcolor')->findOrFail($id);
+        $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
+        $productColors = Productcolor::where('product_id', $productVariant->product_id)
+            ->get()
+            ->unique('color_name')
+            ->values();
+        $productVariants = Variant::where('status', 1)->get();
+
+        return view('vendor.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productColors', 'productVariants'));
+    }
+
+    public function updateProductVariant(Request $request, string $id)
+    {
+        $productVariant = Productvariant::findOrFail($id);
+
+        $request->validate([
+            'productcolor_id' => 'required|integer',
+            'variant_id' => 'required|integer',
+            'RegularPrice' => 'required|numeric',
+            'Discount' => 'required|numeric',
+        ]);
+
+        $productVariant->productcolor_id = $request->productcolor_id;
+        $productVariant->variant_id = $request->variant_id;
+        $productVariant->regular_price = $request->RegularPrice;
+        $productVariant->sale_price = $request->Discount;
+
+        $variant = Variant::find($request->variant_id);
+        if ($variant) {
+            $productVariant->variant_name = $variant->name;
+        }
+
+        $productVariant->save();
+
+        $productColor = Productcolor::find($request->productcolor_id);
+        if ($productColor) {
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('admin/images/variant/'), $filename);
+                $productColor->Image = 'public/admin/images/variant/' . $filename;
+            }
+
+            if ($request->hasFile('images')) {
+                $imgPaths = [];
+                foreach ($request->file('images') as $key => $img) {
+                    $imgName = time() . '_' . $key . '_' . $img->getClientOriginalName();
+                    $img->move(public_path('admin/images/variant/'), $imgName);
+                    $imgPaths[] = 'public/admin/images/variant/' . $imgName;
+                }
+                $productColor->Images = json_encode($imgPaths);
+            }
+
+            $productColor->save();
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Variant updated successfully']);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -518,7 +579,7 @@ class ProductController extends Controller
                 //                  $subcategoriesAction = '<a class="editButton btn btn-sm btn-danger" href="'.route('admin.subcategory.index',$admin->id).'">
                 //                                   <i class="fas fa-edit"></i></a>';
 
-                $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('admin.edit-product-variant', $admin->id) . '" >
+                $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('vendor.edit-product-variant', $admin->id) . '" >
                                    <i class="fas fa-edit"></i></a>';
 
                 $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
