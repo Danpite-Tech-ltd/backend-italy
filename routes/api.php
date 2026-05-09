@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/dashboard-overview', [DashboardController::class, 'dashboardOverview']);
     Route::get('/user-profile', [DashboardController::class, 'userProfile']);
 
+    // vendor review and rating
+    Route::post('/vendor-review', [VendorController::class, 'vendor_review_submit']);
 });
 
 Route::name('api.')->group(function () {
@@ -89,4 +91,5 @@ Route::name('api.')->group(function () {
 
     // vendor store
     Route::get('/vendor-store/{id}', [VendorController::class, 'vendor_store']);
+    Route::get('/vendor-review/{id}', [VendorController::class, 'vendor_review']);
 });
