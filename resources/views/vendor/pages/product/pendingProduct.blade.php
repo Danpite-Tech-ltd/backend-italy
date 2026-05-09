@@ -7,7 +7,7 @@
 
 @section('content')
 
-<div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
@@ -15,32 +15,32 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="card-title mb-0">Pending Product List</h4>
 
-                            <a href="{{ route('vendor.product.create') }}" class="btn btn-md btn-secondary">
-                                Create Product
-                            </a>
+                        <a href="{{ route('vendor.product.create') }}" class="btn btn-md btn-secondary">
+                            Create Product
+                        </a>
 
                     </div>
 
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped"
-                               id="adminTable">
+                        <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped" id="adminTable">
                             <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                 <th>Category</th>
-                                 <th>Vendor</th>
-                                 <th>Price</th>
-                                  <th>Type</th>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Vendor</th>
+                                    <th>Price</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
 
 
 
 
 
-                            </tr>
+                                </tr>
                             </thead>
                             <tbody>
 
@@ -60,12 +60,13 @@
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
-    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
+    {{--
+    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
 
     <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -109,8 +110,8 @@
                         text: 'Download PDF',
                         className: 'btn btn-danger btn-sm'
                     },
-                    {extend: 'csv', className: 'btn btn-info btn-sm', text: 'CSV Export'},
-                    {extend: 'excel', className: 'btn btn-success btn-sm', text: 'Excel Export'},
+                    { extend: 'csv', className: 'btn btn-info btn-sm', text: 'CSV Export' },
+                    { extend: 'excel', className: 'btn btn-success btn-sm', text: 'Excel Export' },
 
                 ],
 
@@ -145,7 +146,7 @@
                         name: 'name',
                         width: '20%'
                     },
-                {
+                    {
                         data: 'category.name',
                         name: 'category.name',
                         width: '10%',
@@ -171,7 +172,7 @@
                         searchable: false,
                         orderable: false
                     },
-                     {
+                    {
                         data: 'type.name',
                         render: function (data, type, row) {
                             return `<span class="badge bg-primary"> ${data} </span>`
@@ -192,4 +193,3 @@
         });
     </script>
 @endpush
-

@@ -13,7 +13,7 @@
                 <div class="card-header">
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="card-title mb-0">Product List</h4>
+                        <h4 class="mb-0 card-title">Product List</h4>
 
                             <a href="{{ route('vendor.product.create') }}" class="btn btn-md btn-secondary">
                                 Create Product
@@ -35,6 +35,7 @@
                                  <th>Vendor</th>
                                  <th>Price</th>
                                   <th>Type</th>
+                                  <th>Actions</th>
 
 
 
@@ -178,6 +179,12 @@
                         },
                         width: '10%'
                     },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false,
+                        width: '15%'
+                    },
 
 
 
@@ -185,6 +192,54 @@
 
                 ]
             });
+
+            // Delete Admin
+            $(document).on('click', '#deleteAdminBtn', function () {
+                let id = $(this).data('id');
+
+                swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this !",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+
+
+                            $.ajax({
+                                type: 'DELETE',
+
+                                url: "{{ url('vendor/products') }}/" + id,
+                                data: {
+                                    '_token': token
+                                },
+                                success: function (res) {
+                                    Swal.fire({
+                                        title: "Deleted!",
+                                        text: "Product has been deleted.",
+                                        icon: "success"
+                                    });
+
+                                    adminTable.ajax.reload();
+                                },
+                                error: function (err) {
+                                    console.log('error')
+                                }
+                            })
+
+
+                        } else {
+                            swal.fire('Your Data is Safe');
+                        }
+
+                    })
+
+
+            })
 
 
 
