@@ -10,6 +10,8 @@ use App\Models\Product;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
+use App\Models\Vat;
+use App\Models\Tax;
 use App\Models\VendorOrder;
 use Exception;
 use Illuminate\Http\Request;
@@ -142,6 +144,8 @@ class CheckoutController extends Controller
         try {
 
             $shippingCharge = ShippingCharge::findOrFail($request->shipping_charge_id);
+            $vat = Vat::firstOrFail();
+            $tax = Tax::firstOrFail();
 
             /* ================= CUSTOMER ================= */
             $customer = Customer::create([
@@ -161,6 +165,8 @@ class CheckoutController extends Controller
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
                 'order_status_id' => 1,
+                'vat_percentage' => $vat->rate,
+                'tax_percentage' => $tax->rate,
                 'subtotal' => 0,
                 'total' => 0,
             ]);
@@ -232,9 +238,14 @@ class CheckoutController extends Controller
             }
 
             /* ================= UPDATE MAIN ORDER ================= */
+            $vat_amount = $totalSubtotal * ($vat->rate / 100);
+            $tax_amount = $totalSubtotal * ($tax->rate / 100);
+
             $order->update([
+                'vat' => $vat_amount,
+                'tax' => $tax_amount,
                 'subtotal' => $totalSubtotal,
-                'total' => $totalSubtotal + $shippingCharge->delivery_charge,
+                'total' => $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount,
             ]);
 
             DB::commit();
@@ -264,6 +275,26 @@ class CheckoutController extends Controller
         return $this->success(
             message: 'Order Success data.',
             data: $order
+        );
+    }
+
+
+    public function vat()
+    {
+        $vat = Vat::select('id', 'rate')->first();
+
+        return $this->success(
+            message: 'Vat data.',
+            data: $vat
+        );
+    }
+    public function tax()
+    {
+        $vat = Tax::first('id', 'rate');
+
+        return $this->success(
+            message: 'Vat data.',
+            data: $vat
         );
     }
 

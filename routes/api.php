@@ -92,4 +92,8 @@ Route::name('api.')->group(function () {
     // vendor store
     Route::get('/vendor-store/{id}', [VendorController::class, 'vendor_store']);
     Route::get('/vendor-review/{id}', [VendorController::class, 'vendor_review']);
+
+    // vat & tax
+    Route::get('/vat', [CheckoutController::class, 'vat']);
+    Route::get('/tax', [CheckoutController::class, 'tax']);
 });
