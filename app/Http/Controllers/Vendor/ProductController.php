@@ -25,26 +25,42 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $vendor = Auth::guard('vendor')->user();
-
-        if (!$vendor) {
-            return redirect()->route('vendor.login');
-        }
-
         if (request()->ajax()) {
+            $vendor = Auth::guard('vendor')->user();
+
+            if (!$vendor) {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => 'Vendor not authenticated'
+                ], 401);
+            }
 
             $products = Product::with([
                 'category:id,name',
                 'vendor:id,company_name',
-                'type',
+                'type:id,name',
                 'productvariants:id,product_id,sale_price'
             ])
                 ->where('status', 1)
                 ->where('vendor_id', $vendor->id);
 
             return DataTables::eloquent($products)
+                ->addColumn('thumbnail_img', function ($product) {
+                    return $product->thumbnail_img ?? '';
+                })
+                ->addColumn('category.name', function ($product) {
+                    return $product->category->name ?? '';
+                })
+                ->addColumn('vendor.company_name', function ($product) {
+                    return $product->vendor->company_name ?? '';
+                })
+                ->addColumn('product_price', function ($product) {
+                    return $product->productvariants->first()->sale_price ?? 0;
+                })
+                ->addColumn('type.name', function ($product) {
+                    return $product->type->name ?? '';
+                })
                 ->addColumn('status', function ($product) {
-
                     if ($product->status == 1) {
                         return '
                         <a class="status" href="javascript:void(0)"
@@ -59,63 +75,80 @@ class ProductController extends Controller
                        <i class="fa-solid fa-toggle-off fa-2x" style="color: grey"></i>
                     </a>';
                 })
-
-                ->addColumn('product_price', function ($product) {
-                    return $product->productvariants->first()->sale_price ?? 0;
+                ->addColumn('action', function ($product) {
+                    $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('vendor.product.edit', $product->id) . '">
+                                   <i class="fas fa-edit"></i></a>';
+                    $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                                   data-id="' . $product->id . '" id="deleteAdminBtn">
+                                   <i class="fas fa-trash"></i></a>';
+                    return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
                 })
-
+                ->rawColumns(['status', 'action'])
                 ->addIndexColumn()
-                ->rawColumns(['status'])
                 ->make(true);
+        }
+
+        $vendor = Auth::guard('vendor')->user();
+        if (!$vendor) {
+            return redirect()->route('vendor.login');
         }
 
         return view('vendor.pages.product.index');
     }
 
     public function pendingProduct()
-    { 
-        $vendor = Auth::guard('vendor')->user();
-
-        if (!$vendor) {
-            return redirect()->route('vendor.login');
-        }
-
+    {
         if (request()->ajax()) {
+            $vendor = Auth::guard('vendor')->user();
+
+            if (!$vendor) {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => 'Vendor not authenticated'
+                ], 401);
+            }
 
             $products = Product::with([
                 'category:id,name',
                 'vendor:id,company_name',
-                'type',
+                'type:id,name',
                 'productvariants:id,product_id,sale_price'
             ])
                 ->where('status', 0)
                 ->where('vendor_id', $vendor->id);
 
             return DataTables::eloquent($products)
-                ->addColumn('status', function ($product) {
-
-                    if ($product->status == 1) {
-                        return '
-                        <a class="status" href="javascript:void(0)"
-                           data-id="' . $product->id . '" data-status="' . $product->status . '">
-                           <i class="fa-solid fa-toggle-on fa-2x"></i>
-                        </a>';
-                    }
-
-                    return '
-                    <a class="status" href="javascript:void(0)"
-                       data-id="' . $product->id . '" data-status="' . $product->status . '">
-                       <i class="fa-solid fa-toggle-off fa-2x" style="color: grey"></i>
-                    </a>';
+                ->addColumn('thumbnail_img', function ($product) {
+                    return $product->thumbnail_img ?? '';
                 })
-
+                ->addColumn('category.name', function ($product) {
+                    return $product->category->name ?? '';
+                })
+                ->addColumn('vendor.company_name', function ($product) {
+                    return $product->vendor->company_name ?? '';
+                })
                 ->addColumn('product_price', function ($product) {
                     return $product->productvariants->first()->sale_price ?? 0;
                 })
-
+                ->addColumn('type.name', function ($product) {
+                    return $product->type->name ?? '';
+                })
+                ->addColumn('action', function ($product) {
+                    $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('vendor.product.edit', $product->id) . '">
+                                   <i class="fas fa-edit"></i></a>';
+                    $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                                   data-id="' . $product->id . '" id="deleteAdminBtn">
+                                   <i class="fas fa-trash"></i></a>';
+                    return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
+                })
+                ->rawColumns(['thumbnail_img', 'action'])
                 ->addIndexColumn()
-                ->rawColumns(['status'])
                 ->make(true);
+        }
+
+        $vendor = Auth::guard('vendor')->user();
+        if (!$vendor) {
+            return redirect()->route('vendor.login');
         }
 
         return view('vendor.pages.product.pendingProduct');
@@ -240,7 +273,6 @@ class ProductController extends Controller
 
 
         return redirect()->route('vendor.pro-variant-page', $product->id);
-
     }
 
     public function proVariantPage(string $id)
@@ -276,6 +308,69 @@ class ProductController extends Controller
 
 
         return view('vendor.pages.product.edit.basic-info', compact('product', 'categories', 'brands', 'productTypes', 'id', 'vendors'));
+    }
+
+    public function editProductVariant(string $id)
+    {
+        $productVariant = Productvariant::with('product.productcolors', 'product.productvariants', 'productcolor')->findOrFail($id);
+        $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
+        $productColors = Productcolor::where('product_id', $productVariant->product_id)
+            ->get()
+            ->unique('color_name')
+            ->values();
+        $colors = Color::where('status', 1)->get();
+        $productVariants = Variant::where('status', 1)->get();
+
+        return view('vendor.pages.product.edit.variant-info', compact('productColor', 'productVariant', 'productColors', 'productVariants', 'colors'));
+    }
+
+    public function updateProductVariant(Request $request, string $id)
+    {
+        $productVariant = Productvariant::findOrFail($id);
+
+        $request->validate([
+            'productcolor_id' => 'required|exists:colors,id',
+            'variant_id' => 'required|integer',
+            'RegularPrice' => 'required|numeric',
+            'Discount' => 'required|numeric',
+        ]);
+
+        $selectedColor = Color::findOrFail($request->productcolor_id);
+
+        $productColor = Productcolor::findOrFail($productVariant->productcolor_id);
+        $productColor->color_id = $selectedColor->id;
+        $productColor->color_name = $selectedColor->name;
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('admin/images/variant/'), $filename);
+            $productColor->Image = 'public/admin/images/variant/' . $filename;
+        }
+
+        if ($request->hasFile('images')) {
+            $imgPaths = [];
+            foreach ($request->file('images') as $key => $img) {
+                $imgName = time() . '_' . $key . '_' . $img->getClientOriginalName();
+                $img->move(public_path('admin/images/variant/'), $imgName);
+                $imgPaths[] = 'public/admin/images/variant/' . $imgName;
+            }
+            $productColor->Images = json_encode($imgPaths);
+        }
+
+        $productColor->save();
+        $productVariant->variant_id = $request->variant_id;
+        $productVariant->regular_price = $request->RegularPrice;
+        $productVariant->sale_price = $request->Discount;
+
+        $variant = Variant::find($request->variant_id);
+        if ($variant) {
+            $productVariant->variant_name = $variant->name;
+        }
+
+        $productVariant->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Variant updated successfully']);
     }
 
     /**
@@ -350,7 +445,6 @@ class ProductController extends Controller
         $product->save();
 
         return redirect()->route('vendor.pro-variant-page', ['id' => $product->id]);
-
     }
 
     /**
@@ -404,7 +498,6 @@ class ProductController extends Controller
 
                 $variant->save();
                 $savedVariants[] = $variant;
-
             }
         }
 
@@ -486,9 +579,9 @@ class ProductController extends Controller
                 $editAction = '';
                 $deleteAction = '';
                 //                  $subcategoriesAction = '<a class="editButton btn btn-sm btn-danger" href="'.route('admin.subcategory.index',$admin->id).'">
-//                                   <i class="fas fa-edit"></i></a>';
+                //                                   <i class="fas fa-edit"></i></a>';
 
-                $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('admin.edit-product-variant', $admin->id) . '" >
+                $editAction = '<a class="editButton btn btn-sm btn-info" href="' . route('vendor.edit-product-variant', $admin->id) . '" >
                                    <i class="fas fa-edit"></i></a>';
 
                 $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
@@ -497,22 +590,22 @@ class ProductController extends Controller
 
 
                 //              if(Auth::guard('admin')->user()->can('Edit Admin')) {
-//
-//                  $editAction= '<a class="editButton btn btn-sm btn-primary" href="javascript:void(0)"
-//                                    data-id="'.$admin->id.'" data-bs-toggle="modal" data-bs-target="#editAdminModal">
-//                                    <i class="fas fa-edit"></i></a>';
-//
-//              }
-//
-//              if(Auth::guard('admin')->user()->can('Delete Admin')) {
-//
-//                  $deleteAction= '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
-//                                    data-id="'.$admin->id.'" id="deleteAdminBtn"">
-//                                    <i class="fas fa-trash"></i></a>';
-//
-//              }
+                //
+                //                  $editAction= '<a class="editButton btn btn-sm btn-primary" href="javascript:void(0)"
+                //                                    data-id="'.$admin->id.'" data-bs-toggle="modal" data-bs-target="#editAdminModal">
+                //                                    <i class="fas fa-edit"></i></a>';
+                //
+                //              }
+                //
+                //              if(Auth::guard('admin')->user()->can('Delete Admin')) {
+                //
+                //                  $deleteAction= '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                //                                    data-id="'.$admin->id.'" id="deleteAdminBtn"">
+                //                                    <i class="fas fa-trash"></i></a>';
+                //
+                //              }
 
-                return '<div class="d-flex gap-3"> ' . $editAction . $deleteAction . '</div>';
+                return '<div class="gap-3 d-flex"> ' . $editAction . $deleteAction . '</div>';
             })
             ->addColumn('stockInfo', function ($admin) {
                 return "<span>Total stock: <span class='font-weight-bold'>$admin->total_stock</span></span><br><br>
@@ -533,5 +626,4 @@ class ProductController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Product Variant deleted successfully'], 200);
     }
-
 }

@@ -1,4 +1,4 @@
-@extends('admin.layout.app')
+@extends('vendor.layouts.master')
 
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
@@ -93,18 +93,7 @@
                                                                 <td>
                                                                     <select name="productcolor_id" id="productcolorID" class="form-control">
                                                                         @foreach($colors as $color)
-                                                                            @php
-                                                                                $normalizedImage = '';
-                                                                                if (!empty($color->image)) {
-                                                                                    $normalizedImage = str_replace(['public/', 'public\\'], '', $color->image);
-                                                                                }
-                                                                                $sliderImages = collect(json_decode($color->images ?? '[]', true) ?: [])->map(function ($img) {
-                                                                                    return asset(str_replace(['public/', 'public\\'], '', $img));
-                                                                                })->all();
-                                                                            @endphp
                                                                             <option value="{{ $color->id }}"
-                                                                                data-image="{{ $normalizedImage ? asset($normalizedImage) : '' }}"
-                                                                                data-images='@json($sliderImages)'
                                                                                 {{ $color->id == $productVariant->productcolor->color_id ? 'selected' : '' }}>
                                                                                 {{ $color->name }}
                                                                             </option>
@@ -294,7 +283,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '{{ route('admin.product-variant.update', $productVariant->id) }}',
+                url: '{{ route('vendor.product-variant.update', $productVariant->id) }}',
                 data: formData,
                 contentType: false,
                 processData: false,

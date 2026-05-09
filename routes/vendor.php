@@ -11,7 +11,6 @@ use App\Http\Controllers\Vendor\SupplierController;
 use App\Http\Controllers\Vendor\SalesReportController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::prefix('vendor')->name('vendor.')->group(function () {
     // vendor register
     Route::get('/register', [AuthController::class, 'register'])->name('register');
@@ -67,10 +66,14 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
     Route::resource('/products', ProductController::class)->names('product');
     Route::get('/pending-products', [ProductController::class, 'pendingProduct'])->name('pending-products');
     Route::get('/pro-variant-page/{id}', [ProductController::class, 'proVariantPage'])->name('pro-variant-page');
+
+    Route::get('/edit-product-variant/{id}', [ProductController::class, 'editProductVariant'])->name('edit-product-variant');
+    Route::post('/product-variant/{id}/update', [ProductController::class, 'updateProductVariant'])->name('product-variant.update');
+    Route::delete('/delete-product-variant/{id}', [ProductController::class, 'deleteProductVariant'])->name('delete-product-variant');
+
     Route::get('/subcategory-by-category/{id}', [ProductController::class, 'getSubCategoryByCategory'])->name('subcategory-by-category');
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
     Route::get('/product-colors', [ProductController::class, 'productColors'])->name('product.color');
     Route::get('/product-variants', [ProductController::class, 'productVariants'])->name('product.variant');
     Route::get('/variant-products/{id}', [ProductController::class, 'variantProducts'])->name('variant.productlist');
-    Route::delete('/delete-product-variant/{id}', [ProductController::class, 'deleteProductVariant'])->name('delete-product-variant');
 });
