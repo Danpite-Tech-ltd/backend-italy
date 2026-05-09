@@ -34,47 +34,60 @@ class VendorController extends Controller
     }
 
     public function vendor_review_submit(Request $request)
-{
-    $data = $request->validate([
-        'vendor_id' => ['required', 'exists:vendors,id'],
-        'rating' => ['required', 'integer', 'min:1', 'max:5'],
-        'review' => ['required', 'string']
-    ]);
+    {
+        $data = $request->validate([
+            'vendor_id' => ['required', 'exists:vendors,id'],
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'review' => ['required', 'string']
+        ]);
 
-    $data['user_id'] = auth()->id();
+        $data['user_id'] = auth()->id();
 
-    $exists = VendorReview::where('vendor_id', $request->vendor_id)
-        ->where('user_id', auth()->id())
-        ->exists();
+        $exists = VendorReview::where('vendor_id', $request->vendor_id)
+            ->where('user_id', auth()->id())
+            ->exists();
 
-    if ($exists) {
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You already reviewed this vendor'
+            ], 409);
+        }
+
+        $review = VendorReview::create($data);
+
+        // average rating
+        $avgRating = VendorReview::where('vendor_id', $request->vendor_id)
+            ->avg('rating');
+
+        // convert to percentage
+        $avgPercentage = ($avgRating / 5) * 100;
+
+        // update vendor
+        $vendor = Vendor::find($request->vendor_id);
+
+        $vendor->avg_rating = round($avgPercentage, 2);
+
+        $vendor->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'You already reviewed this vendor'
-        ], 409);
+            'success' => true,
+            'message' => 'Review submitted successfully',
+            'review' => $review,
+            'avg_rating' => $vendor->avg_rating
+        ], 201);
     }
 
-    $review = VendorReview::create($data);
-
-    // average rating
-    $avgRating = VendorReview::where('vendor_id', $request->vendor_id)
-        ->avg('rating');
-
-    // convert to percentage
-    $avgPercentage = ($avgRating / 5) * 100;
-
-    // update vendor
-    $vendor = Vendor::find($request->vendor_id);
-
-    $vendor->avg_rating = round($avgPercentage, 2);
-
-    $vendor->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Review submitted successfully',
-        'review' => $review,
-        'avg_rating' => $vendor->avg_rating
-    ], 201);
-}
+    public function vendor_review($id)
+    {
+        $reviews = VendorReview::where('vendor_id', $id)->with('user', function($q){
+            $q->select('id', 'name', 'email', 'phone', 'profile_image');
+        })->get();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Vendor Reviews',
+            'reviews' => $reviews,
+        ], 200);
+    }
 }
