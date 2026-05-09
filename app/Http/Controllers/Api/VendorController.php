@@ -73,7 +73,7 @@ class VendorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Review submitted successfully',
-            'review' => $review,
+            'data' => $review,
             'avg_rating' => $vendor->avg_rating
         ], 201);
     }
@@ -83,11 +83,11 @@ class VendorController extends Controller
         $reviews = VendorReview::where('vendor_id', $id)->with('user', function($q){
             $q->select('id', 'name', 'email', 'phone', 'profile_image');
         })->get();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Vendor Reviews',
-            'reviews' => $reviews,
+            'data' => $reviews,
         ], 200);
     }
 }

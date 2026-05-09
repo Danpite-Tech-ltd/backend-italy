@@ -10,6 +10,8 @@ use App\Models\Product;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
+use App\Models\Vat;
+use App\Models\Tax;
 use App\Models\VendorOrder;
 use Exception;
 use Illuminate\Http\Request;
@@ -264,6 +266,24 @@ class CheckoutController extends Controller
         return $this->success(
             message: 'Order Success data.',
             data: $order
+        );
+    }
+
+
+    public function vat(){
+        $vat = Vat::select('id', 'rate')->first();
+
+        return $this->success(
+            message: 'Vat data.',
+            data: $vat
+        );
+    }
+    public function tax(){
+        $vat = Tax::first('id', 'rate');
+
+        return $this->success(
+            message: 'Vat data.',
+            data: $vat
         );
     }
 
