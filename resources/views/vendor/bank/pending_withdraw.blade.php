@@ -11,6 +11,7 @@
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Note</th>
+                            <th>Admin Note</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,7 +24,8 @@
                                         {{ $value->status }}
                                     </span>
                                 </td>
-                                <td>{{ $value->note }}</td>
+                                <td>{{ $value->note ?? '-' }}</td>
+                                <td>{{ $value->admin_note ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>

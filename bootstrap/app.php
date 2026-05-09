@@ -68,7 +68,8 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Server error occurred.',
+                    'message' => 'Server error occurred.' ,
+                    'errors' => $e->getMessage()
                 ], 500);
             }
         });
