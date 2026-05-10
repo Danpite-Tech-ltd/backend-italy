@@ -50,7 +50,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         // product Review
         Route::get('/review', [ReviewController::class, 'vendorReview'])->name('review.index');
         Route::get('/review/edit/{id}', [ReviewController::class, 'vendorEdit'])->name('review.edit');
-        Route::get('/review/update/{id}', [ReviewController::class, 'vendorUpdate'])->name('review.update');
+        Route::post('/review/update/{id}', [ReviewController::class, 'vendorUpdate'])->name('review.update');
 
         //Orders
         Route::resource('/orders', OrderController::class)->names('order');

@@ -142,5 +142,21 @@ class ReviewController extends Controller
         return view('vendor.pages.review.index', compact('reviews'));
     }
 
+    public function vendorEdit($id)
+    {
+        $review = Review::find($id);
+        return view('vendor.pages.review.edit', compact('review'));
+    }
+
+    public function vendorUpdate(Request $request, $id)
+    {
+        $review = Review::find($id);
+        $review->reply_message = $request->reply_message;
+
+        $review->save();
+
+        return redirect('vendor/review')->with('message', 'Review updated successfully');
+    }
+
 
 }
