@@ -41,6 +41,7 @@ class ReviewController extends Controller
 
             $review = new Review();
             $review->user_id = $user->id;
+            $review->vendor_id = $request->vendor_id;
             $review->name = $user->name;
             $review->phone = $user->phone;
             $review->email = $user->email;
@@ -133,6 +134,12 @@ class ReviewController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
+    }
+
+    public function vendorReview(){
+        $reviews = Review::where('vendor_id', auth()->guard('vendor')->user()->id)->where('status', 'approve')->latest()->get();
+
+        return view('vendor.pages.review.index', compact('reviews'));
     }
 
 

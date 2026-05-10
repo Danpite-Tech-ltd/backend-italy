@@ -9,6 +9,7 @@ use App\Http\Controllers\Vendor\ProductController;
 use App\Http\Controllers\Vendor\PurchaseController;
 use App\Http\Controllers\Vendor\SupplierController;
 use App\Http\Controllers\Vendor\SalesReportController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('vendor')->name('vendor.')->group(function () {
@@ -45,6 +46,11 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
 
         //Sales Reports
         Route::resource('/sales-reports', SalesReportController::class)->names('sales-reports');
+
+        // product Review
+        Route::get('/review', [ReviewController::class, 'vendorReview'])->name('review.index');
+        Route::get('/review/edit/{id}', [ReviewController::class, 'vendorEdit'])->name('review.edit');
+        Route::get('/review/update/{id}', [ReviewController::class, 'vendorUpdate'])->name('review.update');
 
         //Orders
         Route::resource('/orders', OrderController::class)->names('order');
