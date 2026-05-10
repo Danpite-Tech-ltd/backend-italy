@@ -32,6 +32,13 @@ class ReviewController extends Controller
 
             $user = auth()->user();
 
+            if (Review::where('status', 'approve')->where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You already reviewed this product'
+                ], 409);
+            }
+
             $review = new Review();
             $review->user_id = $user->id;
             $review->name = $user->name;
@@ -70,12 +77,14 @@ class ReviewController extends Controller
         }
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $review = Review::find($id);
         return view('admin.review.edit', compact('review'));
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $review = Review::find($id);
         $review->reply_message = $request->reply_message;
         $review->status = $request->status;
