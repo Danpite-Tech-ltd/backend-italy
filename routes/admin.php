@@ -119,6 +119,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/pending-review', [ReviewController::class, 'pendingReview'])->name('review.pending');
     Route::get('/review-list', [ReviewController::class, 'index'])->name('review.index');
     Route::post('/review/change-status', [ReviewController::class, 'changeStatus'])->name('review.changeStatus');
+    Route::post('/review/delete', [ReviewController::class, 'destroy'])->name('review.delete');
 
     //Users
     Route::resource('/users', UserController::class)->names('user');

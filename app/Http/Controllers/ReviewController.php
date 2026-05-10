@@ -91,5 +91,25 @@ class ReviewController extends Controller
         }
     }
 
+    public function destroy(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'review_id' => 'required|integer|exists:reviews,id',
+            ]);
+
+            $review = Review::find($request->review_id);
+            if (!$review) {
+                return response()->json(['status' => 'error', 'message' => 'Review not found'], 404);
+            }
+
+            $review->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Review deleted']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
 
 }
