@@ -48,7 +48,7 @@ class ProductController extends Controller
     public function productDetails($slug)
     {
         $products = Product::where(['slug' => $slug, 'status' => 1])
-            ->with(['productcolors', 'productvariants', 'category', 'vendor', 'subcategory'])
+            ->with(['productcolors', 'productvariants', 'category', 'vendor', 'reviews'])
             ->firstOrFail();
 
         return $this->success(

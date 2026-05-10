@@ -127,6 +127,26 @@
                 </ul>
             </div>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#review-manage" aria-expanded="false"
+                aria-controls="ui-basic">
+                <i class="typcn typcn-device-desktop menu-icon"></i>
+                <span class="menu-title">Review Management</span>
+                <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+
+            <div class="collapse @if (request()->routeIs('vendor.review.*')) show @endif" id="review-manage">
+                <ul class="nav flex-column sub-menu">
+
+
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.review.index') active @endif"
+                            href="{{ route('vendor.review.index') }}">Review List</a></li>
+
+
+
+                </ul>
+            </div>
+        </li>
 
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#inventory-manage" aria-expanded="false"

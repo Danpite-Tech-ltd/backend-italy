@@ -220,6 +220,25 @@
 
 
 
+        {{--    rreview Manage    --}}
+        <li class="nav-item @if (request()->routeIs('admin.review.*')) active @endif">
+            <a class="nav-link" data-toggle="collapse" href="#review" aria-expanded="false" aria-controls="review">
+                <i class="typcn typcn-shopping-cart menu-icon"></i>
+                <span class="menu-title">Review Management</span>
+                <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+
+            <div class="collapse @if (request()->routeIs('admin.review.*')) show @endif" id="review">
+                <ul class="nav flex-column sub-menu">
+
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.index') active @endif"
+                            href="{{ route('admin.review.index') }}">Review List</a></li>
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.pending') active @endif"
+                            href="{{ route('admin.review.pending') }}">Pending Review List</a></li>
+
+                </ul>
+            </div>
+        </li>
         {{--    Order Manage    --}}
         @canany(['View Coupon', 'View Order'])
             <li class="nav-item @if (request()->routeIs('admin.order.*')) active @endif">

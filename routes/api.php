@@ -8,6 +8,7 @@ use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\VendorController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 
     // vendor review and rating
     Route::post('/vendor-review', [VendorController::class, 'vendor_review_submit']);
+
+    // product review
+    Route::post('/review', [ReviewController::class, 'store']);
 });
 
 Route::name('api.')->group(function () {
