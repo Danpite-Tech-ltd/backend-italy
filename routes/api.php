@@ -60,8 +60,9 @@ Route::name('api.')->group(function () {
     Route::get('/childcategories-by-subcategory/{slug}', [FrontendController::class, 'childcategoriesBySubCategory']);
     Route::get('/brands', [FrontendController::class, 'brands']);
 
-    // slider
+    // slider & banner
     Route::get('/mainslider', [FrontendController::class, 'main_sliders']);
+    Route::get('/banner', [FrontendController::class, 'banner']);
 
     // pages
     Route::get('/customer-pages', [FrontendController::class, 'customerPages']);
