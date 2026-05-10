@@ -232,7 +232,9 @@
                 <ul class="nav flex-column sub-menu">
 
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.index') active @endif"
-                            href="{{ route('admin.review.index') }}">Review</a></li>
+                            href="{{ route('admin.review.index') }}">Review List</a></li>
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.pending') active @endif"
+                            href="{{ route('admin.review.pending') }}">Pending Review List</a></li>
 
                 </ul>
             </div>

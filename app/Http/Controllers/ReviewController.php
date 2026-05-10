@@ -7,8 +7,15 @@ use App\Models\Review;
 
 class ReviewController extends Controller
 {
-    public function index(){
+    public function pendingReview()
+    {
         $reviews = Review::where('status', 'pending')->latest()->get();
+
+        return view('admin.review.pending', compact('reviews'));
+    }
+    public function index()
+    {
+        $reviews = Review::where('status', 'approve')->latest()->get();
 
         return view('admin.review.index', compact('reviews'));
     }
@@ -23,7 +30,7 @@ class ReviewController extends Controller
                 'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             ]);
 
-            $user  = auth()->user();
+            $user = auth()->user();
 
             $review = new Review();
             $review->user_id = $user->id;
@@ -63,5 +70,26 @@ class ReviewController extends Controller
         }
     }
 
-    
+    public function changeStatus(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id' => 'required|integer|exists:reviews,id',
+            ]);
+
+            $review = Review::find($request->id);
+            if (!$review) {
+                return response()->json(['status' => 'error', 'message' => 'Review not found'], 404);
+            }
+
+            $review->status = 'approve';
+            $review->save();
+
+            return response()->json(['status' => 'success', 'message' => 'Review approved']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+
 }

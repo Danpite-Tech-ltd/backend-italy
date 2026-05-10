@@ -116,7 +116,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/approved/vendors/update/{id}', [VendorController::class, 'approved_vendor_update'])->name('approved.vendor.update');
 
     // Review
+    Route::get('/pending-review', [ReviewController::class, 'pendingReview'])->name('review.pending');
     Route::get('/review-list', [ReviewController::class, 'index'])->name('review.index');
+    Route::post('/review/change-status', [ReviewController::class, 'changeStatus'])->name('review.changeStatus');
 
     //Users
     Route::resource('/users', UserController::class)->names('user');
