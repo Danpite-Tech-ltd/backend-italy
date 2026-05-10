@@ -7,6 +7,12 @@ use App\Models\Review;
 
 class ReviewController extends Controller
 {
+    public function index(){
+        $reviews = Review::where('status', 'pending')->latest()->get();
+
+        return view('admin.review.index', compact('reviews'));
+    }
+
     public function store(Request $request)
     {
         try {
@@ -56,4 +62,6 @@ class ReviewController extends Controller
             ], 500);
         }
     }
+
+    
 }

@@ -49,6 +49,7 @@ use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WpaymentController;
 use App\Http\Controllers\Admin\WsaleController;
 use App\Http\Controllers\Admin\WsalestockController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TicketController;
 
@@ -113,6 +114,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/approved/vendors/status', [VendorController::class, 'approved_vendor_status'])->name('approved.vendor.status');
     Route::get('/approved/vendors/edit/{id}', [VendorController::class, 'approved_vendor_edit'])->name('approved.vendor.edit');
     Route::post('/approved/vendors/update/{id}', [VendorController::class, 'approved_vendor_update'])->name('approved.vendor.update');
+
+    // Review
+    Route::get('/review-list', [ReviewController::class, 'index'])->name('review.index');
 
     //Users
     Route::resource('/users', UserController::class)->names('user');
