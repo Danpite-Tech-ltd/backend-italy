@@ -70,6 +70,21 @@ class ReviewController extends Controller
         }
     }
 
+    public function edit($id){
+        $review = Review::find($id);
+        return view('admin.review.edit', compact('review'));
+    }
+
+    public function update(Request $request, $id){
+        $review = Review::find($id);
+        $review->reply_message = $request->reply_message;
+        $review->status = $request->status;
+
+        $review->save();
+
+        return redirect('admin/review-list')->with('message', 'Review updated successfully');
+    }
+
     public function changeStatus(Request $request)
     {
         try {

@@ -32,6 +32,7 @@
                                     <th>Rating</th>
                                     <th>Message</th>
                                     <th>Image</th>
+                                    <th>Reply Message</th>
                                     <th>Status</th>
                                     <th width="120">Actions</th>
                                 </tr>
@@ -57,7 +58,7 @@
                                             <img src="{{ asset($review->image) }}" width="60" height="60"
                                                 style="object-fit:cover;border-radius:6px;">
                                         </td>
-
+                                        <td>{{ $review->reply_message }}</td>
                                         <td>
                                             <a href="javascript:void(0)" class="badge bg-danger review-change-status"
                                                 data-id="{{ $review->id }}">
@@ -66,7 +67,7 @@
                                         </td>
 
                                         <td>
-                                            <a href="" class="btn btn-sm btn-primary">
+                                            <a href="{{ route('admin.review.edit', $review->id) }}" class="btn btn-sm btn-primary">
                                                 Edit
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger review-delete"

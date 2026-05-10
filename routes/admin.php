@@ -120,6 +120,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/review-list', [ReviewController::class, 'index'])->name('review.index');
     Route::post('/review/change-status', [ReviewController::class, 'changeStatus'])->name('review.changeStatus');
     Route::post('/review/delete', [ReviewController::class, 'destroy'])->name('review.delete');
+    Route::get('/review/edit/{id}', [ReviewController::class, 'edit'])->name('review.edit');
+    Route::post('/review/update/{id}', [ReviewController::class, 'update'])->name('review.update');
+    Route::post('/review/delete', [ReviewController::class, 'destroy'])->name('review.delete');
 
     //Users
     Route::resource('/users', UserController::class)->names('user');
