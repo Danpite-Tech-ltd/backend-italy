@@ -63,7 +63,7 @@
                                         </td>
 
                                         <td>
-                                            <a href="{{ route('admin.review.edit', $review->id) }}" class="btn btn-sm btn-primary">
+                                            <a href="{{ route('admin.review.edit', $review->id) }}" class="btn btn-sm btn-success">
                                                 Edit
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger review-delete"
