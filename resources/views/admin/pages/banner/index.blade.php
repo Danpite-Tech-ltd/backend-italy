@@ -34,10 +34,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0 card-title">Banner List</h4>
                         @can('Create Banner')
-                            <button class="btn btn-md btn-secondary" data-bs-toggle="modal"
+                            {{-- <button class="btn btn-md btn-secondary" data-bs-toggle="modal"
                                     data-bs-target="#createAdminModal">
                                 Create Banner
-                            </button>
+                            </button> --}}
                         @endcan
                     </div>
 
@@ -51,7 +51,7 @@
                                 <th>SL</th>
                                 <th>Image</th>
                                 <th>Banner Title</th>
-                                <th>Type</th>
+                                <th>Link</th>
                                 <th>Actions</th>
 
                             </tr>
@@ -100,18 +100,18 @@
                         {{--                            <input type="text" class="form-control" name="btn_name" required>--}}
                         {{--                        </div>--}}
 
-                        {{--                        <div class="mb-3">--}}
-                        {{--                            <label for="btn_link" class="col-form-label">Button Link</label>--}}
-                        {{--                            <input type="text" class="form-control" name="btn_link" required>--}}
-                        {{--                        </div>--}}
-
                         <div class="mb-3">
+                            <label for="btn_link" class="col-form-label">Button Link</label>
+                            <input type="text" class="form-control" name="btn_link" required>
+                        </div>
+
+                        {{-- <div class="mb-3">
                             <label for="type" class="col-form-label">Type</label>
                             <select name="type" class="form-control">
                                 <option value="normal">Normal</option>
                                 <option value="offer">Offer</option>
                             </select>
-                        </div>
+                        </div> --}}
 
                         <div class="mb-3">
                             <label for="image" class="col-form-label">banner Image</label>
@@ -151,7 +151,7 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="title_1" class="col-form-label">Title</label>
-                            <input type="text" class="form-control" id="title_1" name="title_1" required>
+                            <input type="text" class="form-control" id="title_1" name="title_1" readonly required>
                         </div>
 
                         {{--                        <div class="mb-3">--}}
@@ -164,18 +164,18 @@
                         {{--                            <input type="text" class="form-control" id="btn_name" name="btn_name" required>--}}
                         {{--                        </div>--}}
 
-                        {{--                        <div class="mb-3">--}}
-                        {{--                            <label for="btn_link" class="col-form-label">Button Link</label>--}}
-                        {{--                            <input type="text" id="btn_link" class="form-control" name="btn_link" required>--}}
-                        {{--                        </div>--}}
-
                         <div class="mb-3">
+                            <label for="btn_link" class="col-form-label">Button Link</label>
+                            <input type="text" id="btn_link" class="form-control" name="btn_link" required>
+                        </div>
+
+                        {{-- <div class="mb-3">
                             <label for="type" class="col-form-label">Type</label>
                             <select name="type" id="type" class="form-control">
                                 <option value="normal">Normal</option>
                                 <option value="offer">Offer</option>
                             </select>
-                        </div>
+                        </div> --}}
 
                         <div class="mb-3">
                             <label for="image" class="col-form-label">banner Image</label>
@@ -296,13 +296,18 @@
                         name: 'title_1',
 
                     },
-
                     {
-                        data: 'type',
-                        render: function (data, type, row) {
-                            return '<span class="badge bg-success">' + data + '</span>';
-                        }
+                        data: 'btn_link',
+                        name: 'btn_link',
+
                     },
+
+                    // {
+                    //     data: 'type',
+                    //     render: function (data, type, row) {
+                    //         return '<span class="badge bg-success">' + data + '</span>';
+                    //     }
+                    // },
 
 
                     {
@@ -380,8 +385,8 @@
                             $('#title_1').val(res.data.title_1);
                             // $('#text').val(res.data.text);
                             // $('#btn_name').val(res.data.btn_name);
-                            // $('#btn_link').val(res.data.btn_link);
-                            $('#type').val(res.data.type);
+                            $('#btn_link').val(res.data.btn_link);
+                            // $('#type').val(res.data.type);
                             $('#status').val(res.data.status);
 
                             $('#imgPrev').empty();
