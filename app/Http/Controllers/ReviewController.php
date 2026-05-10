@@ -9,13 +9,13 @@ class ReviewController extends Controller
 {
     public function pendingReview()
     {
-        $reviews = Review::where('status', 'pending')->latest()->get();
+        $reviews = Review::where('status', 'pending')->with('product')->latest()->get();
 
         return view('admin.review.pending', compact('reviews'));
     }
     public function index()
     {
-        $reviews = Review::where('status', 'approve')->latest()->get();
+        $reviews = Review::where('status', 'approve')->with('product')->latest()->get();
 
         return view('admin.review.index', compact('reviews'));
     }

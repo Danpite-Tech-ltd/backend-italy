@@ -27,8 +27,7 @@
                                 <tr>
                                     <th>SL</th>
                                     <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
+                                    <th>Product Name</th>
                                     <th>Rating</th>
                                     <th>Message</th>
                                     <th>Image</th>
@@ -43,8 +42,7 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $review->name }}</td>
-                                        <td>{{ $review->phone }}</td>
-                                        <td>{{ $review->email }}</td>
+                                        <td>{{ $review->product->name }}</td>
 
                                         <td>
                                             <span class="badge bg-warning text-dark">
