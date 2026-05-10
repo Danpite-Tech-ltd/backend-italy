@@ -63,13 +63,13 @@
                                         </td>
 
                                         <td>
-                                            <a href="" class="btn btn-sm btn-primary">
+                                            <a href="{{ route('admin.review.edit', $review->id) }}" class="btn btn-sm btn-primary">
                                                 Edit
                                             </a>
-
-                                            <a href="" class="btn btn-sm btn-danger">
+                                            <button type="button" class="btn btn-sm btn-danger review-delete"
+                                                data-id="{{ $review->id }}">
                                                 Delete
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -108,6 +108,51 @@
                 ordering: true,
                 searching: true,
                 lengthMenu: [10, 25, 50, 100]
+            });
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '.review-delete', function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var id = btn.data('id');
+
+            Swal.fire({
+                title: 'Delete this review?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('admin.review.delete') }}",
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            review_id: id
+                        },
+                        success: function(res) {
+                            if (res.status === 'success') {
+                                btn.closest('tr').fadeOut(300, function() {
+                                    $(this).remove();
+                                });
+                                Swal.fire('Deleted', res.message || 'Review deleted',
+                                'success');
+                            } else {
+                                Swal.fire('Error', res.message || 'Could not delete', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            var msg = 'Something went wrong';
+                            if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr
+                                .responseJSON.message;
+                            Swal.fire('Error', msg, 'error');
+                        }
+                    });
+                }
             });
         });
     </script>
