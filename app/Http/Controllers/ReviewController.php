@@ -24,6 +24,7 @@ class ReviewController extends Controller
             $review->name = $user->name;
             $review->phone = $user->phone;
             $review->email = $user->email;
+            $review->profile_image = $user->profile_image;
             $review->ratting = $request->ratting;
             $review->review = $request->review;
             $review->product_id = $request->product_id;
