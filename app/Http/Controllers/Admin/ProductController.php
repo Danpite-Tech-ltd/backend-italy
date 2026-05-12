@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BasicInfo;
 use App\Models\Branch;
 use App\Models\Brand;
+use App\Models\ProductTag;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
@@ -240,12 +241,13 @@ class ProductController extends Controller implements HasMiddleware
     {
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
+        $tags = ProductTag::where('status', 1)->get();
         $vendors = Vendor::where('status', 'approved')->get();
         $productTypes = ProductType::where('status', 1)->get();
         $warehouses = Warehouse::where('status', 1)->get();
         $branches = Branch::where('status', 1)->get();
 
-        return view('admin.pages.product.create.basic-info', compact('categories', 'brands', 'productTypes', 'vendors', 'warehouses', 'branches'));
+        return view('admin.pages.product.create.basic-info', compact('categories', 'brands', 'tags', 'productTypes', 'vendors', 'warehouses', 'branches'));
     }
 
     public function SKUGenerator(string $id)
@@ -334,6 +336,15 @@ class ProductController extends Controller implements HasMiddleware
             $file->move('public/admin/upload/products/', $filename);
             $product->meta_image = 'public/admin/upload/products/' . $filename;
         }
+
+        // Save selected product tags as JSON array (if provided)
+        if ($request->filled('tag_names')) {
+            $product->tag_names = json_encode(array_values((array) $request->input('tag_names')));
+        } else {
+            $product->tag_names = null;
+        }
+
+        $product->tag_names = json_encode(array_values ((array) $request->input('tag_names')));
 
         $product->save();
 
@@ -500,6 +511,13 @@ class ProductController extends Controller implements HasMiddleware
             $filename = time() . '.' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('admin/upload/products/'), $filename);
             $product->meta_image = 'admin/upload/products/' . $filename;
+        }
+
+        // Save selected product tags as JSON array (if provided)
+        if ($request->filled('tag_names')) {
+            $product->tag_names = json_encode(array_values((array) $request->input('tag_names')));
+        } else {
+            $product->tag_names = null;
         }
 
         $product->save();
