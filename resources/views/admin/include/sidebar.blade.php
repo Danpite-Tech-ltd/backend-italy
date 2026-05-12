@@ -99,6 +99,7 @@
                     'admin.product-type.*',
                     'admin.product.*',
                     'admin.color.*',
+                    'admin.product_tag.*',
                     'admin.variant.*')) active @endif">
                 <a class="nav-link" data-toggle="collapse" href="#product" aria-expanded="false" aria-controls="product">
                     <i class="typcn typcn-device-desktop menu-icon"></i>
@@ -113,6 +114,7 @@
                         'admin.brand.*',
                         'admin.product-type.*',
                         'admin.product.*',
+                        'admin.product_tag.*',
                         'admin.color.*',
                         'admin.variant.*')) show @endif" id="product">
                     <ul class="nav flex-column sub-menu">
@@ -153,7 +155,8 @@
                                     href="{{ route('admin.brand.index') }}">Brand</a></li>
                         @endcan
 
-
+                        <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.product_tag.index') active @endif"
+                                    href="{{ route('admin.product_tag.index') }}">Product Tag</a></li>
 
                         @can('View Type')
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.product-type.index') active @endif"

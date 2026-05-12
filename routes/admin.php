@@ -44,6 +44,7 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\TaxVatController;
 use App\Http\Controllers\Admin\ProductTypeController;
+use App\Http\Controllers\Admin\ProductTagController;
 
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\WarehouseController;
@@ -159,6 +160,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/child-category-by-subcategory/{id}', [ChildCategoryController::class, 'getChildCategoryBySubCategory'])->name('child-category-by-subcategory');
     Route::post('/product/change-status', [ProductController::class, 'changeProductStatus'])->name('product.status');
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
+
+    // product tag
+    Route::resource('/product-tags', ProductTagController::class)->names('product_tag');
+    Route::post('/product-tag/change-status', [ProductTagController::class, 'changeStatus'])->name('product_tag.change-status');
+    Route::post('/product-tag/delete', [ProductTagController::class, 'destroy'])->name('product_tag.delete');
 
     Route::get('/products/create/variant', [ProductController::class, 'createVariant'])->name('product.create.variant');
     Route::get('/product-colors', [ProductController::class, 'productColors'])->name('product.color');
