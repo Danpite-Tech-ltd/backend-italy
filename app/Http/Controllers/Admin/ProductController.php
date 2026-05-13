@@ -344,8 +344,6 @@ class ProductController extends Controller implements HasMiddleware
             $product->tag_names = null;
         }
 
-        $product->tag_names = json_encode(array_values ((array) $request->input('tag_names')));
-
         $product->save();
 
 
