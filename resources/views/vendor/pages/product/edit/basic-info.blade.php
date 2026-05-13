@@ -170,26 +170,54 @@
                             </div>
 
 
-                            {{-- <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="mb-3 form-group">
                                     <label for="category_id" class="form-label">Brands</label>
-                                    <select id="brand_id"
-                                            class="form-control select2"
-                                            value="{{ old('brand_id') }}" name="brand_id">
+                                    <select id="brand_id" class="form-control select2" value="{{ old('brand_id') }}"
+                                        name="brand_id">
                                         <option value="">Select..</option>
                                         @foreach ($brands as $value)
-                                            <option value="{{$value->id}}"
-                                                    @if ($product->brand_id == $value->id) selected @endif>{{$value->name}}</option>
+                                            <option value="{{ $value->id }}"
+                                                @if ($product->brand_id == $value->id) selected @endif>{{ $value->name }}
+                                            </option>
                                         @endforeach
                                     </select>
 
                                     @error('brand_id')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
                                     @enderror
                                 </div>
-                            </div> --}}
+                            </div>
+
+                            {{-- products tag --}}
+                            <div class="col-sm-6">
+                                <div class="form-group mb-3">
+                                    <label for="category_id" class="form-label">Product Tags</label>
+
+                                    @php
+                                        $selectedTags = json_decode($product->tag_names, true) ?? [];
+                                    @endphp
+
+                                    <select id="tag_names" class="form-control" name="tag_names[]" multiple="multiple">
+                                        <option value="">Select..</option>
+
+                                        @foreach ($tags as $value)
+                                            <option value="{{ $value->name }}"
+                                                {{ in_array($value->name, $selectedTags) ? 'selected' : '' }}>
+                                                {{ $value->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('tag_names')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
 
 
                             <!-- col-end -->
@@ -353,7 +381,22 @@
             </div>
         </div>
     </div>
+    
+    <style>
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            display: flex;
+            align-items: center;
+            height: 25px !important;
+            font-size: 13px !important;
+        }
+    </style>
+@endsection
 
+
+@push('js')
+    <script src="{{ asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script>
         (function($) {
             $(document).ready(function() {
@@ -364,12 +407,16 @@
                 }
             });
         })(jQuery);
+        $(document).ready(function() {
+
+            $('#tag_names').select2({
+                placeholder: "Select Tags",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
     </script>
-@endsection
-
-
-@push('js')
-    <script src="{{ asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js') }}"></script>
 
     <script>
         //Fetch Subcategories

@@ -43,7 +43,8 @@ class ProductController extends Controller
                 'productvariants:id,product_id,sale_price'
             ])
                 ->where('status', 1)
-                ->where('vendor_id', $vendor->id);
+                ->where('vendor_id', $vendor->id)
+                ->latest();
 
             return DataTables::eloquent($products)
                 ->addColumn('thumbnail_img', function ($product) {
@@ -309,12 +310,13 @@ class ProductController extends Controller
     {
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
+        $tags = ProductTag::where('status', 1)->get();
         $vendors = Vendor::where('status', 'approved')->get();
         $productTypes = ProductType::where('status', 1)->get();
         $id = $product->id;
 
 
-        return view('vendor.pages.product.edit.basic-info', compact('product', 'categories', 'brands', 'productTypes', 'id', 'vendors'));
+        return view('vendor.pages.product.edit.basic-info', compact('product', 'categories', 'tags', 'brands', 'productTypes', 'id', 'vendors'));
     }
 
     public function editProductVariant(string $id)
@@ -447,6 +449,13 @@ class ProductController extends Controller
             $filename = time() . '.' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('admin/upload/products/'), $filename);
             $product->meta_image = 'admin/upload/products/' . $filename;
+        }
+
+        // Save selected product tags as JSON array (if provided)
+        if ($request->filled('tag_names')) {
+            $product->tag_names = json_encode(array_values((array) $request->input('tag_names')));
+        } else {
+            $product->tag_names = null;
         }
 
         $product->save();
