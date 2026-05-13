@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
+use App\Models\ProductTag;
 use App\Models\Productcolor;
 use App\Models\ProductType;
 use App\Models\Productvariant;
@@ -169,11 +170,12 @@ class ProductController extends Controller
 
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
+        $tags = ProductTag::where('status', 1)->get();
         $productTypes = ProductType::where('status', 1)->get();
 
         return view(
             'vendor.pages.product.create.basic-info',
-            compact('categories', 'brands', 'productTypes', 'vendor')
+            compact('categories', 'tags', 'brands', 'productTypes', 'vendor')
         );
     }
 
@@ -265,7 +267,12 @@ class ProductController extends Controller
             $product->meta_image = 'public/admin/upload/products/' . $filename;
         }
 
-
+        // Save selected product tags as JSON array (if provided)
+        if ($request->filled('tag_names')) {
+            $product->tag_names = json_encode(array_values((array) $request->input('tag_names')));
+        } else {
+            $product->tag_names = null;
+        }
 
         $product->save();
 

@@ -2,6 +2,8 @@
 
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css">
 @endpush
 
 
@@ -110,7 +112,7 @@
                             </div> --}}
                             <!-- col end -->
 
-                            {{-- <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <div class="form-group mb-3">
                                     <label for="category_id" class="form-label">Brands</label>
                                     <select id="brand_id"
@@ -127,7 +129,25 @@
                                     </span>
                                     @enderror
                                 </div>
-                            </div> --}}
+                            </div>
+
+                            {{-- products tag --}}
+                            <div class="col-sm-6">
+                                <div class="form-group mb-3">
+                                    <label for="category_id" class="form-label">Product Tags</label>
+                                    <select id="tag_names" class="form-control" name="tag_names[]" multiple="multiple">
+                                        <option value="">Select..</option>
+                                        @foreach ($tags as $value)
+                                            <option value="{{ $value->name }}">{{ $value->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('tag_names')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
 
 
                             <!-- col-end -->
@@ -294,9 +314,42 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            display: flex;
+            align-items: center;
+            height: 25px !important;
+            font-size: 13px !important;
+        }
+    </style>
 @endsection
 
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                if ($.fn.select2) {
+                    $('#testSelect').select2();
+                } else {
+                    alert('Select2 not loaded');
+                }
+            });
+        })(jQuery);
+
+        $(document).ready(function() {
+
+            $('#tag_names').select2({
+                placeholder: "Select Tags",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+    </script>
+
     <script src="{{ asset('https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js') }}"></script>
 
     <script>
