@@ -152,14 +152,14 @@ class AuthController extends Controller
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('customers', 'email')->ignore($user->id),
+                Rule::unique('users', 'email')->ignore($user->id),
             ],
 
             'phone' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('customers', 'phone')->ignore($user->id),
+                Rule::unique('users', 'phone')->ignore($user->id),
             ],
             'address' => 'required|string|min:6',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048'
