@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,11 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 
     // product review
     Route::post('/review', [ReviewController::class, 'store']);
+
+    // wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist/store', [WishlistController::class, 'store']);
+    Route::post('/wishlist/remove', [WishlistController::class, 'delete']);
 });
 
 Route::name('api.')->group(function () {
