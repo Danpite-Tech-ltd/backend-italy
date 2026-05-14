@@ -83,4 +83,17 @@ class DashboardController extends Controller
             'data' => $orders,
         ]);
     }
+
+    public function orderDetails($invoiceID)
+    {
+        $order = Order::where('invoiceID', $invoiceID)
+            ->select('id', 'invoiceID', 'subtotal', 'total', 'order_date', 'order_status_id', 'customer_note', 'vat_percentage', 'tax_percentage', 'vat', 'tax', 'delivery_charge')
+            ->with('orderProducts', 'orderStatus')->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User order',
+            'data' => $order
+        ]);
+    }
 }

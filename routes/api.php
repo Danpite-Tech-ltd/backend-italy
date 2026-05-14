@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::post('/user-update-password', [AuthController::class, 'userUpdatePassword']);
     Route::get('/order-status', [DashboardController::class, 'orderStatus']);
     Route::get('/orders', [DashboardController::class, 'orders']);
+    Route::get('/order-details/{invoiceID}', [DashboardController::class, 'orderDetails']);
 
 
     // vendor review and rating
