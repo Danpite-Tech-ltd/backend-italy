@@ -116,4 +116,7 @@ Route::name('api.')->group(function () {
     // vat & tax
     Route::get('/vat', [CheckoutController::class, 'vat']);
     Route::get('/tax', [CheckoutController::class, 'tax']);
+
+    // pages
+    Route::get('customer-support', [FrontendController::class, 'customerSupport']);
 });

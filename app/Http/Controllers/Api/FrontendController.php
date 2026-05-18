@@ -163,4 +163,13 @@ class FrontendController extends Controller
         );
     }
 
+    public function customerSupport(){
+        $pages = Page::where('status', 1)->get();
+
+        return $this->success(
+            message: 'Customer Suport Page Data',
+            data: $pages
+        );
+    }
+
 }
