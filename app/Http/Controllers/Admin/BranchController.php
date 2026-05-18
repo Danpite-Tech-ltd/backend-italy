@@ -52,7 +52,6 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:255|unique:branches',
@@ -60,7 +59,6 @@ class BranchController extends Controller
             'email' => 'nullable|email|max:255|unique:branches',
             'address' => 'nullable|string'
         ]);
-
         Branch::create($request->all());
 
         return redirect()->route('admin.branch.index')->with('success', 'Branch created successfully.');
@@ -108,6 +106,8 @@ class BranchController extends Controller
                 Rule::unique('branches')->ignore($branch->id),
             ],
             'address' => 'nullable|string',
+            'lat' => 'nullable|string',
+            'lng' => 'nullable|string'
         ]);
 
         $branch->update($data);
