@@ -102,6 +102,7 @@ Route::name('api.')->group(function () {
     Route::get('/flash-sale', [ProductController::class, 'flashSale']);
     Route::get('/daily-deals', [ProductController::class, 'dailyDeals']);
     Route::get('/brand-products/{slug}', [ProductController::class, 'brandProducts']);
+    Route::get('/product-tags', [ProductController::class, 'productTags']);
 
     // branch
     Route::get('/branch', [FrontendController::class, 'branch']);

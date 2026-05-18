@@ -8,6 +8,7 @@ use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\Brand;
+use App\Models\ProductTag;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -171,6 +172,15 @@ class ProductController extends Controller
         return $this->success(
             message: 'Daily deals products',
             data: $products
+        );
+    }
+
+    public function productTags(){
+        $tags = ProductTag::where('status', 1)->get();
+
+        return $this->success(
+            message: 'Product Tags',
+            data: $tags
         );
     }
 }
