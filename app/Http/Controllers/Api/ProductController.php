@@ -96,19 +96,84 @@ class ProductController extends Controller
             'data' => $products
         ]);
     }
-    public function categoryProducts($slug)
+    public function categoryProducts(Request $request, $slug)
     {
-        $category = Category::where('slug', $slug)->where('status', 1)->firstOrFail();
+        $category = Category::where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
 
-        $products = Product::where(['status' => 1, 'category_id' => $category->id])
-            ->with(['firstvariant'])
-            ->select('id', 'category_id', 'name', 'slug', 'thumbnail_img', 'tag_names')
-            ->orderBy('id', 'DESC')
-            ->paginate(24);
+        $products = Product::query();
+
+        $products->where('products.status', 1)
+            ->where('products.category_id', $category->id)
+
+            ->leftJoin('productvariants', 'products.id', '=', 'productvariants.product_id')
+
+            ->with('firstVariant')
+
+            ->distinct()
+
+            ->select(
+                'products.id',
+                'products.category_id',
+                'products.name',
+                'products.slug',
+                'products.thumbnail_img',
+                'products.tag_names',
+                'products.created_at'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tag Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('tags')) {
+
+            $products->where(function ($query) use ($request) {
+
+                foreach ($request->tags as $tag) {
+                    $query->orWhereJsonContains('products.tag_names', $tag);
+                }
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        switch ($request->filter) {
+
+            case 'price_asc':
+                $products->orderBy('productvariants.sale_price', 'ASC');
+                break;
+
+            case 'price_desc':
+                $products->orderBy('productvariants.sale_price', 'DESC');
+                break;
+
+            case 'newest':
+                $products->orderBy('products.created_at', 'DESC');
+                break;
+
+            case 'oldest':
+                $products->orderBy('products.created_at', 'ASC');
+                break;
+
+            default:
+                $products->orderBy('products.id', 'DESC');
+                break;
+        }
+
+        $products = $products->paginate(24);
 
         return response()->json([
             'status' => true,
-            'massage' => 'category wise product',
+            'message' => 'Category wise products',
             'category' => $category,
             'data' => $products
         ]);
@@ -175,7 +240,8 @@ class ProductController extends Controller
         );
     }
 
-    public function productTags(){
+    public function productTags()
+    {
         $tags = ProductTag::where('status', 1)->get();
 
         return $this->success(

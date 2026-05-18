@@ -45,7 +45,7 @@ class Product extends Model
     }
     public function firstVariant()
     {
-        return $this->hasOne(ProductVariant::class, 'product_id');
+        return $this->hasOne(Productvariant::class, 'product_id');
     }
 
     public function productcolors()
