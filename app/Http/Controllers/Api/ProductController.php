@@ -20,7 +20,8 @@ class ProductController extends Controller
     {
         $products = Category::where('status', 1)->where('front_status', 1)
             ->orderBy('id', 'DESC')
-            ->with(['products', 'products.productcolors', 'products.productvariants'])
+            ->with(['products', 'products.firstvariant'])
+            ->select('id', 'name', 'slug')
             ->limit(24)
             ->get();
 
@@ -34,7 +35,8 @@ class ProductController extends Controller
     {
         $products = Product::where('status', 1)
             ->where('name', 'LIKE', "%{$keyword}%")
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -48,7 +50,7 @@ class ProductController extends Controller
     public function productDetails($slug)
     {
         $products = Product::where(['slug' => $slug, 'status' => 1])
-            ->with(['productcolors', 'productvariants', 'category', 'vendor', 'reviews'])
+            ->with(['productcolors', 'productvariants', 'vendor', 'reviews'])
             ->firstOrFail();
 
         return $this->success(
@@ -64,7 +66,8 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 1)
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'category_id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -80,42 +83,51 @@ class ProductController extends Controller
         $brand = Brand::where('slug', $slug)->where('status', 1)->firstOrFail();
 
         $products = Product::where(['status' => 1, 'brand_id' => $brand->id])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'brand_id', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->paginate(24);
 
-        return $this->success(
-            message: 'brand Products',
-            data: $products
-        );
+        return response()->json([
+            'status' => true,
+            'massage' => 'Brand wise product',
+            'brand' => $brand,
+            'data' => $products
+        ]);
     }
     public function categoryProducts($slug)
     {
         $category = Category::where('slug', $slug)->where('status', 1)->firstOrFail();
 
         $products = Product::where(['status' => 1, 'category_id' => $category->id])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'category_id', 'name', 'slug', 'thumbnail_img', 'tag_names')
             ->orderBy('id', 'DESC')
             ->paginate(24);
 
-        return $this->success(
-            message: 'Category Products',
-            data: $products
-        );
+        return response()->json([
+            'status' => true,
+            'massage' => 'category wise product',
+            'category' => $category,
+            'data' => $products
+        ]);
     }
 
     public function subcategoryProducts($slug)
     {
         $category = Subcategory::where('slug', $slug)->where('status', 1)->firstOrFail();
         $products = Product::where(['status' => 1, 'subcategory_id' => $category->id])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'subcategory_id', 'name', 'slug', 'thumbnail_img', 'tag_names')
             ->orderBy('id', 'DESC')
             ->paginate(24);
 
-        return $this->success(
-            message: 'Sub Category Products',
-            data: $products
-        );
+        return response()->json([
+            'status' => true,
+            'massage' => 'subcategory wise product',
+            'subcategory' => $category,
+            'data' => $products
+        ]);
     }
 
     public function childcategoryProducts($slug)
@@ -135,7 +147,8 @@ class ProductController extends Controller
     public function flashSale()
     {
         $products = Product::where(['status' => 1, 'product_type_id' => 1])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -149,7 +162,8 @@ class ProductController extends Controller
     public function dailyDeals()
     {
         $products = Product::where(['status' => 1, 'product_type_id' => 2])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
