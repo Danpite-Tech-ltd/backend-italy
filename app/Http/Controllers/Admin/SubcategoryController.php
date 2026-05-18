@@ -114,6 +114,14 @@ class SubcategoryController extends Controller implements HasMiddleware
             $subcategory->image = 'public/admin/upload/subcategory/' . $filename;
 
         }
+        if ($request->hasFile('banner_image')) {
+
+            $file1 = $request->file('banner_image');
+            $filename1 = time() . uniqid() . '.' . $file1->getClientOriginalExtension();
+            $file1->move('public/admin/upload/subcategory/', $filename1);
+            $subcategory->banner_image = 'public/admin/upload/subcategory/' . $filename1;
+
+        }
 
         if ($request->hasFile('meta_image')) {
 
@@ -171,6 +179,18 @@ class SubcategoryController extends Controller implements HasMiddleware
             $filename = time() . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move('public/admin/upload/subcategory/', $filename);
             $subcategory->image = 'public/admin/upload/subcategory/' . $filename;
+
+        }
+        if ($request->hasFile('banner_image')) {
+
+            if ($subcategory->banner_image && file_exists($subcategory->banner_image)) {
+                unlink($subcategory->banner_image);
+            }
+
+            $file1 = $request->file('banner_image');
+            $filename1 = time() . uniqid() . '.' . $file1->getClientOriginalExtension();
+            $file1->move('public/admin/upload/subcategory/', $filename1);
+            $subcategory->banner_image = 'public/admin/upload/subcategory/' . $filename1;
 
         }
 
