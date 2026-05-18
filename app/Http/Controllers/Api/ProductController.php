@@ -179,19 +179,94 @@ class ProductController extends Controller
         ]);
     }
 
-    public function subcategoryProducts($slug)
+    public function subcategoryProducts(Request $request, $slug)
     {
-        $category = Subcategory::where('slug', $slug)->where('status', 1)->firstOrFail();
-        $products = Product::where(['status' => 1, 'subcategory_id' => $category->id])
-            ->with(['firstvariant'])
-            ->select('id', 'subcategory_id', 'name', 'slug', 'thumbnail_img', 'tag_names')
-            ->orderBy('id', 'DESC')
-            ->paginate(24);
+        // Subcategory Find
+        $subcategory = Subcategory::where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
 
+        // Product Query
+        $products = Product::query();
+
+        $products->where('products.status', 1)
+            ->where('products.subcategory_id', $subcategory->id)
+
+            // Variant Join
+            ->leftJoin('productvariants', 'products.id', '=', 'productvariants.product_id')
+
+            // Relation Load
+            ->with('firstVariant')
+
+            // Remove Duplicate
+            ->distinct()
+
+            ->select(
+                'products.id',
+                'products.subcategory_id',
+                'products.category_id',
+                'products.branch_id',
+                'products.name',
+                'products.slug',
+                'products.thumbnail_img',
+                'products.tag_names',
+                'products.created_at'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tag Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('tags')) {
+
+            $products->where(function ($query) use ($request) {
+
+                foreach ($request->tags as $tag) {
+                    $query->orWhereJsonContains('products.tag_names', $tag);
+                }
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting Filter
+        |--------------------------------------------------------------------------
+        */
+
+        switch ($request->filter) {
+
+            case 'price_asc':
+                $products->orderBy('productvariants.sale_price', 'ASC');
+                break;
+
+            case 'price_desc':
+                $products->orderBy('productvariants.sale_price', 'DESC');
+                break;
+
+            case 'newest':
+                $products->orderBy('products.created_at', 'DESC');
+                break;
+
+            case 'oldest':
+                $products->orderBy('products.created_at', 'ASC');
+                break;
+
+            default:
+                $products->orderBy('products.id', 'DESC');
+                break;
+        }
+
+        // Pagination
+        $products = $products->paginate(24);
+
+        // Response
         return response()->json([
             'status' => true,
-            'massage' => 'subcategory wise product',
-            'subcategory' => $category,
+            'message' => 'subcategory wise product',
+            'subcategory' => $subcategory,
             'data' => $products
         ]);
     }
