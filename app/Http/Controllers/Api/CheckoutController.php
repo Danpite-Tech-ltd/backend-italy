@@ -290,11 +290,11 @@ class CheckoutController extends Controller
     }
     public function tax()
     {
-        $vat = Tax::first('id', 'rate');
+        $tax = Tax::select('id', 'rate')->first();
 
         return $this->success(
-            message: 'Vat data.',
-            data: $vat
+            message: 'tax data.',
+            data: $tax
         );
     }
 
