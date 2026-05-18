@@ -54,6 +54,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     // product review
     Route::post('/review', [ReviewController::class, 'store']);
 
+    // my review
+    Route::get('/my-reviews', [ReviewController::class, 'myReview']);
+
     // wishlist
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/store', [WishlistController::class, 'store']);
