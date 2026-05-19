@@ -128,6 +128,13 @@ class CategoryController extends Controller implements HasMiddleware
             $file->move('public/admin/upload/category/', $filename);
             $category->image = 'public/admin/upload/category/' . $filename;
         }
+        if ($request->hasFile('banner_image')) {
+
+            $file1 = $request->file('banner_image');
+            $filename1 = time() . uniqid() . '.' . $file1->getClientOriginalExtension();
+            $file1->move('public/admin/upload/category/', $filename1);
+            $category->banner_image = 'public/admin/upload/category/' . $filename1;
+        }
 
         if ($request->hasFile('meta_image')) {
 
@@ -188,6 +195,17 @@ class CategoryController extends Controller implements HasMiddleware
             $filename = time() . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move('public/admin/upload/category/', $filename);
             $category->image = 'public/admin/upload/category/' . $filename;
+        }
+        if ($request->hasFile('banner_image')) {
+
+            if ($category->banner_image && file_exists($category->banner_image)) {
+                unlink($category->image);
+            }
+
+            $file1 = $request->file('banner_image');
+            $filename1 = time() . uniqid() . '.' . $file1->getClientOriginalExtension();
+            $file1->move('public/admin/upload/category/', $filename1);
+            $category->banner_image = 'public/admin/upload/category/' . $filename1;
         }
 
         if ($request->hasFile('meta_image')) {

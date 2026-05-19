@@ -11,6 +11,7 @@ use App\Models\Page;
 use App\Models\Pixel;
 use App\Models\ShippingCharge;
 use App\Models\Slider;
+use App\Models\Banner;
 use App\Models\Subcategory;
 use App\Models\Tag;
 use App\Models\Brand;
@@ -40,10 +41,19 @@ class FrontendController extends Controller
             data: $sliders
         );
     }
+    public function banner()
+    {
+        $banners = Banner::where('status', 1)->select('id', 'title_1', 'btn_link', 'image')->get();
+
+        return $this->success(
+            message: 'All banner image.',
+            data: $banners
+        );
+    }
 
     // categories data
     public function brands()
-    {   
+    {
         $brands = Brand::where('status', 1)->get();
 
         return $this->success(
@@ -61,7 +71,7 @@ class FrontendController extends Controller
         );
     }
     public function categories()
-    {   
+    {
         $categories = Category::where('status', 1)->where('front_status', 1)->get();
 
         return $this->success(
@@ -152,5 +162,6 @@ class FrontendController extends Controller
             data: $order
         );
     }
+
 
 }

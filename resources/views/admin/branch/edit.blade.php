@@ -36,8 +36,18 @@
                             </div>
                             <div class="form-group">
                                 <label for="branch_address">Address</label>
-                                <textarea class="form-control" id="address" name="address" 
+                                <textarea class="form-control" id="address" name="address"
                                     placeholder="Enter Branch Address">{{ $branch->address }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="lat">Latitude </label>
+                                <input type="text" class="form-control" id="lat" name="lat" value="{{ $branch->lat }}"
+                                    placeholder="Enter Latitude Code">
+                            </div>
+                            <div class="form-group">
+                                <label for="lng">Lngitude </label>
+                                <input type="text" class="form-control" id="lng" name="lng" value="{{ $branch->lng }}"
+                                    placeholder="Enter Longitude Code">
                             </div>
                             <button type="submit" class="btn btn-primary">Update Branch</button>
                         </form>

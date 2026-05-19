@@ -44,12 +44,15 @@ use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\TaxVatController;
+use App\Http\Controllers\Admin\ProductTypeController;
+use App\Http\Controllers\Admin\ProductTagController;
 
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Admin\WpaymentController;
 use App\Http\Controllers\Admin\WsaleController;
 use App\Http\Controllers\Admin\WsalestockController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\TicketController;
 
@@ -115,6 +118,15 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/approved/vendors/edit/{id}', [VendorController::class, 'approved_vendor_edit'])->name('approved.vendor.edit');
     Route::post('/approved/vendors/update/{id}', [VendorController::class, 'approved_vendor_update'])->name('approved.vendor.update');
 
+    // Review
+    Route::get('/pending-review', [ReviewController::class, 'pendingReview'])->name('review.pending');
+    Route::get('/review-list', [ReviewController::class, 'index'])->name('review.index');
+    Route::post('/review/change-status', [ReviewController::class, 'changeStatus'])->name('review.changeStatus');
+    Route::post('/review/delete', [ReviewController::class, 'destroy'])->name('review.delete');
+    Route::get('/review/edit/{id}', [ReviewController::class, 'edit'])->name('review.edit');
+    Route::post('/review/update/{id}', [ReviewController::class, 'update'])->name('review.update');
+    Route::post('/review/delete', [ReviewController::class, 'destroy'])->name('review.delete');
+
     //Users
     Route::resource('/users', UserController::class)->names('user');
 
@@ -149,6 +161,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/child-category-by-subcategory/{id}', [ChildCategoryController::class, 'getChildCategoryBySubCategory'])->name('child-category-by-subcategory');
     Route::post('/product/change-status', [ProductController::class, 'changeProductStatus'])->name('product.status');
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
+
+    // product tag
+    Route::resource('/product-tags', ProductTagController::class)->names('product_tag');
+    Route::post('/product-tag/change-status', [ProductTagController::class, 'changeStatus'])->name('product_tag.change-status');
+    Route::post('/product-tag/delete', [ProductTagController::class, 'destroy'])->name('product_tag.delete');
 
     Route::get('/products/create/variant', [ProductController::class, 'createVariant'])->name('product.create.variant');
     Route::get('/product-colors', [ProductController::class, 'productColors'])->name('product.color');

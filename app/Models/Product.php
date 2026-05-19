@@ -16,7 +16,7 @@ class Product extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(Vendor::class);
+        return $this->belongsTo(Vendor::class)->select('id');
     }
 
     public function branch()
@@ -43,10 +43,18 @@ class Product extends Model
     {
         return $this->hasMany(Productvariant::class);
     }
+    public function firstVariant()
+    {
+        return $this->hasOne(Productvariant::class, 'product_id');
+    }
 
     public function productcolors()
     {
         return $this->hasMany(Productcolor::class);
+    }
+    public function firstColor()
+    {
+        return $this->hasOne(Productcolor::class);
     }
 
     public function orders()
@@ -61,7 +69,12 @@ class Product extends Model
 
     public function type()
     {
-        return $this->belongsTo(ProductType::class,'product_type_id');
+        return $this->belongsTo(ProductType::class, 'product_type_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'product_id', 'id');
     }
 
 

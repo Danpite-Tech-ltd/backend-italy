@@ -99,6 +99,7 @@
                     'admin.product-type.*',
                     'admin.product.*',
                     'admin.color.*',
+                    'admin.product_tag.*',
                     'admin.variant.*')) active @endif">
                 <a class="nav-link" data-toggle="collapse" href="#product" aria-expanded="false" aria-controls="product">
                     <i class="typcn typcn-device-desktop menu-icon"></i>
@@ -113,6 +114,7 @@
                         'admin.brand.*',
                         'admin.product-type.*',
                         'admin.product.*',
+                        'admin.product_tag.*',
                         'admin.color.*',
                         'admin.variant.*')) show @endif" id="product">
                     <ul class="nav flex-column sub-menu">
@@ -153,7 +155,8 @@
                                     href="{{ route('admin.brand.index') }}">Brand</a></li>
                         @endcan
 
-
+                        <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.product_tag.index') active @endif"
+                                    href="{{ route('admin.product_tag.index') }}">Product Tag</a></li>
 
                         @can('View Type')
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.product-type.index') active @endif"
@@ -220,6 +223,25 @@
 
 
 
+        {{--    rreview Manage    --}}
+        <li class="nav-item @if (request()->routeIs('admin.review.*')) active @endif">
+            <a class="nav-link" data-toggle="collapse" href="#review" aria-expanded="false" aria-controls="review">
+                <i class="typcn typcn-shopping-cart menu-icon"></i>
+                <span class="menu-title">Review Management</span>
+                <i class="typcn typcn-chevron-right menu-arrow"></i>
+            </a>
+
+            <div class="collapse @if (request()->routeIs('admin.review.*')) show @endif" id="review">
+                <ul class="nav flex-column sub-menu">
+
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.index') active @endif"
+                            href="{{ route('admin.review.index') }}">Review List</a></li>
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.review.pending') active @endif"
+                            href="{{ route('admin.review.pending') }}">Pending Review List</a></li>
+
+                </ul>
+            </div>
+        </li>
         {{--    Order Manage    --}}
         @canany(['View Coupon', 'View Order'])
             <li class="nav-item @if (request()->routeIs('admin.order.*')) active @endif">

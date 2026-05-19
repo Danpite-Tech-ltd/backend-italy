@@ -31,7 +31,7 @@ class BannerController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $banners = Banner::select('id', 'image', 'title_1', 'type', 'status');
+            $banners = Banner::select('id', 'image', 'title_1', 'btn_link', 'status');
 
             return DataTables::eloquent($banners)
                 ->addColumn('action', function ($admin) {
@@ -45,7 +45,7 @@ class BannerController extends Controller implements HasMiddleware
                     }
 
                     if (Auth::user()->can('Delete Banner')) {
-                        $deleteAction = '<a class="btn btn-sm btn-danger" href="javascript:void(0)"
+                        $deleteAction = '<a class="d-none btn btn-sm btn-danger" href="javascript:void(0)"
                                    data-id="' . $admin->id . '" id="deleteAdminBtn"">
                                    <i class="fas fa-trash"></i></a>';
                     }
@@ -77,8 +77,8 @@ class BannerController extends Controller implements HasMiddleware
 //        $banner->text       = $request->text;
         $banner->title_1 = $request->title_1;
 //        $banner->btn_name   = $request->btn_name;
-//        $banner->btn_link   = $request->btn_link;
-        $banner->type = $request->type;
+       $banner->btn_link   = $request->btn_link;
+        // $banner->type = $request->type;
         $banner->status = $request->status;
 
         if ($request->hasFile('image')) {
@@ -118,9 +118,9 @@ class BannerController extends Controller implements HasMiddleware
 //        $banner->text       = $request->text;
         $banner->title_1 = $request->title_1;
 //        $banner->btn_name   = $request->btn_name;
-//        $banner->btn_link   = $request->btn_link;
+        $banner->btn_link   = $request->btn_link;
 
-        $banner->type = $request->type;
+        // $banner->type = $request->type;
         $banner->status = $request->status;
 
         if ($request->hasFile('image')) {

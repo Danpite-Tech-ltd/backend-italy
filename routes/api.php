@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\StripePaymentController;
 use App\Http\Controllers\Api\VendorController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,9 +42,26 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     //User Dashboard
     Route::get('/dashboard-overview', [DashboardController::class, 'dashboardOverview']);
     Route::get('/user-profile', [DashboardController::class, 'userProfile']);
+    Route::post('/profile-update', [AuthController::class, 'profileUpdate']);
+    Route::post('/user-update-password', [AuthController::class, 'userUpdatePassword']);
+    Route::get('/order-status', [DashboardController::class, 'orderStatus']);
+    Route::get('/orders', [DashboardController::class, 'orders']);
+    Route::get('/order-details/{invoiceID}', [DashboardController::class, 'orderDetails']);
+
 
     // vendor review and rating
     Route::post('/vendor-review', [VendorController::class, 'vendor_review_submit']);
+
+    // product review
+    Route::post('/review', [ReviewController::class, 'store']);
+
+    // my review
+    Route::get('/my-reviews', [ReviewController::class, 'myReview']);
+
+    // wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist/store', [WishlistController::class, 'store']);
+    Route::post('/wishlist/remove', [WishlistController::class, 'delete']);
 });
 
 Route::name('api.')->group(function () {
@@ -55,8 +74,9 @@ Route::name('api.')->group(function () {
     Route::get('/childcategories-by-subcategory/{slug}', [FrontendController::class, 'childcategoriesBySubCategory']);
     Route::get('/brands', [FrontendController::class, 'brands']);
 
-    // slider
+    // slider & banner
     Route::get('/mainslider', [FrontendController::class, 'main_sliders']);
+    Route::get('/banner', [FrontendController::class, 'banner']);
 
     // pages
     Route::get('/customer-pages', [FrontendController::class, 'customerPages']);
@@ -83,6 +103,7 @@ Route::name('api.')->group(function () {
     Route::get('/flash-sale', [ProductController::class, 'flashSale']);
     Route::get('/daily-deals', [ProductController::class, 'dailyDeals']);
     Route::get('/brand-products/{slug}', [ProductController::class, 'brandProducts']);
+    Route::get('/product-tags', [ProductController::class, 'productTags']);
 
     // branch
     Route::get('/branch', [FrontendController::class, 'branch']);
@@ -95,5 +116,11 @@ Route::name('api.')->group(function () {
     Route::get('/vendor-review/{id}', [VendorController::class, 'vendor_review']);
 
     // stripe payment gateway
-    Route::get('/stripe-payment/{id}', [StripePaymentController::class, 'stripePayment']);
+    Route::get('/stripe-payment', [StripePaymentController::class, 'stripePayment']);
+    // vat & tax
+    Route::get('/vat', [CheckoutController::class, 'vat']);
+    Route::get('/tax', [CheckoutController::class, 'tax']);
+
+    // pages
+    Route::get('customer-support', [FrontendController::class, 'customerSupport']);
 });

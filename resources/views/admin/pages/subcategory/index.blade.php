@@ -97,6 +97,11 @@
                             <input type="text" class="form-control" name="name" required>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="banner_image" class="col-form-label">Banner Image</label>
+                            <input type="file" class="form-control" name="banner_image">
+                        </div>
+
 
                         <div class="mb-3">
                             <label for="status" class="col-form-label">Status</label>
@@ -174,6 +179,14 @@
                         <div class="mb-3">
                             <label for="name" class="col-form-label">Sub Category Name *</label>
                             <input type="text" class="form-control" id="name" name="name">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="banner_image" class="col-form-label">Banner Image</label>
+                            <input type="file" class="form-control" name="banner_image">
+                            <div id="bannerimgPrev">
+
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -405,6 +418,11 @@
 
                             $('#status').val(res.data.status);
 
+
+                            $('#bannerimgPrev').empty();
+                            $('#bannerimgPrev').append(
+                                `<img id="profileImg" src="{{asset('')}}${res.data.banner_image}" width="300px" height="100px">`
+                            );
 
                             $('#metaImgPrev').empty();
                             $('#metaImgPrev').append(

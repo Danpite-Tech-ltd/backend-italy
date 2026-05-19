@@ -38,6 +38,16 @@
                                 <textarea class="form-control" id="address" name="address"
                                     placeholder="Enter Branch Address"></textarea>
                             </div>
+                            <div class="form-group">
+                                <label for="lat">Latitude </label>
+                                <input type="text" class="form-control" id="lat" name="lat"
+                                    placeholder="Enter Latitude code">
+                            </div>
+                            <div class="form-group">
+                                <label for="lng">Longitude </label>
+                                <input type="text" class="form-control" id="lng" name="lng"
+                                    placeholder="Enter Longitude code">
+                            </div>
                             <button type="submit" class="btn btn-primary">Create Branch</button>
                         </form>
                     </div>

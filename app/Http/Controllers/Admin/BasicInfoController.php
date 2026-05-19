@@ -160,6 +160,10 @@ class BasicInfoController extends Controller implements HasMiddleware
         $basicInfo->opening_hours_text = $request->opening_hours_text;
         $basicInfo->google_schema = $request->google_schema;
 
+
+        $basicInfo->popups_link = $request->popups_link;
+        $basicInfo->announcement_text = $request->announcement_text;
+
         $basicInfo->product_sku_prefix = $request->product_sku_prefix;
         $basicInfo->order_invoice_prefix = $request->order_invoice_prefix;
 

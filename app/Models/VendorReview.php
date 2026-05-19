@@ -9,4 +9,9 @@ class VendorReview extends Model
     protected $table = 'vendor_review';
 
     protected $guarded = [];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

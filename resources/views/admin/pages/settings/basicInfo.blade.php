@@ -201,14 +201,28 @@
                                         <div class="col-lg-6">
                                             <div>
                                                 <div class="mb-3">
-                                                    <label for="newsletter_bgImage" class="form-label">Newsletter Background Image</label>
+                                                    <label for="newsletter_bgImage" class="form-label">Popups Image Image</label>
                                                     <input type="file" class="form-control" id="newsletter_bgImage" name="newsletter_bgImage">
                                                     @if($basicInfo && $basicInfo->newsletter_bgImage)
                                                         <img id="bLogoImgPrev" class="mt-1" src="{{ asset($basicInfo->newsletter_bgImage) }}"
                                                              height="60px" width="200px" alt="" />
                                                     @endif
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label for="popups_link" class="form-label">Popups Link</label>
+                                                    <textarea id="popups_link" name="popups_link"
+                                                              class="form-control">{{$basicInfo->popups_link ?? ''}}</textarea>
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                    <label for="announcement_text" class="form-label">
+                                                       Announcements Text</label>
+                                                    <input class="form-control" name="announcement_text" type="text"
+                                                           placeholder=""
+                                                           id="announcement_text" value="{{$basicInfo->announcement_text ?? ''}}">
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
@@ -320,73 +334,6 @@
                                 </div>
 
 
-                            </div>
-                        </div> <!-- end col -->
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title text-center">Meta Information</h4>
-
-                                </div>
-
-
-                                <div class="card-body p-4">
-
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div>
-                                                <div class="mb-3">
-                                                    <label for="meta_title" class="form-label">Meta Title</label>
-                                                    <input type="text" class="form-control" id="meta_title" name="meta_title"
-                                                           value="{{$basicInfo->meta_title ?? ''}}">
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <div class="mb-3">
-                                                    <label for="meta_desc" class="form-label">Meta Description</label>
-                                                    <textarea id="meta_desc" name="meta_desc"
-                                                              class="form-control">{{$basicInfo->meta_description ?? ''}}</textarea>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="col-lg-6">
-                                            <div class="mt-3 mt-lg-0">
-                                                <div class="mb-3">
-                                                    <label for="meta_keyword" class="form-label">Meta Keywords</label>
-                                                    <textarea id="meta_keyword" class="form-control"
-                                                              name="meta_keyword">{{$basicInfo->meta_keywords ?? ''}}</textarea>
-                                                </div>
-
-
-
-                                                <div class="mb-3">
-                                                    <label for="meta_image"  class="form-label"  >Meta Image</label>
-                                                    <input type="file" oninput="metaLogoImgPrev.src=window.URL.createObjectURL(this.files[0])" class="form-control" name="meta_image">
-
-                                                    @if($basicInfo && $basicInfo->meta_image)
-                                                        <img id="metaLogoImgPrev" class="mt-1" src="{{asset($basicInfo->meta_image)}}"
-                                                             height="60px" width="60px"/>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-6">
-                                            <div class="mt-3 mt-lg-0">
-                                                <div class="mb-3">
-                                                    <label for="meta_keyword" class="form-label">Google Schema</label>
-                                                    <textarea id="meta_keyword" class="form-control"
-                                                              name="google_schema">{{$basicInfo->google_schema ?? ''}}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div> <!-- end col -->
                     </div>
