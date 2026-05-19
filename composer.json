@@ -28,6 +28,7 @@
         "spatie/laravel-permission": "^6.20",
         "spatie/laravel-responsecache": "^7.7",
         "spatie/laravel-sluggable": "^3.7",
+        "stripe/stripe-php": "^20.1",
         "yajra/laravel-datatables": "^11.0"
     },
     "require-dev": {
