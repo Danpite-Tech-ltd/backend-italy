@@ -156,6 +156,10 @@ class CheckoutController extends Controller
             ]);
 
             /* ================= MAIN ORDER ================= */
+            $payment = $request->payment;
+            if($payment == 'cod'){
+                $payment_method = "Cash on Delivery";
+            }
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'user_id' => auth()->id() ?? null,
@@ -165,7 +169,9 @@ class CheckoutController extends Controller
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
                 'order_status_id' => 1,
-                'vat_percentage' => $vat->rate,
+                'payment' => $payment,
+                'payment_method' => $payment_method ?? null,
+                 'vat_percentage' => $vat->rate,
                 'tax_percentage' => $tax->rate,
                 'subtotal' => 0,
                 'total' => 0,
