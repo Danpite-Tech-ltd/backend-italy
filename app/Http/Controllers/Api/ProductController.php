@@ -8,6 +8,7 @@ use App\Models\ChildCategory;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\Brand;
+use App\Models\ProductTag;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,8 @@ class ProductController extends Controller
     {
         $products = Category::where('status', 1)->where('front_status', 1)
             ->orderBy('id', 'DESC')
-            ->with(['products', 'products.productcolors', 'products.productvariants'])
+            ->with(['products', 'products.firstvariant'])
+            ->select('id', 'name', 'slug')
             ->limit(24)
             ->get();
 
@@ -34,7 +36,8 @@ class ProductController extends Controller
     {
         $products = Product::where('status', 1)
             ->where('name', 'LIKE', "%{$keyword}%")
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -48,7 +51,7 @@ class ProductController extends Controller
     public function productDetails($slug)
     {
         $products = Product::where(['slug' => $slug, 'status' => 1])
-            ->with(['productcolors', 'productvariants', 'category', 'vendor', 'reviews'])
+            ->with(['productcolors', 'productvariants', 'vendor', 'reviews'])
             ->firstOrFail();
 
         return $this->success(
@@ -64,7 +67,8 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 1)
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'category_id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -80,42 +84,191 @@ class ProductController extends Controller
         $brand = Brand::where('slug', $slug)->where('status', 1)->firstOrFail();
 
         $products = Product::where(['status' => 1, 'brand_id' => $brand->id])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'brand_id', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->paginate(24);
 
-        return $this->success(
-            message: 'brand Products',
-            data: $products
-        );
+        return response()->json([
+            'status' => true,
+            'massage' => 'Brand wise product',
+            'brand' => $brand,
+            'data' => $products
+        ]);
     }
-    public function categoryProducts($slug)
+    public function categoryProducts(Request $request, $slug)
     {
-        $category = Category::where('slug', $slug)->where('status', 1)->firstOrFail();
+        $category = Category::where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
 
-        $products = Product::where(['status' => 1, 'category_id' => $category->id])
-            ->with(['productcolors', 'productvariants'])
-            ->orderBy('id', 'DESC')
-            ->paginate(24);
+        $products = Product::query();
 
-        return $this->success(
-            message: 'Category Products',
-            data: $products
-        );
+        $products->where('products.status', 1)
+            ->where('products.category_id', $category->id)
+
+            ->leftJoin('productvariants', 'products.id', '=', 'productvariants.product_id')
+
+            ->with('firstVariant')
+
+            ->distinct()
+
+            ->select(
+                'products.id',
+                'products.category_id',
+                'products.name',
+                'products.slug',
+                'products.thumbnail_img',
+                'products.tag_names',
+                'products.created_at'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tag Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('tags')) {
+
+            $products->where(function ($query) use ($request) {
+
+                foreach ($request->tags as $tag) {
+                    $query->orWhereJsonContains('products.tag_names', $tag);
+                }
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        switch ($request->filter) {
+
+            case 'price_asc':
+                $products->orderBy('productvariants.sale_price', 'ASC');
+                break;
+
+            case 'price_desc':
+                $products->orderBy('productvariants.sale_price', 'DESC');
+                break;
+
+            case 'newest':
+                $products->orderBy('products.created_at', 'DESC');
+                break;
+
+            case 'oldest':
+                $products->orderBy('products.created_at', 'ASC');
+                break;
+
+            default:
+                $products->orderBy('products.id', 'DESC');
+                break;
+        }
+
+        $products = $products->paginate(24);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Category wise products',
+            'category' => $category,
+            'data' => $products
+        ]);
     }
 
-    public function subcategoryProducts($slug)
+    public function subcategoryProducts(Request $request, $slug)
     {
-        $category = Subcategory::where('slug', $slug)->where('status', 1)->firstOrFail();
-        $products = Product::where(['status' => 1, 'subcategory_id' => $category->id])
-            ->with(['productcolors', 'productvariants'])
-            ->orderBy('id', 'DESC')
-            ->paginate(24);
+        // Subcategory Find
+        $subcategory = Subcategory::where('slug', $slug)
+            ->where('status', 1)
+            ->firstOrFail();
 
-        return $this->success(
-            message: 'Sub Category Products',
-            data: $products
-        );
+        // Product Query
+        $products = Product::query();
+
+        $products->where('products.status', 1)
+            ->where('products.subcategory_id', $subcategory->id)
+
+            // Variant Join
+            ->leftJoin('productvariants', 'products.id', '=', 'productvariants.product_id')
+
+            // Relation Load
+            ->with('firstVariant')
+
+            // Remove Duplicate
+            ->distinct()
+
+            ->select(
+                'products.id',
+                'products.subcategory_id',
+                'products.category_id',
+                'products.branch_id',
+                'products.name',
+                'products.slug',
+                'products.thumbnail_img',
+                'products.tag_names',
+                'products.created_at'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tag Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('tags')) {
+
+            $products->where(function ($query) use ($request) {
+
+                foreach ($request->tags as $tag) {
+                    $query->orWhereJsonContains('products.tag_names', $tag);
+                }
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting Filter
+        |--------------------------------------------------------------------------
+        */
+
+        switch ($request->filter) {
+
+            case 'price_asc':
+                $products->orderBy('productvariants.sale_price', 'ASC');
+                break;
+
+            case 'price_desc':
+                $products->orderBy('productvariants.sale_price', 'DESC');
+                break;
+
+            case 'newest':
+                $products->orderBy('products.created_at', 'DESC');
+                break;
+
+            case 'oldest':
+                $products->orderBy('products.created_at', 'ASC');
+                break;
+
+            default:
+                $products->orderBy('products.id', 'DESC');
+                break;
+        }
+
+        // Pagination
+        $products = $products->paginate(24);
+
+        // Response
+        return response()->json([
+            'status' => true,
+            'message' => 'subcategory wise product',
+            'subcategory' => $subcategory,
+            'data' => $products
+        ]);
     }
 
     public function childcategoryProducts($slug)
@@ -135,7 +288,8 @@ class ProductController extends Controller
     public function flashSale()
     {
         $products = Product::where(['status' => 1, 'product_type_id' => 1])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -149,7 +303,8 @@ class ProductController extends Controller
     public function dailyDeals()
     {
         $products = Product::where(['status' => 1, 'product_type_id' => 2])
-            ->with(['productcolors', 'productvariants'])
+            ->with(['firstvariant'])
+            ->select('id', 'name', 'slug', 'thumbnail_img')
             ->orderBy('id', 'DESC')
             ->limit(24)
             ->get();
@@ -157,6 +312,16 @@ class ProductController extends Controller
         return $this->success(
             message: 'Daily deals products',
             data: $products
+        );
+    }
+
+    public function productTags()
+    {
+        $tags = ProductTag::where('status', 1)->get();
+
+        return $this->success(
+            message: 'Product Tags',
+            data: $tags
         );
     }
 }

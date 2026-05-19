@@ -136,7 +136,8 @@ class ReviewController extends Controller
         }
     }
 
-    public function vendorReview(){
+    public function vendorReview()
+    {
         $reviews = Review::where('vendor_id', auth()->guard('vendor')->user()->id)->where('status', 'approve')->latest()->get();
 
         return view('vendor.pages.review.index', compact('reviews'));
@@ -156,6 +157,25 @@ class ReviewController extends Controller
         $review->save();
 
         return redirect('vendor/review')->with('message', 'Review updated successfully');
+    }
+
+    public function myReview()
+    {
+        $user_id = auth()->user()->id;
+
+        $reviews = Review::where('user_id', $user_id)
+            ->with([
+                'product' => function ($q) {
+                    $q->select('id', 'name', 'slug', 'thumbnail_img');
+                }
+            ])
+            ->get();
+        return response()->json([
+                'status' => 'success',
+                'message' => 'My Review',
+                'data' => $reviews,
+            ], 201);
+
     }
 
 

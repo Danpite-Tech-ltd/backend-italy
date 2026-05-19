@@ -107,6 +107,10 @@
                             <label for="image" class="col-form-label">Image</label>
                             <input type="file" class="form-control" name="image" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="banner_image" class="col-form-label">Banner Image</label>
+                            <input type="file" class="form-control" name="banner_image" required>
+                        </div>
 
                         <div class="mb-3">
                             <label for="status" class="col-form-label">Status</label>
@@ -196,6 +200,13 @@
                             <label for="image" class="col-form-label">Image</label>
                             <input type="file" class="form-control" name="image">
                             <div id="imgPrev">
+
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="banner_image" class="col-form-label">Banner Image</label>
+                            <input type="file" class="form-control" name="banner_image">
+                            <div id="bannerimgPrev">
 
                             </div>
                         </div>
@@ -446,9 +457,14 @@
                                 `<img id="profileImg" src="{{asset('')}}${res.data.image}" width="100px" height="100px">`
                             );
 
+                            $('#bannerimgPrev').empty();
+                            $('#bannerimgPrev').append(
+                                `<img id="profileImg" src="{{asset('')}}${res.data.banner_image}" width="200px" height="100px">`
+                            );
+
                             $('#metaImgPrev').empty();
                             $('#metaImgPrev').append(
-                                `<img id="profileImg" src="{{asset('')}}${res.data.image}" width="100px" height="100px">`
+                                `<img id="profileImg" src="{{asset('')}}${res.data.meta_image}" width="100px" height="100px">`
                             );
 
 

@@ -43,12 +43,19 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/user-profile', [DashboardController::class, 'userProfile']);
     Route::post('/profile-update', [AuthController::class, 'profileUpdate']);
     Route::post('/user-update-password', [AuthController::class, 'userUpdatePassword']);
+    Route::get('/order-status', [DashboardController::class, 'orderStatus']);
+    Route::get('/orders', [DashboardController::class, 'orders']);
+    Route::get('/order-details/{invoiceID}', [DashboardController::class, 'orderDetails']);
+
 
     // vendor review and rating
     Route::post('/vendor-review', [VendorController::class, 'vendor_review_submit']);
 
     // product review
     Route::post('/review', [ReviewController::class, 'store']);
+
+    // my review
+    Route::get('/my-reviews', [ReviewController::class, 'myReview']);
 
     // wishlist
     Route::get('/wishlist', [WishlistController::class, 'index']);
@@ -95,6 +102,7 @@ Route::name('api.')->group(function () {
     Route::get('/flash-sale', [ProductController::class, 'flashSale']);
     Route::get('/daily-deals', [ProductController::class, 'dailyDeals']);
     Route::get('/brand-products/{slug}', [ProductController::class, 'brandProducts']);
+    Route::get('/product-tags', [ProductController::class, 'productTags']);
 
     // branch
     Route::get('/branch', [FrontendController::class, 'branch']);
@@ -109,4 +117,7 @@ Route::name('api.')->group(function () {
     // vat & tax
     Route::get('/vat', [CheckoutController::class, 'vat']);
     Route::get('/tax', [CheckoutController::class, 'tax']);
+
+    // pages
+    Route::get('customer-support', [FrontendController::class, 'customerSupport']);
 });
