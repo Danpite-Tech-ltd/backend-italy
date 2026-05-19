@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\StripePaymentController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Api\WishlistController;
@@ -114,6 +115,8 @@ Route::name('api.')->group(function () {
     Route::get('/vendor-store/{id}', [VendorController::class, 'vendor_store']);
     Route::get('/vendor-review/{id}', [VendorController::class, 'vendor_review']);
 
+    // stripe payment gateway
+    Route::get('/stripe-payment', [StripePaymentController::class, 'stripePayment']);
     // vat & tax
     Route::get('/vat', [CheckoutController::class, 'vat']);
     Route::get('/tax', [CheckoutController::class, 'tax']);

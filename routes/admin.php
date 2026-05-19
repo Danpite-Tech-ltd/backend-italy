@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\SalesReportController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SmsGatewayController;
+use App\Http\Controllers\Admin\StripePaymentController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\TagController;
