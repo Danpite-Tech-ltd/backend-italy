@@ -1,22 +1,25 @@
 @extends('admin.layout.app')
 @section('title','Ticket Manage')
 
-
+@push('css')
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+@endpush
 @section('content')
 <div class="container-fluid">
-    
+
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                   
+
                 </div>
                 <h4 class="page-title">Ticket Manage</h4>
             </div>
         </div>
-    </div>       
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
    <div class="row">
     <div class="col-12">
         <div class="card">
@@ -33,8 +36,8 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                
-                
+
+
                     <tbody>
                         @foreach($show_data as $key=>$value)
                         <tr>
@@ -47,15 +50,15 @@
                             <td>
                                 <div class="button-list">
                                     @if($value->status == 1)
-                                        <form method="post" action="{{route('admin.ticket.inactive')}}" class="d-inline"> 
+                                        <form method="post" action="{{route('admin.ticket.inactive')}}" class="d-inline">
                                         @csrf
-                                            <input type="hidden" value="{{$value->id}}" name="hidden_id">       
+                                            <input type="hidden" value="{{$value->id}}" name="hidden_id">
                                             <button type="submit" class="btn btn-xs  btn-secondary waves-effect waves-light change-confirm"><i style="font-size:14px;" class="fa-solid fa-thumbs-down"></i></button>
                                         </form>
                                     @else
                                         <form method="post" action="{{route('admin.ticket.active')}}" class="d-inline">
                                             @csrf
-                                            <input type="hidden" value="{{$value->id}}" name="hidden_id">        
+                                            <input type="hidden" value="{{$value->id}}" name="hidden_id">
                                             <button type="submit" class="btn btn-xs  btn-success waves-effect waves-light change-confirm"><i style="font-size:14px;" class="fa-solid fa-thumbs-up"></i></button>
                                         </form>
                                     @endif
@@ -66,10 +69,27 @@
                         @endforeach
                     </tbody>
                 </table>
- 
+
             </div> <!-- end card body-->
         </div> <!-- end card -->
     </div><!-- end col-->
    </div>
 </div>
 @endsection
+
+@push('js')
+<!-- DataTables Core (1.13.8) -->
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#datatable-buttons').DataTable({
+                responsive: true,
+                pageLength: 10,
+                ordering: true,
+                searching: true,
+                lengthMenu: [10, 25, 50, 100]
+            });
+        });
+    </script>
+@endpush
