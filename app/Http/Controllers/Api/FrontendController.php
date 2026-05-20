@@ -15,6 +15,7 @@ use App\Models\Banner;
 use App\Models\Subcategory;
 use App\Models\Tag;
 use App\Models\Brand;
+use App\Models\Blog;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Trait\ApiResponse;
@@ -160,6 +161,15 @@ class FrontendController extends Controller
         return $this->success(
             message: 'Order Track data.',
             data: $order
+        );
+    }
+
+    public function blogs(){
+        $blogs = Blog::where('status', 1)->get();
+
+        return $this->success(
+            message: 'Blogs data.',
+            data: $blogs
         );
     }
 
