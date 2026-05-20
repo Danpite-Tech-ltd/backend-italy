@@ -116,11 +116,11 @@ Route::name('api.')->group(function () {
     Route::get('/vendor-review/{id}', [VendorController::class, 'vendor_review']);
 
     // stripe payment gateway
-    Route::get('/stripe-payment', [StripePaymentController::class, 'stripePayment']);
+    Route::post('/stripe-payment', [StripePaymentController::class, 'stripePayment']);
     // vat & tax
     Route::get('/vat', [CheckoutController::class, 'vat']);
     Route::get('/tax', [CheckoutController::class, 'tax']);
 
-    // pages
-    Route::get('customer-support', [FrontendController::class, 'customerSupport']);
+    // blog
+    Route::get('/blogs', [FrontendController::class, 'blogs']);
 });
