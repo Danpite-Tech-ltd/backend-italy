@@ -152,16 +152,16 @@ class ProductController extends Controller
                 $products->orderBy('productvariants.sale_price', 'ASC');
                 break;
 
-            case 'price_desc':
+            case 'price_dsc':
                 $products->orderBy('productvariants.sale_price', 'DESC');
                 break;
 
             case 'newest':
-                $products->orderBy('products.created_at', 'DESC');
+                $products->orderBy('products.id', 'DESC');
                 break;
 
             case 'oldest':
-                $products->orderBy('products.created_at', 'ASC');
+                $products->orderBy('products.id', 'ASC');
                 break;
 
             default:
@@ -242,16 +242,16 @@ class ProductController extends Controller
                 $products->orderBy('productvariants.sale_price', 'ASC');
                 break;
 
-            case 'price_desc':
+            case 'price_dsc':
                 $products->orderBy('productvariants.sale_price', 'DESC');
                 break;
 
             case 'newest':
-                $products->orderBy('products.created_at', 'DESC');
+                $products->orderBy('products.id', 'DESC');
                 break;
 
             case 'oldest':
-                $products->orderBy('products.created_at', 'ASC');
+                $products->orderBy('products.id', 'ASC');
                 break;
 
             default:

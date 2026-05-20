@@ -32,7 +32,7 @@ class StripePaymentController extends Controller
             $charge = Charge::create([
                 'source' => $request->stripeToken,
                 'amount' => $request->amount * 100,
-                'currency' => 'usd',
+                'currency' => 'eur',
                 'description' => 'Product Payment',
             ]);
 
