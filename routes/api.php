@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\StripePaymentController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\CompareController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,11 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/store', [WishlistController::class, 'store']);
     Route::post('/wishlist/remove', [WishlistController::class, 'delete']);
+
+    // Compare
+    Route::get('/compare', [CompareController::class, 'index']);
+    Route::post('/compare/store', [CompareController::class, 'store']);
+    Route::post('/compare/remove', [CompareController::class, 'destroy']);
 });
 
 Route::name('api.')->group(function () {
