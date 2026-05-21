@@ -10,7 +10,7 @@ class Compare extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'category_id')->select('id', 'name', 'slug', 'thumbnail_img');
+        return $this->hasMany(Product::class, 'id', 'product_id')->select('id', 'name', 'slug', 'thumbnail_img');
     }
 
 }

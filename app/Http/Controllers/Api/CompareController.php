@@ -60,8 +60,16 @@ class CompareController extends Controller
         ]);
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
-        
+        $user_id = auth()->user()->id;
+
+        $compare = Compare::where('user_id', $user_id)->where('product_id', $request->product_id)->firstOrFail();
+        $compare->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => "Data delete successfully."
+        ]);
     }
 }
