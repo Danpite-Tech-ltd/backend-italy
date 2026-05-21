@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\SocialiteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
@@ -88,6 +89,9 @@ Route::get('image-upload', [ImageController::class, 'index']);
 Route::post('image-upload', [ImageController::class, 'store'])->name('image.store');
 
 Route::resource('/cart', CartController::class)->names('cart')->middleware(['auth', 'verified']);
+
+Route::get('/api/google/redirect',[SocialiteController::class,'google_redirect']);
+Route::get('/api/google/callback',[SocialiteController::class,'google_callback']);
 
 
 //Route::middleware('auth')->group(function () {

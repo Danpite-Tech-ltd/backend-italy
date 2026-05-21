@@ -125,6 +125,4 @@ Route::name('api.')->group(function () {
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
 
-    Route::get('/google/redirect',[SocialiteController::class,'google_redirect'])->name('google.redirect');
-    Route::get('/google/callback',[SocialiteController::class,'google_callback'])->name('google.callback');
 });
