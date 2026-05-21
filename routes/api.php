@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\SocialiteController;
 use App\Http\Controllers\Api\StripePaymentController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\ReviewController;
@@ -123,4 +124,7 @@ Route::name('api.')->group(function () {
 
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
+
+    Route::get('/google/redirect',[SocialiteController::class,'google_redirect'])->name('google.redirect');
+    Route::get('/google/callback',[SocialiteController::class,'google_callback'])->name('google.callback');
 });
