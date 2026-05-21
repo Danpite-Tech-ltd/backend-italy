@@ -32,18 +32,33 @@ class ProductController extends Controller
         );
     }
 
-    public function searchProduct($keyword)
+    public function searchProduct(Request $request)
     {
-        $products = Product::where('status', 1)
-            ->where('name', 'LIKE', "%{$keyword}%")
-            ->with(['firstvariant'])
-            ->select('id', 'name', 'slug', 'thumbnail_img')
-            ->orderBy('id', 'DESC')
-            ->limit(24)
+        $keyword = trim($request->keyword);
+
+        if (strlen($keyword) < 2) {
+            return $this->success(
+                message: 'Type minimum 2 characters',
+                data: []
+            );
+        }
+
+        $products = Product::query()
+            ->where('status', 1)
+            ->where('name', 'LIKE', '%' . $keyword . '%')
+            ->with('firstvariant')
+            ->select(
+                'id',
+                'name',
+                'slug',
+                'thumbnail_img'
+            )
+            ->latest('id')
+            ->take(12)
             ->get();
 
         return $this->success(
-            message: 'Search result for "' . $keyword . '"',
+            message: 'Search result',
             data: $products
         );
     }
