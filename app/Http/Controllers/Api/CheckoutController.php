@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
@@ -119,6 +120,41 @@ class CheckoutController extends Controller
     //         ], 500);
     //     }
     // }
+
+    public function applyCoupon(Request $request)
+    {
+        $coupon = $request->coupon_name;
+
+        $pack = Coupon::where('status',1)->where('code', $coupon)->first();
+
+        // Check if coupon exists
+        if (!$pack) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Coupon'
+            ]);
+        }
+
+        // Check expiration
+        if ($pack->expire_date < $pack->active_date) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Expired Coupon'
+            ]);
+        }
+
+        // Prepare response
+        $discount = $pack->discount;
+        $type = $pack->type == 1 ? 'flat' : 'percentage';
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon Added Successfully.',
+            'discount' => $discount,
+            'type' => $type,
+            'coupon' => $pack
+        ]);
+    }
 
     public function orderPlace(Request $request)
     {

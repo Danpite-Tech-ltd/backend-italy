@@ -281,11 +281,11 @@
                                 href="{{ route('admin.coupon.index') }}">Coupon</a></li>
                     @endcan
 
-                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.discount.index') active @endif"
+                    {{-- <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.discount.index') active @endif"
                             href="{{ route('admin.discount.index') }}">Discounts</a></li>
 
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.voucher.index') active @endif"
-                            href="{{ route('admin.voucher.index') }}">Vouchers</a></li>
+                            href="{{ route('admin.voucher.index') }}">Vouchers</a></li> --}}
 
                 </ul>
             </div>

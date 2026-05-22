@@ -128,6 +128,9 @@ Route::name('api.')->group(function () {
     Route::get('/vat', [CheckoutController::class, 'vat']);
     Route::get('/tax', [CheckoutController::class, 'tax']);
 
+    // coupon
+    Route::get('/apply/coupon', [CheckoutController::class, 'applyCoupon']);
+
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
 
