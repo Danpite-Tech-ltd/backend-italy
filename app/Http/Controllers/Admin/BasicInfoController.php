@@ -56,6 +56,7 @@ class BasicInfoController extends Controller implements HasMiddleware
         $basicInfo->skype_link = $request->skype_link;
         $basicInfo->about_text = $request->about_text;
         $basicInfo->copyright_text = $request->copyright_text;
+        $basicInfo->website_url = $request->website_url;
 
         $basicInfo->product_sku_prefix = $request->product_sku_prefix;
         $basicInfo->order_invoice_prefix = $request->order_invoice_prefix;
@@ -159,6 +160,7 @@ class BasicInfoController extends Controller implements HasMiddleware
         $basicInfo->meta_keywords = $request->meta_keyword;
         $basicInfo->opening_hours_text = $request->opening_hours_text;
         $basicInfo->google_schema = $request->google_schema;
+        $basicInfo->website_url = $request->website_url;
 
 
         $basicInfo->popups_link = $request->popups_link;

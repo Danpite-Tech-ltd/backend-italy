@@ -176,6 +176,11 @@
                                                 </div>
 
                                                 <div class="mb-3">
+                                                    <label for="website_url" class="form-label">Website Url</label>
+                                                    <textarea id="website_url" name="website_url"
+                                                              class="form-control">{{$basicInfo->website_url ?? ''}}</textarea>
+                                                </div>
+                                                <div class="mb-3">
                                                     <label for="copyright_text" class="form-label">Copyright Text</label>
                                                     <textarea id="copyright_text" name="copyright_text"
                                                               class="form-control">{{$basicInfo->copyright_text ?? ''}}</textarea>

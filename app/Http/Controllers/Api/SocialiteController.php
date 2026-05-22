@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BasicInfo;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -14,8 +15,8 @@ class SocialiteController extends Controller
     public function google_redirect()
     {
         return Socialite::driver('google')
-        ->stateless()
-        ->redirect();
+            ->stateless()
+            ->redirect();
     }
 
     public function google_callback()
@@ -26,19 +27,29 @@ class SocialiteController extends Controller
 
             // Email check
             $user = User::where('email', $googleUser->email)->first();
+
+            // Existing User Login
             if ($user) {
 
                 $token = $user->createToken('authToken')->plainTextToken;
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Login successful!',
-                    'token' => $token,
-                    'user' => $user,
-                ], 200);
+                $userData = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'slug' => $user->slug,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'status' => $user->status,
+                ];
+
+                return redirect()->to(
+                    'http://localhost:3000/auth/google/callback?' .
+                        'token=' . urlencode($token) .
+                        '&user=' . urlencode(json_encode($userData))
+                );
             }
 
-            // if not registration
+            // New Registration
             DB::beginTransaction();
 
             $user = new User();
@@ -47,31 +58,39 @@ class SocialiteController extends Controller
             $user->email = $googleUser->email;
             $user->phone = null;
 
-            // random password
+            // Random password
             $user->password = bcrypt(Str::random(16));
             $user->status = 1;
 
             $user->save();
 
             $token = $user->createToken('authToken')->plainTextToken;
+            $url = BasicInfo::first()->website_url;
 
             DB::commit();
 
-            return response()->json([
-                'status' => true,
-                'message' => 'User registered & login successful!',
-                'token' => $token,
-                'user' => $user,
-            ], 201);
+            $userData = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'slug' => $user->slug,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'status' => $user->status,
+            ];
+
+            return redirect()->to(
+                $url.'/auth/google/callback?' .
+                    'token=' . urlencode($token) .
+                    '&user=' . urlencode(json_encode($userData))
+            );
         } catch (\Exception $e) {
 
             DB::rollBack();
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Google login failed!',
-                'error' => $e->getMessage(),
-            ], 500);
+            return redirect()->to(
+                $url.'/auth/google/callback?' .
+                    'error=' . urlencode($e->getMessage())
+            );
         }
     }
 }
