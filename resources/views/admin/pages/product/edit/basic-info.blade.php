@@ -307,7 +307,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-4 col-md-6">
+                            <div class="col-sm-4">
                                 <div class="form-group mb-3">
                                     <label for="product_type_id" class="form-label">Product Type</label>
                                     <select class="form-control" id="product_type_id" name="product_type_id">
@@ -321,11 +321,19 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="form-group mb-3">
                                     <label for="product_type_id" class="form-label">Affiliate Commission </label>
                                     <input type="number" class="form-control" name="affiliate_commission"
                                         value="{{ old('affiliate_commission', $product->affiliate_commission ?? 0) }}">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group mb-3">
+                                    <label for="product_type_id" class="form-label">Reward Point </label>
+                                    <input type="number" class="form-control" name="reward_point"
+                                        value="{{ old('reward_point', $product->reward_point ?? 0) }}">
                                 </div>
                             </div>
 
