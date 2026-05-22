@@ -123,7 +123,7 @@ class CheckoutController extends Controller
 
     public function applyCoupon(Request $request)
     {
-        $coupon = $request->coupon_name;
+        $coupon = $request->coupon_code;
 
         $pack = Coupon::where('status',1)->where('code', $coupon)->first();
 
