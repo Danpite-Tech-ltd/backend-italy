@@ -181,6 +181,11 @@
                                                               class="form-control">{{$basicInfo->website_url ?? ''}}</textarea>
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label for="per_reward_point_price" class="form-label">Per Reward Point Price</label>
+                                                    <textarea id="per_reward_point_price" name="per_reward_point_price"
+                                                              class="form-control">{{$basicInfo->per_reward_point_price ?? ''}}</textarea>
+                                                </div>
+                                                <div class="mb-3">
                                                     <label for="copyright_text" class="form-label">Copyright Text</label>
                                                     <textarea id="copyright_text" name="copyright_text"
                                                               class="form-control">{{$basicInfo->copyright_text ?? ''}}</textarea>

@@ -57,6 +57,7 @@ class BasicInfoController extends Controller implements HasMiddleware
         $basicInfo->about_text = $request->about_text;
         $basicInfo->copyright_text = $request->copyright_text;
         $basicInfo->website_url = $request->website_url;
+        $basicInfo->per_reward_point_price = $request->per_reward_point_price ?? 0;
 
         $basicInfo->product_sku_prefix = $request->product_sku_prefix;
         $basicInfo->order_invoice_prefix = $request->order_invoice_prefix;
