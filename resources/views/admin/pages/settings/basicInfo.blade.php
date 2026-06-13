@@ -182,8 +182,8 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="per_reward_point_price" class="form-label">Per Reward Point Price</label>
-                                                    <textarea id="per_reward_point_price" name="per_reward_point_price"
-                                                              class="form-control">{{$basicInfo->per_reward_point_price ?? ''}}</textarea>
+                                                    <input type="text" id="per_reward_point_price" name="per_reward_point_price"
+                                                              class="form-control" value="{{$basicInfo->per_reward_point_price ?? ''}}">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="copyright_text" class="form-label">Copyright Text</label>
