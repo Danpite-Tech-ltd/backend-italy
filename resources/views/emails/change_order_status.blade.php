@@ -154,7 +154,7 @@
                 </p>
 
                 <p style="margin-top: 25px; margin-bottom: 0; font-size: 15px; color: #1f2937;">
-                    Warm regards,<br>
+                    Best regards,<br>
                     <strong>The {{ config('app.name') }} Team</strong>
                 </p>
             </td>
