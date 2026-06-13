@@ -370,4 +370,14 @@ class CheckoutController extends Controller
         ]);
     }
 
+    public function couponList()
+    {
+        $coupons = Coupon::where('status', 1)->where('expire_date', '>=', now())->where('active_date', '<=', now())->get();
+
+        return $this->success(
+            message: 'All active coupons.',
+            data: $coupons
+        );
+    }
+
 }
