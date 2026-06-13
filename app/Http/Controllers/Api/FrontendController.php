@@ -17,6 +17,7 @@ use App\Models\Tag;
 use App\Models\Brand;
 use App\Models\Blog;
 use App\Models\Branch;
+use App\Models\CustomerNotification;
 use Illuminate\Http\Request;
 use App\Trait\ApiResponse;
 
@@ -187,6 +188,15 @@ class FrontendController extends Controller
         return $this->success(
             message: 'Blog details data.',
             data: $blogs
+        );
+    }
+    public function customerNotification()
+    {
+        $notify = CustomerNotification::where('user_id',Auth::id())->paginate(12);
+
+        return $this->success(
+            message: 'Customer Notification',
+            data: $notify
         );
     }
 }
