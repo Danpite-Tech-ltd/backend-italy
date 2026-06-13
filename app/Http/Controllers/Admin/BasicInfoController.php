@@ -140,6 +140,7 @@ class BasicInfoController extends Controller implements HasMiddleware
      */
     public function update(Request $request)
     {
+        // dd($request->all());
         $basicInfo = BasicInfo::first();
 
         $basicInfo->site_name = $request->site_name;
@@ -162,6 +163,7 @@ class BasicInfoController extends Controller implements HasMiddleware
         $basicInfo->opening_hours_text = $request->opening_hours_text;
         $basicInfo->google_schema = $request->google_schema;
         $basicInfo->website_url = $request->website_url;
+        $basicInfo->per_reward_point_price = $request->per_reward_point_price ?? 0;
 
 
         $basicInfo->popups_link = $request->popups_link;

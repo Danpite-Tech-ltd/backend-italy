@@ -430,10 +430,10 @@ class OrderController extends Controller implements HasMiddleware
             }
             // reward point
             // add reward points to customer
-            $customer = Customer::find($order->customer_id);
-            if ($customer) {
-                $customer->reward_point += $order->reward_point;
-                $customer->save();
+            $user = User::find($order->user_id);
+            if ($user) {
+                $user->reward_point += $order->reward_point;
+                $user->save();
             }
         }
 
