@@ -57,7 +57,7 @@ class OrderController extends Controller implements HasMiddleware
 
             return DataTables::eloquent($orders)
                 ->addColumn('invoice_info', function ($order) {
-                    return '<span class="text-center badge bg-dark mb-2"><p class="imgcbtn">' . $order->invoiceID . '</p></span>
+                    return '<span class="mb-2 text-center badge bg-dark"><p class="imgcbtn">' . $order->invoiceID . '</p></span>
                             <br>
                             <p>' . $order->created_at->format('d M Y') . '</p>
                             <br>
@@ -72,7 +72,7 @@ class OrderController extends Controller implements HasMiddleware
                     foreach ($order->orderProducts as $product) {
 
                         $productInfo .= '<div class="mb-2">
-                                       <div class="d-flex gap-3">
+                                       <div class="gap-3 d-flex">
                                         <a target="_blank" href="' . route('product-details', $product->slug) . '">
                                             <img src="' . asset($product->thumbnail_img) . '" width="60" height="60">
                                         </a>
@@ -424,6 +424,13 @@ class OrderController extends Controller implements HasMiddleware
                 // vendor balance increment
                 Vendor::where('id', $vendorId)
                     ->increment('balance', $vendorAmount);
+            }
+            // reward point
+            // add reward points to customer
+            $customer = Customer::find($order->customer_id);
+            if ($customer) {
+                $customer->reward_point += $order->reward_point;
+                $customer->save();
             }
         }
 
