@@ -63,7 +63,8 @@ class FrontendController extends Controller
         );
     }
 
-    public function branch(){
+    public function branch()
+    {
         $branc = Branch::where('status', 1)->get();
 
         return $this->success(
@@ -116,7 +117,8 @@ class FrontendController extends Controller
         );
     }
 
-    public function legalPages(){
+    public function legalPages()
+    {
         $pages = Page::where('status', 1)->where('type', 0)->get();
 
         return $this->success(
@@ -126,7 +128,8 @@ class FrontendController extends Controller
     }
 
     // pixel and gtm
-    public function pixel(){
+    public function pixel()
+    {
         $pixel = Pixel::first();
 
         return $this->success(
@@ -135,7 +138,8 @@ class FrontendController extends Controller
         );
     }
 
-    public function gtm(){
+    public function gtm()
+    {
         $gtm = Tag::first();
 
         return $this->success(
@@ -145,7 +149,8 @@ class FrontendController extends Controller
     }
 
     // shipping charge
-    public function shippingCharge(){
+    public function shippingCharge()
+    {
         $shipping = ShippingCharge::all();
 
         return $this->success(
@@ -155,7 +160,8 @@ class FrontendController extends Controller
     }
 
     // order track
-    public function orderTrack($invoice_id){
+    public function orderTrack($invoice_id)
+    {
         $order = Order::where('invoiceID', $invoice_id)->with(['orderProducts', 'customer'])->get();
 
         return $this->success(
@@ -164,8 +170,9 @@ class FrontendController extends Controller
         );
     }
 
-    public function blogs(){
-        $blogs = Blog::where('status', 1)->get();
+    public function blogs()
+    {
+        $blogs = Blog::where('status', 1)->select('id', 'title', 'slug', 'image', 'author', 'author_image', 'published_date', 'short_description', 'status')->paginate(12);
 
         return $this->success(
             message: 'Blogs data.',
@@ -173,5 +180,13 @@ class FrontendController extends Controller
         );
     }
 
+    public function blogDetails($slug)
+    {
+        $blogs = Blog::where('slug', $slug)->first();
 
+        return $this->success(
+            message: 'Blog details data.',
+            data: $blogs
+        );
+    }
 }

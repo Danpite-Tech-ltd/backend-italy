@@ -133,5 +133,6 @@ Route::name('api.')->group(function () {
 
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
+    Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails']);
 
 });
