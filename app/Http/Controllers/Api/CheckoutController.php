@@ -5,23 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderPlace;
 use App\Models\Coupon;
+use App\Models\BasicInfo;
 use App\Models\Customer;
 use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\RefundCancel;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
 use App\Models\Vat;
 use App\Models\Tax;
+use App\Models\User;
 use App\Models\VendorOrder;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use App\Trait\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
@@ -125,6 +129,7 @@ class CheckoutController extends Controller
     // }
 
 
+
     public function orderPlace(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -162,7 +167,7 @@ class CheckoutController extends Controller
 
             /* ================= MAIN ORDER ================= */
             $payment = $request->payment;
-            if($payment == 'cod'){
+            if ($payment == 'cod') {
                 $payment_method = "Cash on Delivery";
             }
             $order = Order::create([
@@ -176,7 +181,7 @@ class CheckoutController extends Controller
                 'order_status_id' => 1,
                 'payment' => $payment,
                 'payment_method' => $payment_method ?? null,
-                 'vat_percentage' => $vat->rate,
+                'vat_percentage' => $vat->rate,
                 'tax_percentage' => $tax->rate,
                 'subtotal' => 0,
                 'total' => 0,
@@ -187,7 +192,7 @@ class CheckoutController extends Controller
             /* ================= GROUP PRODUCTS BY VENDOR ================= */
             $vendorGroups = [];
 
-            $rewardPoints = 0;
+            $userRewardPoints = 0;
 
             foreach ($request->products as $item) {
 
@@ -202,7 +207,7 @@ class CheckoutController extends Controller
 
                 $totalSubtotal += $lineTotal;
 
-                $rewardPoints += $product->reward_point * $item['qty'];
+                $userRewardPoints += $product->reward_point * $item['qty'];
 
                 $vendorGroups[$vendorId][] = [
                     'product' => $product,
@@ -266,7 +271,6 @@ class CheckoutController extends Controller
 
                     if ($coupon->type == 'flat') {
                         $coupon_discount = $coupon->discount;
-
                     } elseif ($coupon->type == 'percentage') {
                         $coupon_discount = ($totalSubtotal * $coupon->discount) / 100;
                     }
@@ -277,6 +281,30 @@ class CheckoutController extends Controller
             $tax_amount = $totalSubtotal * ($tax->rate / 100);
             $total = $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount - $coupon_discount;
 
+            $rewardPoints = User::find(auth()->id())->reward_point ?? 0;
+            $point_price  = BasicInfo::first()->per_reward_point_price ?? 0;
+
+            $pointsUsed  = 0;
+            $pointsValue = 0;
+
+            if ($request->points_redeem == 1 && $point_price > 0) {
+
+                // ইউজারের সব পয়েন্টের সমান টাকার পরিমাণ
+                $pointsValueAvailable = $rewardPoints * $point_price;
+
+                // total-এর বেশি কাটা যাবে না, তাই min() দিয়ে cap
+                $pointsValue = min($pointsValueAvailable, $total);
+
+                // total থেকে এই amount বাদ দেওয়া হলো
+                $total -= $pointsValue;
+
+                // কতটা পয়েন্ট actually use হলো (টাকা থেকে পয়েন্টে কনভার্ট)
+                $pointsUsed = $pointsValue / $point_price;
+            }
+            $user = User::find(auth()->id());
+            $user->reward_point = $rewardPoints - $pointsUsed;
+            $user->save();
+
             $order->update([
                 'vat' => $vat_amount,
                 'tax' => $tax_amount,
@@ -286,7 +314,10 @@ class CheckoutController extends Controller
                 'coupon_type' => $coupon->type ?? '',
                 'coupon_amount' => $coupon->discount ?? 0,
                 'coupon_discount' => $coupon_discount ?? 0,
-                'reward_point' => $rewardPoints ?? 0,
+                'reward_point' => $userRewardPoints ?? 0,
+                'points_amount' => $pointsValue ?? 0,
+                'per_reward_point_price' => $point_price ?? 0,
+                'points_used' => $pointsUsed ?? 0,
             ]);
 
             // email to customer
@@ -307,7 +338,6 @@ class CheckoutController extends Controller
                 'message' => 'Order placed successfully',
                 'invoice_id' => $order->invoiceID,
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -383,4 +413,40 @@ class CheckoutController extends Controller
         ]);
     }
 
+    public function couponList()
+    {
+        $coupons = Coupon::where('status', 1)->where('expire_date', '>=', now())->where('active_date', '<=', now())->get();
+
+        return $this->success(
+            message: 'All active coupons.',
+            data: $coupons
+        );
+    }
+
+    public function refundCancelList()
+    {
+        // $order = Order::where('user_id',Auth::user()->id)->get();
+        $order = Order::where('user_id', 19)->whereIn('order_status_id', ["1", "2"])->get();
+
+        return $this->success(
+            message: 'Order List',
+            data: $order,
+        );
+    }
+
+    public function refundCancelSubmit(Request $request, $order_id)
+    {
+        $order = Order::find($order_id);
+
+        $refundCancel = new RefundCancel();
+        $refundCancel->type = $request->type;
+        $refundCancel->order_id = $order->id;
+        $refundCancel->reason = $request->reason;
+        $refundCancel->save();
+
+        return $this->success(
+            message: 'Refund/Cancel Order Sumit',
+            data: $refundCancel,
+        );
+    }
 }

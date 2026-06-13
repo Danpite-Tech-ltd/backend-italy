@@ -130,7 +130,7 @@ Route::name('api.')->group(function () {
     Route::get('/tax', [CheckoutController::class, 'tax']);
 
     // coupon
-    Route::get('/apply/coupon', [CheckoutController::class, 'applyCoupon']);
+    Route::get('/coupon-list', [CheckoutController::class, 'couponList']);
 
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
@@ -138,5 +138,9 @@ Route::name('api.')->group(function () {
 
     // customer notification
     Route::get('/customer-notification',[FrontendController::class,'customerNotification']);
+
+    // refund & Cancel
+    Route::get('/refund-cancel/list',[CheckoutController::class,'refundCancelList']);
+    Route::post('/refund-cancel/{order_id}',[CheckoutController::class,'refundCancelSubmit']);
 
 });
