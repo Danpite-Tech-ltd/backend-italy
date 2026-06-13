@@ -183,6 +183,8 @@ class CheckoutController extends Controller
             /* ================= GROUP PRODUCTS BY VENDOR ================= */
             $vendorGroups = [];
 
+            $rewardPoints = 0;
+
             foreach ($request->products as $item) {
 
                 $product = Product::findOrFail($item['id']);
@@ -195,6 +197,8 @@ class CheckoutController extends Controller
                 $lineTotal = $price * $item['qty'];
 
                 $totalSubtotal += $lineTotal;
+
+                $rewardPoints += $product->reward_point * $item['qty'];
 
                 $vendorGroups[$vendorId][] = [
                     'product' => $product,
@@ -278,6 +282,7 @@ class CheckoutController extends Controller
                 'coupon_type' => $coupon->type ?? '',
                 'coupon_amount' => $coupon->discount ?? 0,
                 'coupon_discount' => $coupon_discount ?? 0,
+                'reward_point' => $rewardPoints ?? 0,
             ]);
 
             DB::commit();
