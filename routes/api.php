@@ -70,6 +70,13 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/compare', [CompareController::class, 'index']);
     Route::post('/compare/store', [CompareController::class, 'store']);
     Route::post('/compare/remove', [CompareController::class, 'destroy']);
+
+    // customer notification
+    Route::get('/customer-notification',[FrontendController::class,'customerNotification']);
+
+    // refund & Cancel
+    Route::get('/refund-cancel/list',[CheckoutController::class,'refundCancelList']);
+    Route::post('/refund-cancel/{order_id}',[CheckoutController::class,'refundCancelSubmit']);
 });
 
 Route::name('api.')->group(function () {
@@ -135,12 +142,4 @@ Route::name('api.')->group(function () {
     // blog
     Route::get('/blogs', [FrontendController::class, 'blogs']);
     Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails']);
-
-    // customer notification
-    Route::get('/customer-notification',[FrontendController::class,'customerNotification']);
-
-    // refund & Cancel
-    Route::get('/refund-cancel/list',[CheckoutController::class,'refundCancelList']);
-    Route::post('/refund-cancel/{order_id}',[CheckoutController::class,'refundCancelSubmit']);
-
 });

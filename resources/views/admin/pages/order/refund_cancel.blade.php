@@ -99,10 +99,32 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $order->type }}</td>
-                                        <td>{{ $order->order_id }}</td>
+                                        <td>
+                                            @php
+                                                $mainOrder = App\Models\Order::find($order->order_id);
+                                            @endphp
+
+                                            @if($mainOrder)
+                                                <div class="order-info">
+                                                    <span class="mb-1 d-block fw-bold text-primary">
+                                                        <i class="fa fa-hashtag"></i> {{ $mainOrder->invoiceID }}
+                                                    </span>
+
+                                                    <span class="my-2 fs-6 d-block text-dark fw-medium small">
+                                                        <strong>Total:</strong> {{ number_format($mainOrder->total, 2) }}
+                                                    </span>
+
+                                                    <span class="d-block text-muted style" style="font-size: 12px;">
+                                                        <i class="fa fa-calendar-alt"></i>
+                                                        {{ date('d M, Y', strtotime($mainOrder->order_date)) }}
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <span class="text-danger small">Order Not Found</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $order->reason }}</td>
                                         <td>
-                                            {{-- 🛠 এখানে id="status-badge-..." যুক্ত করা হয়েছে --}}
                                             @if ($order->status == 0)
                                                 <span class="badge bg-danger" id="status-badge-{{ $order->id }}">Pending</span>
                                             @else
@@ -186,65 +208,65 @@
         });
     </script>
     <script>
-    function changeOrderStatus(orderId, currentStatus) {
-        let textMessage = currentStatus == 0
-            ? "Do you want to mark this request as Complete?"
-            : "Do you want to revert this request back to Pending?";
+        function changeOrderStatus(orderId, currentStatus) {
+            let textMessage = currentStatus == 0
+                ? "Do you want to mark this request as Complete?"
+                : "Do you want to revert this request back to Pending?";
 
-        let confirmBtnText = currentStatus == 0 ? "Yes, Complete it!" : "Yes, set Pending!";
+            let confirmBtnText = currentStatus == 0 ? "Yes, Complete it!" : "Yes, set Pending!";
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: textMessage,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: currentStatus == 0 ? '#198754' : '#ffc107',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: confirmBtnText
-        }).then((result) => {
-            if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: textMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: currentStatus == 0 ? '#198754' : '#ffc107',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: confirmBtnText
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-                $.ajax({
-                    url: "{{ url('/admin/refund-order/toggle-status') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: orderId
-                    },
-                    success: function (response) {
-                        if (response.status) {
-                            Swal.fire(
-                                'Updated!',
-                                response.message,
-                                'success'
-                            );
+                    $.ajax({
+                        url: "{{ url('/admin/refund-order/toggle-status') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            id: orderId
+                        },
+                        success: function (response) {
+                            if (response.status) {
+                                Swal.fire(
+                                    'Updated!',
+                                    response.message,
+                                    'success'
+                                );
 
-                            let badge = $('#status-badge-' + orderId);
-                            let button = $('#status-btn-' + orderId);
+                                let badge = $('#status-badge-' + orderId);
+                                let button = $('#status-btn-' + orderId);
 
-                            if (response.new_status == 1) {
-                                badge.removeClass('bg-danger').addClass('bg-success').text('Complete');
-                                button.removeClass('btn-success').addClass('btn-warning')
-                                      .html('<i class="fa fa-undo"></i> Mark Pending');
-                                button.attr('onclick', 'changeOrderStatus(' + orderId + ', 1)');
-                            } else {
-                                badge.removeClass('bg-success').addClass('bg-danger').text('Pending');
-                                button.removeClass('btn-warning').addClass('btn-success')
-                                      .html('<i class="fa fa-check"></i> Mark Complete');
-                                button.attr('onclick', 'changeOrderStatus(' + orderId + ', 0)');
+                                if (response.new_status == 1) {
+                                    badge.removeClass('bg-danger').addClass('bg-success').text('Complete');
+                                    button.removeClass('btn-success').addClass('btn-warning')
+                                        .html('<i class="fa fa-undo"></i> Mark Pending');
+                                    button.attr('onclick', 'changeOrderStatus(' + orderId + ', 1)');
+                                } else {
+                                    badge.removeClass('bg-success').addClass('bg-danger').text('Pending');
+                                    button.removeClass('btn-warning').addClass('btn-success')
+                                        .html('<i class="fa fa-check"></i> Mark Complete');
+                                    button.attr('onclick', 'changeOrderStatus(' + orderId + ', 0)');
+                                }
                             }
+                        },
+                        error: function (xhr) {
+                            Swal.fire(
+                                'Failed!',
+                                'Something went wrong. Please try again.',
+                                'error'
+                            );
                         }
-                    },
-                    error: function (xhr) {
-                        Swal.fire(
-                            'Failed!',
-                            'Something went wrong. Please try again.',
-                            'error'
-                        );
-                    }
-                });
-            }
-        });
-    }
-</script>
+                    });
+                }
+            });
+        }
+    </script>
 @endpush
