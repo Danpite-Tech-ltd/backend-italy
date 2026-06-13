@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerRegister;
+use App\Models\CustomerNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +46,18 @@ class AuthController extends Controller
             $customer->save();
 
             $token = $customer->createToken('authToken')->plainTextToken;
+
+            // mail to customer
+            if ($customer->email) {
+                Mail::to($customer->email)->send(new CustomerRegister($customer));
+            }
+
+            // notification to customer
+            $customerNotification = new CustomerNotification();
+            $customerNotification->user_id = $customer->id;
+            $customerNotification->title = 'Customer Registration';
+            $customerNotification->message = 'Welcome to our platform!';
+            $customerNotification->save();
 
             DB::commit();
 
