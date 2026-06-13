@@ -192,6 +192,16 @@
                                 </div>
                             </div>
 
+                            <div class="col-sm-4 col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label for="pre_order" class="form-label">Pre Order Product</label>
+                                    <select class="form-control" id="pre_order" name="pre_order">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="col-sm-6 d-none">
                                 <div class="form-group mb-3">
                                     <label for="product_type_id" class="form-label">Affiliate Commission </label>
