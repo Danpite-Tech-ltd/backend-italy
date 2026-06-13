@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlace;
 use App\Models\Coupon;
 use App\Models\Customer;
+use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use App\Models\Coupon;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
@@ -122,40 +124,6 @@ class CheckoutController extends Controller
     //     }
     // }
 
-    public function applyCoupon(Request $request)
-    {
-        $coupon = $request->coupon_code;
-
-        $pack = Coupon::where('status',1)->where('code', $coupon)->first();
-
-        // Check if coupon exists
-        if (!$pack) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid Coupon'
-            ]);
-        }
-
-        // Check expiration
-        if ($pack->expire_date < $pack->active_date) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Expired Coupon'
-            ]);
-        }
-
-        // Prepare response
-        $discount = $pack->discount;
-        $type = $pack->type == 1 ? 'flat' : 'percentage';
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Coupon Added Successfully.',
-            'discount' => $discount,
-            'type' => $type,
-            'coupon' => $pack
-        ]);
-    }
 
     public function orderPlace(Request $request)
     {
@@ -320,6 +288,17 @@ class CheckoutController extends Controller
                 'coupon_discount' => $coupon_discount ?? 0,
                 'reward_point' => $rewardPoints ?? 0,
             ]);
+
+            // email to customer
+            if ($customer->email) {
+                Mail::to($customer->email)->send(new OrderPlace($order,$customer));
+            }
+            // notification to cutomer
+            $notify = new CustomerNotification();
+            $notify->user_id = $order->user_id;
+            $notify->title = $notify->title = 'Order Placed Successfully! #' . $order->invoiceID;
+            $notify->message = $notify->message = 'Thank you for shopping with us! Your order #' . $order->invoiceID . ' has been successfully placed. Total Amount: ' . number_format($order->total, 2) . ' TK. We will process your order shortly.';
+            $notify->save();
 
             DB::commit();
 
