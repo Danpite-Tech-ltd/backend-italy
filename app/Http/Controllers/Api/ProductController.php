@@ -65,13 +65,19 @@ class ProductController extends Controller
 
     public function productDetails($slug)
     {
-        $products = Product::where(['slug' => $slug, 'status' => 1])
-            ->with(['productcolors', 'productvariants', 'vendor', 'reviews'])
+        $product = Product::where([
+                'slug' => $slug,
+                'status' => 1
+            ])->with([
+                'productcolors.productvariants',
+                'vendor',
+                'reviews'
+            ])
             ->firstOrFail();
 
         return $this->success(
             message: 'Product Details',
-            data: $products
+            data: $product
         );
     }
 
@@ -151,7 +157,6 @@ class ProductController extends Controller
                 foreach ($request->tags as $tag) {
                     $query->orWhereJsonContains('products.tag_names', $tag);
                 }
-
             });
         }
 
@@ -241,7 +246,6 @@ class ProductController extends Controller
                 foreach ($request->tags as $tag) {
                     $query->orWhereJsonContains('products.tag_names', $tag);
                 }
-
             });
         }
 
