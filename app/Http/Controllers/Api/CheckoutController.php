@@ -245,14 +245,39 @@ class CheckoutController extends Controller
             }
 
             /* ================= UPDATE MAIN ORDER ================= */
+
+            // coupon
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            $coupon_discount = 0;
+
+            if (!empty($request->coupon_code)) {
+
+                $coupon = Coupon::where('code', $request->coupon_code)->first();
+
+                if ($coupon) {
+
+                    if ($coupon->type == 'flat') {
+                        $coupon_discount = $coupon->discount;
+
+                    } elseif ($coupon->type == 'percentage') {
+                        $coupon_discount = ($totalSubtotal * $coupon->discount) / 100;
+                    }
+                }
+            }
+
             $vat_amount = $totalSubtotal * ($vat->rate / 100);
             $tax_amount = $totalSubtotal * ($tax->rate / 100);
+            $total = $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount - $coupon_discount;
 
             $order->update([
                 'vat' => $vat_amount,
                 'tax' => $tax_amount,
                 'subtotal' => $totalSubtotal,
-                'total' => $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount,
+                'total' => $total,
+                'coupon_name' => $coupon->code ?? '',
+                'coupon_type' => $coupon->type ?? '',
+                'coupon_amount' => $coupon->discount ?? 0,
+                'coupon_discount' => $coupon_discount ?? 0,
             ]);
 
             DB::commit();
