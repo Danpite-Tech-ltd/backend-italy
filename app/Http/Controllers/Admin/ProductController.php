@@ -304,6 +304,8 @@ class ProductController extends Controller implements HasMiddleware
         $product->brand_id = $request->brand_id ?? null;
         $product->vendor_id = $request->vendor_id ?? null;
         $product->product_type_id = $request->product_type_id ?? null;
+        $product->reward_point = $request->reward_point ?? 0;
+        $product->pre_order = $request->pre_order ?? 0;
 
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
@@ -469,6 +471,7 @@ class ProductController extends Controller implements HasMiddleware
         $product->warehouse_id = $request->warehouse_id ?? null;
         $product->product_type_id = $request->product_type_id ?? null;
         $product->reward_point = $request->reward_point ?? 0;
+        $product->pre_order = $request->pre_order ?? 0;
 
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;

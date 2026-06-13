@@ -279,9 +279,27 @@
                                 </div>
                             </div>
 
+                            <div class="col-sm-4 col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label for="pre_order" class="form-label">Pre Order Product</label>
+                                    <select class="form-control" id="pre_order" name="pre_order">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group mb-3">
+                                    <label for="reward_point" class="form-label">Reward Point </label>
+                                    <input type="number" class="form-control" name="reward_point"
+                                        >
+                                </div>
+                            </div>
+
                             <div class="col-sm-6">
                                 <div class="form-group mb-3">
-                                    <label for="product_type_id" class="form-label">Affiliate Commission </label>
+                                    <label for="affiliate_commission" class="form-label">Affiliate Commission </label>
                                     <input type="number" class="form-control" name="affiliate_commission"
                                         value="{{ old('affiliate_commission', 0) }}">
                                     @error('affiliate_commission')
