@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\Courier;
 use App\Models\Courierapi;
 use App\Models\Customer;
+use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
@@ -15,6 +16,7 @@ use App\Models\VendorOrder;
 use App\Models\VendorOrderStatus;
 use App\Models\ShippingCharge;
 use App\Models\User;
+use App\Models\Vendor;
 use Brian2694\Toastr\Facades\Toastr;
 use Exception;
 use Illuminate\Http\Request;
@@ -53,7 +55,7 @@ class OrderController extends Controller
                 // 🧾 Invoice Info
                 ->addColumn('invoice_info', function ($order) {
 
-                    return '<span class="badge bg-dark mb-2">'
+                    return '<span class="mb-2 badge bg-dark">'
                         . $order->order->invoiceID .
                         '</span><br>
 
@@ -70,7 +72,7 @@ class OrderController extends Controller
                     foreach ($order->orderProducts as $product) {
 
                         $html .= '<div class="mb-3">
-                                <div class="d-flex gap-3">
+                                <div class="gap-3 d-flex">
                                     <a target="_blank" href="' . route('product-details', $product->slug) . '">
                                         <img src="' . asset($product->thumbnail_img) . '" width="60" height="60">
                                     </a>
@@ -205,6 +207,13 @@ class OrderController extends Controller
 
         // status name
         $statusName = VendorOrderStatus::find($statusId)?->status_name;
+
+        // customer notification
+        $notify = new CustomerNotification();
+        $notify->user_id = Order::find($vendorOrder->order_id)->user_id;
+        $notify->title = 'Order Notification';
+        $notify->message = 'Your order has been updated to ' . $statusName .  ' by '. Vendor::find($vendorOrder->vendor_id)->company_name;
+        $notify->save();
 
         //        $previousStatus = $order->getOriginal('order_status_id');
 

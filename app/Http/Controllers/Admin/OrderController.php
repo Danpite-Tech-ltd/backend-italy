@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use Adrianorosa\GeoLocation\GeoLocation;
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusChange;
 use App\Models\Cart;
 use App\Models\Courier;
 use App\Models\Courierapi;
 use App\Models\Customer;
+use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
 use App\Models\VendorOrder;
 use App\Models\VendorCommission;
 use App\Models\Vendor;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ShippingCharge;
 use App\Models\User;
 use Brian2694\Toastr\Facades\Toastr;
@@ -457,6 +460,19 @@ class OrderController extends Controller implements HasMiddleware
 
         $order->order_status_id = $order_status_id;
         $order->save();
+
+        // customer notification
+        $notify = new CustomerNotification();
+        $notify->user_id = $order->user_id;
+        $notify->title = 'Order Notification';
+        $notify->message = 'Your order has been updated to ' . $order_status .  ' by '. Auth::user()->name;
+        $notify->save();
+
+        // mail to customer
+        $customer = Customer::find($order->customer_id);
+        if ($customer->email) {
+            Mail::to($customer->email)->send(new OrderStatusChange($order_status,$customer));
+        }
 
         return response()->json(['message' => 'Order Status Changed to ' . $order_status], 200);
     }

@@ -123,7 +123,7 @@
 
         <tr>
             <td class="content">
-                <h2>Welcome aboard, {{ $user->name }}!</h2>
+                <h2>Welcome {{ $user->name }}!</h2>
                 <p>Thank you for creating an account with us. We are absolutely thrilled to have you in our community. Your account is now fully active and ready to go.</p>
 
                 <div class="info-box">
@@ -157,7 +157,7 @@
 
         <tr>
             <td class="footer">
-                <p style="margin: 0 0 10px 0;">&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
+                <p style="margin: 0 0 10px 0;">&copy; {{ App\Models\BasicInfo::first()->website_url }} {{ config('app.name') }}. All rights reserved.</p>
                 <p style="margin: 0;">You received this email because you registered on our platform. If this wasn't you, please disregard this email.</p>
             </td>
         </tr>

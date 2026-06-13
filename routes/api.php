@@ -136,4 +136,7 @@ Route::name('api.')->group(function () {
     Route::get('/blogs', [FrontendController::class, 'blogs']);
     Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails']);
 
+    // customer notification
+    Route::get('/customer-notification',[FrontendController::class,'customerNotification']);
+
 });
