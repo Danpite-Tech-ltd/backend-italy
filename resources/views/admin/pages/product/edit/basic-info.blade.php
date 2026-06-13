@@ -311,6 +311,7 @@
                                 <div class="form-group mb-3">
                                     <label for="product_type_id" class="form-label">Product Type</label>
                                     <select class="form-control" id="product_type_id" name="product_type_id">
+                                        <option value="">Select..</option>
                                         @forelse($productTypes as $type)
                                             <option value="{{ $type->id }}"
                                                 @if ($product->product_type_id == $type->id) selected @endif>{{ $type->name }}
@@ -320,6 +321,18 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-sm-4">
+                                <div class="form-group mb-3">
+                                    <label for="pre_order" class="form-label">Pre Order Product</label>
+                                    <select class="form-control" id="pre_order" name="pre_order">
+                                        <option value="0" {{ $product->pre_order == 0 ? 'selected' : '' }}>No
+                                        </option>
+                                        <option value="1" {{ $product->pre_order == 1 ? 'selected' : '' }}>Yes
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
 
                             <div class="col-sm-4">
                                 <div class="form-group mb-3">

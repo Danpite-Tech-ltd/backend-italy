@@ -70,6 +70,11 @@ class OrderController extends Controller
                     $html = '';
 
                     foreach ($order->orderProducts as $product) {
+                        $preOrderText = '';
+
+                        if ($product->pre_order == 1) {
+                            $preOrderText = "<p style='color:red;font-size:18px;font-weight:bold;'>Pre Order</p>";
+                        }
 
                         $html .= '<div class="mb-3">
                                 <div class="gap-3 d-flex">
@@ -80,7 +85,8 @@ class OrderController extends Controller
                                     <div>
                                         <p><b>' . $product->quantity . ' x ' . $product->product_name . '</b></p>
                                         <p style="color:blue;">Colour: ' . $product->color . '</p>
-                                        <p style="color:red;">Variant: ' . $product->variant . '</p>
+                                        <p style="color:green;">Variant: ' . $product->variant . '</p>
+                                        ' . $preOrderText . '
                                     </div>
                                 </div>
                             </div>';
