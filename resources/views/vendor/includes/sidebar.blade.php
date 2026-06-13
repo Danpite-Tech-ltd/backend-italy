@@ -190,8 +190,6 @@
 
                     <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.order.index') active @endif"
                             href="{{ route('vendor.order.index') }}">Orders</a></li>
-
-
                 </ul>
             </div>
         </li>

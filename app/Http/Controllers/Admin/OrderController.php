@@ -13,6 +13,7 @@ use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderStatus;
+use App\Models\RefundCancel;
 use App\Models\VendorOrder;
 use App\Models\VendorCommission;
 use App\Models\Vendor;
@@ -641,6 +642,12 @@ class OrderController extends Controller implements HasMiddleware
             return response()->json([]);
         }
 
+    }
+
+    public function refundCancelRequest()
+    {
+        $refundCancelOrders = RefundCancel::latest()->get();
+        return view('admin.pages.order.refund_cancel',compact('refundCancelOrders'));
     }
 
 
