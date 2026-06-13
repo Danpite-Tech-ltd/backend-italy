@@ -72,7 +72,14 @@ class OrderController extends Controller implements HasMiddleware
 
                     $productInfo = '';
 
+
+
                     foreach ($order->orderProducts as $product) {
+                        $preOrderText = '';
+
+                        if ($product->pre_order == 1) {
+                            $preOrderText = "<p style='color:red;font-size:18px;font-weight:bold;'>Pre Order</p>";
+                        }
 
                         $productInfo .= '<div class="mb-2">
                                        <div class="gap-3 d-flex">
@@ -86,7 +93,9 @@ class OrderController extends Controller implements HasMiddleware
 
                                         <p style="color:blue;font-size: 18px;"> Colour: ' . $product->color . ' </p>
 
-                                        <p style="font-size: 18px;color:red;font-weight:bold;"> Variant: ' . $product->variant . '</p>
+                                        <p style="font-size: 18px;color:green;font-weight:bold;"> Variant: ' . $product->variant . '</p>
+                                         ' . $preOrderText . '
+                                        
                                         </div>
                                         </div>
                                         <br>';
@@ -189,7 +198,6 @@ class OrderController extends Controller implements HasMiddleware
         $orderStatus = OrderStatus::where('status', 1)->get();
 
         return view('admin.pages.order.create', compact('orderStatus'));
-
     }
 
     /**
@@ -255,13 +263,11 @@ class OrderController extends Controller implements HasMiddleware
             $response['message'] = 'Successfully Add Order';
 
             return json_encode($response);
-
         } catch (Exception $exception) {
             DB::rollBack();
 
             dd($exception->getMessage());
         }
-
     }
 
     /**
@@ -350,7 +356,6 @@ class OrderController extends Controller implements HasMiddleware
                 'status' => 'success',
                 'message' => 'Order updated successfully',
             ]);
-
         } catch (\Exception $exception) {
             DB::rollBack();
             return response()->json([
@@ -445,7 +450,6 @@ class OrderController extends Controller implements HasMiddleware
             $totalCommission = $order->orderProducts()->with('product')->get()->sum(function ($orderProduct) {
                 $commissionPerUnit = $orderProduct->product->affiliate_commission ?? 0;
                 return $commissionPerUnit * $orderProduct->quantity;
-
             });
 
             if ($totalCommission > 0) {
@@ -465,13 +469,13 @@ class OrderController extends Controller implements HasMiddleware
         $notify = new CustomerNotification();
         $notify->user_id = $order->user_id;
         $notify->title = 'Order Notification';
-        $notify->message = 'Your order has been updated to ' . $order_status .  ' by '. Auth::user()->name;
+        $notify->message = 'Your order has been updated to ' . $order_status .  ' by ' . Auth::user()->name;
         $notify->save();
 
         // mail to customer
         $customer = Customer::find($order->customer_id);
         if ($customer->email) {
-            Mail::to($customer->email)->send(new OrderStatusChange($order_status,$customer));
+            Mail::to($customer->email)->send(new OrderStatusChange($order_status, $customer));
         }
 
         return response()->json(['message' => 'Order Status Changed to ' . $order_status], 200);
@@ -506,13 +510,13 @@ class OrderController extends Controller implements HasMiddleware
                     'Secret-Key' => $courier->secret_key,
                     'Content-Type' => 'application/json'
                 ])->post('https://portal.packzy.com/api/v1/create_order', [
-                            'invoice' => $order->invoiceID,
-                            'recipient_name' => $order->customer->name ?? '',
-                            'recipient_phone' => $order->customer->phone ?? '',
-                            'recipient_address' => $order->customer->address ?? '',
-                            'cod_amount' => $order->total,
-                            'note' => $order->customer_note ?? '',
-                        ]);
+                    'invoice' => $order->invoiceID,
+                    'recipient_name' => $order->customer->name ?? '',
+                    'recipient_phone' => $order->customer->phone ?? '',
+                    'recipient_address' => $order->customer->address ?? '',
+                    'cod_amount' => $order->total,
+                    'note' => $order->customer_note ?? '',
+                ]);
 
                 if ($response->ok() && ($response->json('status') == 200)) {
 
@@ -532,8 +536,6 @@ class OrderController extends Controller implements HasMiddleware
 
 
                     $responses[] = $data;
-
-
                 } else {
                     return response()->json([
                         'status' => 'error',
@@ -547,7 +549,6 @@ class OrderController extends Controller implements HasMiddleware
                     'status' => 'error',
                     'message' => $e->getMessage()
                 ]);
-
             }
         }
 
@@ -556,7 +557,6 @@ class OrderController extends Controller implements HasMiddleware
             'message' => 'Consignments Created successfully.',
             'data' => $responses
         ]);
-
     }
 
     public function pathaoOrderSubmit(Request $request)
@@ -576,24 +576,24 @@ class OrderController extends Controller implements HasMiddleware
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                 ])->post($pathao_info->url . '/aladdin/api/v1/orders', [
-                            'store_id' => $request->pathaostore,
-                            'merchant_order_id' => $order->invoiceID,
-                            'sender_name' => 'Test',
-                            'sender_phone' => $order->customer ? $order->customer->phone : '',
-                            'recipient_name' => $order->customer ? $order->customer->name : '',
-                            'recipient_phone' => $order->customer ? $order->customer->phone : '',
-                            'recipient_address' => $order->customer ? $order->customer->address : '',
-                            'recipient_city' => $request->pathaocity,
-                            'recipient_zone' => $request->pathaozone,
-                            'recipient_area' => $request->pathaoarea,
-                            'delivery_type' => 48,
-                            'item_type' => 2,
-                            'special_instruction' => 'Special note- product must be check after delivery',
-                            'item_quantity' => 1,
-                            'item_weight' => 0.5,
-                            'amount_to_collect' => round($order->total),
-                            'item_description' => 'Special note- product must be check after delivery',
-                        ]);
+                    'store_id' => $request->pathaostore,
+                    'merchant_order_id' => $order->invoiceID,
+                    'sender_name' => 'Test',
+                    'sender_phone' => $order->customer ? $order->customer->phone : '',
+                    'recipient_name' => $order->customer ? $order->customer->name : '',
+                    'recipient_phone' => $order->customer ? $order->customer->phone : '',
+                    'recipient_address' => $order->customer ? $order->customer->address : '',
+                    'recipient_city' => $request->pathaocity,
+                    'recipient_zone' => $request->pathaozone,
+                    'recipient_area' => $request->pathaoarea,
+                    'delivery_type' => 48,
+                    'item_type' => 2,
+                    'special_instruction' => 'Special note- product must be check after delivery',
+                    'item_quantity' => 1,
+                    'item_weight' => 0.5,
+                    'amount_to_collect' => round($order->total),
+                    'item_description' => 'Special note- product must be check after delivery',
+                ]);
             }
             if ($response->status() == '200') {
 
@@ -602,7 +602,6 @@ class OrderController extends Controller implements HasMiddleware
                     'order_status_id' => 7,
                     'consignmentID' => $response['data']['consignment_id'] ?? null,
                 ]);
-
             } else {
                 return response()->json([
                     'status' => 'failed',
@@ -627,7 +626,6 @@ class OrderController extends Controller implements HasMiddleware
         } else {
             return response()->json([]);
         }
-
     }
 
     public function pathaoGetArea(Request $request)
@@ -640,8 +638,5 @@ class OrderController extends Controller implements HasMiddleware
         } else {
             return response()->json([]);
         }
-
     }
-
-
 }

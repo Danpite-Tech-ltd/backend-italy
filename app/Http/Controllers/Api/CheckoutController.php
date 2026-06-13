@@ -197,7 +197,7 @@ class CheckoutController extends Controller
                 $product = Product::findOrFail($item['id']);
                 $variant = Productvariant::findOrFail($item['product_variant_id']);
                 $color = Productcolor::findOrFail($item['product_color_id']);
-
+                $preOrder = $product->pre_order;
                 $vendorId = $product->vendor_id;
 
                 $price = $variant->sale_price;
@@ -214,6 +214,7 @@ class CheckoutController extends Controller
                     'qty' => $item['qty'],
                     'price' => $price,
                     'lineTotal' => $lineTotal,
+                    'preOrder' => $preOrder,
                 ];
             }
 
@@ -238,7 +239,7 @@ class CheckoutController extends Controller
                         'order_id' => $order->id,
                         'vendor_order_id' => $vendorOrder->id,
                         'vendor_id' => $vendorId,
-
+                        'pre_order' => $item['preOrder'],
                         'product_id' => $item['product']->id,
                         'productvariant_id' => $item['variant']->id,
                         'product_name' => $item['product']->name,
