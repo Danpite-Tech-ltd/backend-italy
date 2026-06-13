@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     // checkout
     Route::post('/order-place', [CheckoutController::class, 'orderPlace']);
     Route::get('/order-success/{invoice_id}', [CheckoutController::class, 'orderSuccess']);
+    Route::post('/apply-coupon', [CheckoutController::class, 'applyCoupon']);
 
     // ticket
     Route::post('/ticket-store', [TicketController::class, 'ticket_store'])->name('ticket.store');

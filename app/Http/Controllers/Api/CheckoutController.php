@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\Coupon;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
@@ -218,6 +219,8 @@ class CheckoutController extends Controller
             /* ================= GROUP PRODUCTS BY VENDOR ================= */
             $vendorGroups = [];
 
+            $rewardPoints = 0;
+
             foreach ($request->products as $item) {
 
                 $product = Product::findOrFail($item['id']);
@@ -230,6 +233,8 @@ class CheckoutController extends Controller
                 $lineTotal = $price * $item['qty'];
 
                 $totalSubtotal += $lineTotal;
+
+                $rewardPoints += $product->reward_point * $item['qty'];
 
                 $vendorGroups[$vendorId][] = [
                     'product' => $product,
@@ -280,14 +285,40 @@ class CheckoutController extends Controller
             }
 
             /* ================= UPDATE MAIN ORDER ================= */
+
+            // coupon
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            $coupon_discount = 0;
+
+            if (!empty($request->coupon_code)) {
+
+                $coupon = Coupon::where('code', $request->coupon_code)->first();
+
+                if ($coupon) {
+
+                    if ($coupon->type == 'flat') {
+                        $coupon_discount = $coupon->discount;
+
+                    } elseif ($coupon->type == 'percentage') {
+                        $coupon_discount = ($totalSubtotal * $coupon->discount) / 100;
+                    }
+                }
+            }
+
             $vat_amount = $totalSubtotal * ($vat->rate / 100);
             $tax_amount = $totalSubtotal * ($tax->rate / 100);
+            $total = $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount - $coupon_discount;
 
             $order->update([
                 'vat' => $vat_amount,
                 'tax' => $tax_amount,
                 'subtotal' => $totalSubtotal,
-                'total' => $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount,
+                'total' => $total,
+                'coupon_name' => $coupon->code ?? '',
+                'coupon_type' => $coupon->type ?? '',
+                'coupon_amount' => $coupon->discount ?? 0,
+                'coupon_discount' => $coupon_discount ?? 0,
+                'reward_point' => $rewardPoints ?? 0,
             ]);
 
             DB::commit();
@@ -338,6 +369,39 @@ class CheckoutController extends Controller
             message: 'tax data.',
             data: $tax
         );
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'coupon_code' => 'required|string|exists:coupons,code',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->all()
+            ], 422);
+        }
+
+        $coupon = Coupon::where('code', $request->coupon_code)->first();
+
+        if (!$coupon || !$coupon->isValid()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid or expired coupon code.'
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Coupon applied successfully.',
+            'data' => [
+                'code' => $coupon->code,
+                'discount_type' => $coupon->type,
+                'discount_value' => $coupon->discount,
+            ]
+        ]);
     }
 
 }
