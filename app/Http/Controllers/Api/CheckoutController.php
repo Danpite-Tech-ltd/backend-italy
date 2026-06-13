@@ -11,6 +11,7 @@ use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\RefundCancel;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
@@ -24,6 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use App\Trait\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
@@ -419,6 +421,33 @@ class CheckoutController extends Controller
         return $this->success(
             message: 'All active coupons.',
             data: $coupons
+        );
+    }
+
+    public function refundCancelList()
+    {
+        // $order = Order::where('user_id',Auth::user()->id)->get();
+        $order = Order::where('user_id', Auth::user()->id)->whereIn('order_status_id', ["1", "2"])->get();
+
+        return $this->success(
+            message: 'Order List',
+            data: $order,
+        );
+    }
+
+    public function refundCancelSubmit(Request $request, $order_id)
+    {
+        $order = Order::find($order_id);
+
+        $refundCancel = new RefundCancel();
+        $refundCancel->type = $request->type;
+        $refundCancel->order_id = $order->id;
+        $refundCancel->reason = $request->reason;
+        $refundCancel->save();
+
+        return $this->success(
+            message: 'Refund/Cancel Order Sumit',
+            data: $refundCancel,
         );
     }
 }

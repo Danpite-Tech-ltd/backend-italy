@@ -198,6 +198,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/order-status-change', [OrderController::class, 'orderStatusChange'])->name('order.status-change');
     Route::post('/steadfast-order-submit', [OrderController::class, 'steadFastOrderSubmit'])->name('steadfast.order-submit');
 
+    Route::get('/refund-cancel-order', [OrderController::class, 'refundCancelRequest'])->name('refund-cancel-order-request');
+    Route::post('/refund-order/toggle-status', [OrderController::class, 'refundCancelChangeStatus']);
+
     //pathao
     Route::post('order-pathao', [OrderController::class, 'pathaoOrderSubmit'])->name('pathao.order-submit');
     Route::get('/pathao-zone', [OrderController::class, 'pathaoGetZone'])->name('pathaocity');
