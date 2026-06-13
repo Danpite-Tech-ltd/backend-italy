@@ -650,5 +650,26 @@ class OrderController extends Controller implements HasMiddleware
         return view('admin.pages.order.refund_cancel',compact('refundCancelOrders'));
     }
 
+    public function refundCancelChangeStatus(Request $request)
+    {
+        $order = RefundCancel::find($request->id);
+
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Order request not found!'
+            ], 404);
+        }
+
+        $order->status = $order->status == 0 ? 1 : 0;
+        $order->save();
+
+        return response()->json([
+            'status' => true,
+            'new_status' => $order->status,
+            'message' => 'Order status updated successfully!'
+        ]);
+    }
+
 
 }

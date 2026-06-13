@@ -20,10 +20,12 @@
             float: right !important;
             margin-bottom: 15px;
         }
+
         .dt-length {
             float: left !important;
             margin-bottom: 15px;
         }
+
         .dt-search {
             float: right !important;
             clear: both;
@@ -37,24 +39,32 @@
             font-weight: 500;
             font-size: 14px;
             padding: 6px 12px;
-            border: none !important; /* ডিফল্ট বর্ডার রিমুভ করার জন্য */
+            border: none !important;
+            /* ডিফল্ট বর্ডার রিমুভ করার জন্য */
         }
 
         /* 🎨 স্ক্রিনশট অনুযায়ী ব্যাকগ্রাউন্ড কালার ফিক্স (DataTables এর জন্য) */
         .btn-print-custom {
-            background-color: #00ca52 !important; /* সবুজ */
+            background-color: #00ca52 !important;
+            /* সবুজ */
             color: #ffffff !important;
         }
+
         .btn-pdf-custom {
-            background-color: #ff0000 !important; /* লাল */
+            background-color: #ff0000 !important;
+            /* লাল */
             color: #ffffff !important;
         }
+
         .btn-csv-custom {
-            background-color: #1e74ff !important; /* নীল */
+            background-color: #1e74ff !important;
+            /* নীল */
             color: #ffffff !important;
         }
+
         .btn-excel-custom {
-            background-color: #00ca52 !important; /* সবুজ */
+            background-color: #00ca52 !important;
+            /* সবুজ */
             color: #ffffff !important;
         }
     </style>
@@ -92,14 +102,21 @@
                                         <td>{{ $order->order_id }}</td>
                                         <td>{{ $order->reason }}</td>
                                         <td>
+                                            {{-- 🛠 এখানে id="status-badge-..." যুক্ত করা হয়েছে --}}
                                             @if ($order->status == 0)
-                                                <span class="badge bg-danger">Pending</span>
-                                                @else
-                                                <span class="badge bg-success">Complete</span>
+                                                <span class="badge bg-danger" id="status-badge-{{ $order->id }}">Pending</span>
+                                            @else
+                                                <span class="badge bg-success" id="status-badge-{{ $order->id }}">Complete</span>
                                             @endif
                                         </td>
                                         <td>
-                                            
+                                            <button type="button"
+                                                class="btn btn-sm {{ $order->status == 0 ? 'btn-success' : 'btn-warning' }}"
+                                                onclick="changeOrderStatus({{ $order->id }}, {{ $order->status }})"
+                                                id="status-btn-{{ $order->id }}">
+                                                <i class="fa {{ $order->status == 0 ? 'fa-check' : 'fa-undo' }}"></i>
+                                                {{ $order->status == 0 ? 'Mark Complete' : 'Mark Pending' }}
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -107,14 +124,14 @@
                         </table>
                     </div>
                 </div>
-                </div>
             </div>
+        </div>
     </div>
-    @endsection
+@endsection
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
@@ -131,7 +148,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#refundTable').DataTable({
                 "paging": true,
                 "lengthMenu": [10, 25, 50, 100],
@@ -168,4 +185,66 @@
             });
         });
     </script>
+    <script>
+    function changeOrderStatus(orderId, currentStatus) {
+        let textMessage = currentStatus == 0
+            ? "Do you want to mark this request as Complete?"
+            : "Do you want to revert this request back to Pending?";
+
+        let confirmBtnText = currentStatus == 0 ? "Yes, Complete it!" : "Yes, set Pending!";
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: textMessage,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: currentStatus == 0 ? '#198754' : '#ffc107',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: confirmBtnText
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{ url('/admin/refund-order/toggle-status') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: orderId
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire(
+                                'Updated!',
+                                response.message,
+                                'success'
+                            );
+
+                            let badge = $('#status-badge-' + orderId);
+                            let button = $('#status-btn-' + orderId);
+
+                            if (response.new_status == 1) {
+                                badge.removeClass('bg-danger').addClass('bg-success').text('Complete');
+                                button.removeClass('btn-success').addClass('btn-warning')
+                                      .html('<i class="fa fa-undo"></i> Mark Pending');
+                                button.attr('onclick', 'changeOrderStatus(' + orderId + ', 1)');
+                            } else {
+                                badge.removeClass('bg-success').addClass('bg-danger').text('Pending');
+                                button.removeClass('btn-warning').addClass('btn-success')
+                                      .html('<i class="fa fa-check"></i> Mark Complete');
+                                button.attr('onclick', 'changeOrderStatus(' + orderId + ', 0)');
+                            }
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire(
+                            'Failed!',
+                            'Something went wrong. Please try again.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+</script>
 @endpush
