@@ -212,7 +212,6 @@ class OrderController extends Controller
         $notify = new CustomerNotification();
         $notify->user_id = Order::find($vendorOrder->order_id)->user_id;
         $notify->title = 'Order Notification';
-        $notify->message = 'Your order has been updated to ' . $statusName . '.';
         $notify->message = 'Your order has been updated to ' . $statusName .  ' by '. Vendor::find($vendorOrder->vendor_id)->company_name;
         $notify->save();
 
