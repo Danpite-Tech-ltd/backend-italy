@@ -385,6 +385,6 @@ class AffiliateController extends Controller implements HasMiddleware
     {
         $affiliatewithdraw = AffiliateWithdraw::findOrFail($id);
         $user = User::find($affiliatewithdraw->affiliate_id);
-        return view('admin.pages.affiliate.withdraw-show', compact('user'));
+        return view('admin.pages.affiliate.withdraw-show', compact('user', 'affiliatewithdraw'));
     }
 }

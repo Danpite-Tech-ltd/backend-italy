@@ -266,9 +266,9 @@
                                         </div>
                                     </td>
                                     <td align="center">{{ $product->quantity }}</td>
-                                    <td align="right">{{ number_format($product->product_price, 2) }}</td>
+                                    <td align="right">€{{ number_format($product->product_price, 2) }}</td>
                                     <td align="right">
-                                        <strong>{{ number_format($product->product_price * $product->quantity, 2) }}</strong>
+                                        <strong>€{{ number_format($product->product_price * $product->quantity, 2) }}</strong>
                                     </td>
                                 </tr>
                             @endforeach
@@ -278,22 +278,22 @@
                     <table class="summary-table" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <td class="summary-label">Subtotal:</td>
-                            <td class="summary-value">{{ number_format($order->subtotal, 2) }}</td>
+                            <td class="summary-value">€{{ number_format($order->subtotal, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="summary-label">Delivery Charge:</td>
-                            <td class="summary-value">+{{ number_format($order->delivery_charge, 2) }}</td>
+                            <td class="summary-value">+€{{ number_format($order->delivery_charge, 2) }}</td>
                         </tr>
                         @if ($order->vat > 0)
                             <tr>
                                 <td class="summary-label">VAT ({{ $order->vat_percentage }}%):</td>
-                                <td class="summary-value">+{{ number_format($order->vat, 2) }}</td>
+                                <td class="summary-value">+€{{ number_format($order->vat, 2) }}</td>
                             </tr>
                         @endif
                         @if ($order->tax > 0)
                             <tr>
                                 <td class="summary-label">Tax ({{ $order->tax_percentage }}%):</td>
-                                <td class="summary-value">+{{ number_format($order->tax, 2) }}</td>
+                                <td class="summary-value">+€{{ number_format($order->tax, 2) }}</td>
                             </tr>
                         @endif
                         @if ($order->coupon_discount > 0)
@@ -301,7 +301,7 @@
                                 <td class="summary-label" style="color: #10b981;">Discount ({{ $order->coupon_name }}):
                                 </td>
                                 <td class="summary-value" style="color: #10b981;">
-                                    -{{ number_format($order->coupon_discount, 2) }}</td>
+                                    -€{{ number_format($order->coupon_discount, 2) }}</td>
                             </tr>
                         @endif
 
@@ -309,14 +309,14 @@
                             <tr>
                                 <td class="summary-label" style="color: #10b981;">Points Redeem:</td>
                                 <td class="summary-value" style="color: #10b981;">
-                                    -{{ number_format($order->points_amount, 2) }}</td>
+                                    -€{{ number_format($order->points_amount, 2) }}</td>
                             </tr>
                         @endif
 
                         {{-- Total Row --}}
                         <tr class="total-row">
                             <td class="summary-label">Grand Total:</td>
-                            <td class="summary-value total-value">{{ number_format($order->total, 2) }}</td>
+                            <td class="summary-value total-value">€{{ number_format($order->total, 2) }}</td>
                         </tr>
                     </table>
 

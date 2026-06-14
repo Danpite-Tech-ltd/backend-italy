@@ -193,7 +193,7 @@ class OrderController extends Controller implements HasMiddleware
     }
 
     public function invoice(Request $request)
-    { 
+    {
         // dd("hello");
         $ids = explode(',', $request->ids);
 
@@ -460,27 +460,28 @@ class OrderController extends Controller implements HasMiddleware
                 $user->reward_point += $order->reward_point;
                 $user->save();
             }
-        }
+            // If delivered & has affiliate, calculate commission
+            if ($order->affiliate_id) {
+                $affiliateId = $order->affiliate_id;
 
-        // If delivered & has affiliate, calculate commission
-        if ($order->order_status_id == 4 && $order->affiliate_id) {
-            $affiliateId = $order->affiliate_id;
+                // Track order products with affiliate commission
+                $totalCommission = $order->orderProducts()->with('product')->get()->sum(function ($orderProduct) {
+                    $commissionPerUnit = $orderProduct->product->affiliate_commission ?? 0;
+                    return $commissionPerUnit * $orderProduct->quantity;
+                });
 
-            // Track order products with affiliate commission
-            $totalCommission = $order->orderProducts()->with('product')->get()->sum(function ($orderProduct) {
-                $commissionPerUnit = $orderProduct->product->affiliate_commission ?? 0;
-                return $commissionPerUnit * $orderProduct->quantity;
-            });
+                if ($totalCommission > 0) {
+                    // Update affiliate account balance
+                    $affiliate = User::find($affiliateId);
 
-            if ($totalCommission > 0) {
-                // Update affiliate account balance
-                $affiliate = User::find($affiliateId);
-
-                if ($affiliate) {
-                    $affiliate->increment('account_balance', $totalCommission);
+                    if ($affiliate) {
+                        $affiliate->increment('account_balance', $totalCommission);
+                    }
                 }
             }
         }
+
+
 
         $order->order_status_id = $order_status_id;
         $order->save();
