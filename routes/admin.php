@@ -249,6 +249,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     //Sales Reports
     Route::resource('/sales-reports', SalesReportController::class)->names('sales-report');
+    Route::get('/sales/report', [SalesReportController::class, 'salesreport'])->name('salesreport');
 
     //wholesale customer
     Route::resource('wcustomers', WcustomerController::class)->names('wcustomers');
