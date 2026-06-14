@@ -82,8 +82,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     Route::get('/affiliate-shop', [DashboardController::class, 'affiliateShop'])->name('affiliate-shop');
     Route::get('/affiliate-order/{id}/{status_id?}', [DashboardController::class, 'affiliateOrder'])->name('affiliate-order');
     Route::get('/affiliate-withdrawal-history/{id}', [DashboardController::class, 'withdrawHistory'])->name('affiliate-withdrawal-history');
+    Route::get('/affiliate-withdrawal', [DashboardController::class, 'withdrawalRequestPage'])->name('affiliate-withdrawal-page');
+    Route::post('/withdrawal-request', [DashboardController::class, 'withdrawalRequest'])->name('withdrawal-request');
     
-
 });
 
 Route::name('api.')->group(function () {

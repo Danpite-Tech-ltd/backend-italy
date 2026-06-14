@@ -161,4 +161,64 @@ class DashboardController extends Controller
             'data'    => $withdrawals
         ]);
     }
+
+    public function withdrawalRequestPage()
+    {
+        $affiliate = User::where('id', auth()->user()->id)->first();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Withdrawal request page data fetched',
+            'data'    => [
+                'account_balance' => $affiliate->account_balance ?? 0,
+            ]
+        ]);
+    }
+
+    public function withdrawalRequest(Request $request)
+    {
+        $request->validate([
+            'amount'          => 'required|numeric|min:1',
+            'payment_method'  => 'required|string',
+            'payment_details' => 'nullable|string',
+        ]);
+
+        $affiliate = User::where('id', auth()->user()->id)->first();
+
+        if (!$affiliate) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        if ($request->amount > $affiliate->account_balance) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'You do not have enough balance to withdraw'
+            ], 422); 
+        }
+
+        $withdraw = new AffiliateWithdraw();
+        $withdraw->affiliate_id   = $affiliate->id;
+        $withdraw->invoiceID      = uniqid();
+        $withdraw->amount         = $request->amount;
+        $withdraw->payment_method = $request->payment_method;
+        $withdraw->payment_details = $request->payment_details;
+        $withdraw->save();
+
+        $affiliate->account_balance    = $affiliate->account_balance - $request->amount;
+        $affiliate->withdrawal_balance = $affiliate->withdrawal_balance + $request->amount;
+        $affiliate->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Withdrawal Request Sent Successfully',
+            'data'    => [
+                'withdraw_id' => $withdraw->id,
+                'invoice_id'  => $withdraw->invoiceID,
+                'current_balance' => $affiliate->account_balance
+            ]
+        ], 200);
+    }
 }
