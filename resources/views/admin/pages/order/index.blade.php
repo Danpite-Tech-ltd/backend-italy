@@ -148,15 +148,15 @@
 
 
                         <div class="d-flex gap-3">
+                            <a href="javascript:void(0)" class="btn rounded-pill btn-info" id="invoice">
+                                <i class="fa-solid fa-file-invoice"></i> Invoice
+                            </a>
                             @isset($steadfastStatus)
                                 <a href="javascript:void(0)" class="btn rounded-pill btn-info steadfast">
                                     <i class="fas fa-truck"></i> Steadfast
                                 </a>
                             @endisset
 
-                            <a href="javascript:void(0)" class="btn rounded-pill btn-info" id="invoice">
-                                <i class="fa-solid fa-file-invoice"></i> Invoice
-                            </a>
 
                             @isset($pathaoStatus)
                                 <a data-bs-toggle="modal" data-bs-target="#pathao"

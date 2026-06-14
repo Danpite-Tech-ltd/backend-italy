@@ -57,6 +57,8 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('/orders', OrderController::class)->names('order');
         Route::get('/order-by-status/{id}', [OrderController::class, 'orderByStatus'])->name('order.status');
         Route::post('/order-status-change', [OrderController::class, 'orderStatusChange'])->name('order.status-change');
+        // invoice
+        Route::get('/invoice', [OrderController::class, 'invoice'])->name('invoice');
 
         // Bank Setup
         Route::resource('/banks', BankSetupController::class)->names('bank');
