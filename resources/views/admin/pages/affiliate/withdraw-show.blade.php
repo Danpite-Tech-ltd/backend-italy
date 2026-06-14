@@ -60,16 +60,34 @@
                         </ul>
 
                         <!-- Balance Section -->
-                        <h5 class="mb-3 text-success">Account Balances</h5>
+                        <h5 class="mb-3 text-success">Account Information</h5>
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="bi bi-wallet2 me-2"></i> Account Balance</span>
-                                <strong>{{ number_format($user->account_balance, 2) }}</strong>
+                                <span><i class="bi bi-wallet2 me-2"></i> Invoice ID</span>
+                                <strong>{{ $affiliatewithdraw->invoiceID ?? 'N/A' }}</strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="bi bi-cash-coin me-2"></i> Withdraw Balance</span>
-                                <strong>{{ number_format($user->withdrawal_balance, 2) }}</strong>
+                                <span><i class="bi bi-wallet2 me-2"></i> Account Number</span>
+                                <strong>{{ $affiliatewithdraw->account_number ?? 'N/A' }}</strong>
                             </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="bi bi-wallet2 me-2"></i>Payment Method</span>
+                                <strong>{{ $affiliatewithdraw->payment_method ?? 'N/A' }}</strong>
+                            </li>
+                            @if($affiliatewithdraw->payment_details)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="bi bi-wallet2 me-2"></i>Payment Details</span>
+                                <strong>{{ $affiliatewithdraw->payment_details ?? 'N/A' }}</strong>
+                            </li>
+                            @endif
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="bi bi-cash-coin me-2"></i> Withdraw Balance</span>
+                                <strong>€{{ number_format($user->withdrawal_balance, 2) }}</strong>
+                            </li>
+                            {{-- <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="bi bi-wallet2 me-2"></i> Account Balance</span>
+                                <strong>{{ number_format($user->account_balance, 2) }}</strong>
+                            </li> --}}
 
                         </ul>
 
