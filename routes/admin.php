@@ -161,6 +161,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/child-category-by-subcategory/{id}', [ChildCategoryController::class, 'getChildCategoryBySubCategory'])->name('child-category-by-subcategory');
     Route::post('/product/change-status', [ProductController::class, 'changeProductStatus'])->name('product.status');
     Route::post('product-variant/store', [ProductController::class, 'storeVariant'])->name('product-variant.store');
+    // excel import
+    Route::post('/products/import', [ProductController::class, 'import'])
+    ->name('products.import');
 
     // product tag
     Route::resource('/product-tags', ProductTagController::class)->names('product_tag');
