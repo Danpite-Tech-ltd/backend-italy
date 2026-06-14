@@ -43,7 +43,18 @@ class AuthController extends Controller
             $customer->password = bcrypt($request->password);
             // $customer->verify = 1;
             $customer->status = 1;
+
+            if ($request->affiliator) {
+                $customer->ref_code = rand(10000000, 99999999);
+            }
+
             $customer->save();
+
+            if ($request->affiliator) {
+                $customer->syncRoles(['affiliate']);
+            } else {
+                $customer->syncRoles(['user']);
+            }
 
             $token = $customer->createToken('authToken')->plainTextToken;
 
