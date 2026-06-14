@@ -77,6 +77,10 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
     // refund & Cancel
     Route::get('/refund-cancel/list',[CheckoutController::class,'refundCancelList']);
     Route::post('/refund-cancel/{order_id}',[CheckoutController::class,'refundCancelSubmit']);
+
+    //Affiliate
+    Route::get('/affiliate-shop', [DashboardController::class, 'affiliateShop'])->name('affiliate-shop');
+    
 });
 
 Route::name('api.')->group(function () {

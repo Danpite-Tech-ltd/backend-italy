@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AffiliateProduct;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -94,6 +96,29 @@ class DashboardController extends Controller
             'status' => true,
             'message' => 'User order',
             'data' => $order
+        ]);
+    }
+
+    public function affiliateShop()
+    {
+        $user = auth()->user();
+
+        $affiliateProducts = AffiliateProduct::with('product')->where('affiliate_id', Auth::id())->get();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Affiliate Shop Data Fetched Successfully',
+            'data'    => [
+                'user' => [
+                    'name'     => $user->name,
+                    'ref_code' => $user->ref_code,
+                ],
+
+                'affiliate_links' => [
+                    'affiliate_url' => url('/') . "?ref=" . $user->ref_code,
+                ],
+                'products' => $affiliateProducts
+            ]
         ]);
     }
 }
