@@ -485,8 +485,8 @@
 
                 <div class="collapse @if (request()->routeIs('admin.sales-report.*')) show @endif" id="report">
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.sales-report.index') active @endif"
-                                href="{{ route('admin.sales-report.index') }}">Old Sales Report</a></li>
+                        {{-- <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.sales-report.index') active @endif"
+                                href="{{ route('admin.sales-report.index') }}">Old Sales Report</a></li> --}}
                         <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.salesreport') active @endif"
                                 href="{{ route('admin.salesreport') }}"> Sales Report</a></li>
                     </ul>
