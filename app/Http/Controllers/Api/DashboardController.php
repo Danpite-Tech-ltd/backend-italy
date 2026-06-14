@@ -12,26 +12,80 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    // public function dashboardOverview()
+    // {
+    //     $user_id = Auth()->user()->id;
+    //     // return $user_id;
+
+    //     $allOrders = Order::where('user_id', $user_id)->count();
+    //     $pendingOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 1])->count();
+    //     $ProcessingOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 2])->count();
+    //     $completeOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 4])->count();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Dashboard Overview',
+    //         'data' => [
+    //             'allOrders' => $allOrders,
+    //             'pendingOrders' => $pendingOrders,
+    //             'ProcessingOrders' => $ProcessingOrders,
+    //             'completeOrders' => $completeOrders
+    //         ],
+    //     ], 200);
+    // }
+
     public function dashboardOverview()
     {
-        $user_id = Auth()->user()->id;
-        // return $user_id;
+        $user = auth()->user();
+        $userId = $user->id;
+        $today = Carbon::today();
 
-        $allOrders = Order::where('user_id', $user_id)->count();
-        $pendingOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 1])->count();
-        $ProcessingOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 2])->count();
-        $completeOrders = Order::where(['user_id' => $user_id, 'order_status_id' => 4])->count();
+        $responseData = [];
+
+        if ($user->hasRole('user')) {
+            $responseData = [
+                'role'               => 'user',
+                'totalOrders'        => Order::where('user_id', $userId)->count(),
+                'pendingOrders'      => Order::where('user_id', $userId)->where('order_status_id', 1)->count(),
+                'wish'               => Wishlist::where('user_id', $userId)->count(),
+                'todayTotalOrders'   => Order::where('user_id', $userId)->whereDate('created_at', $today)->count(),
+                'todayPendingOrders' => Order::where('user_id', $userId)->where('order_status_id', 1)->whereDate('created_at', $today)->count(),
+                'todayWish'          => Wishlist::where('user_id', $userId)->whereDate('created_at', $today)->count(),
+            ];
+        } else if ($user->hasRole('affiliate')) {
+            $responseData = [
+                'role'                  => 'affiliate',
+                'totalOrders'           => Order::where('user_id', $userId)->count(),
+                'totalPendingOrders'    => Order::where('affiliate_id', $userId)->where('order_status_id', 1)->count(),
+                'totalShippedOrders'    => Order::where('affiliate_id', $userId)->where('order_status_id', 3)->count(),
+                'totalDeliveredOrders'  => Order::where('affiliate_id', $userId)->where('order_status_id', 4)->count(),
+                'totalCancelledOrders'  => Order::where('affiliate_id', $userId)->where('order_status_id', 5)->count(),
+                'totalReturnOrders'     => Order::where('affiliate_id', $userId)->where('order_status_id', 6)->count(),
+                'totalSale'             => Order::where('affiliate_id', $userId)->sum('subtotal'),
+                'myShop'                => AffiliateProduct::where('affiliate_id', $userId)->count(),
+                'accountBalance'        => $user->account_balance ?? 0,
+                'withdrawalBalance'     => $user->withdrawal_balance ?? 0,
+                
+                // Today's statistics data block
+                'todayTotalOrders'      => Order::where('user_id', $userId)->whereDate('created_at', $today)->count(),
+                'todayPendingOrders'    => Order::where('user_id', $userId)->where('order_status_id', 1)->whereDate('created_at', $today)->count(),
+                'todayShippedOrders'    => Order::where('user_id', $userId)->where('order_status_id', 3)->whereDate('created_at', $today)->count(),
+                'todayDeliveredOrders'  => Order::where('user_id', $userId)->where('order_status_id', 4)->whereDate('created_at', $today)->count(),
+                'todayCancelledOrders'  => Order::where('user_id', $userId)->where('order_status_id', 5)->whereDate('created_at', $today)->count(),
+                'todayReturnOrders'     => Order::where('user_id', $userId)->where('order_status_id', 6)->whereDate('created_at', $today)->count(),
+            ];
+        } else {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Unauthorized Role Access'
+            ], 403);
+        }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Dashboard Overview',
-            'data' => [
-                'allOrders' => $allOrders,
-                'pendingOrders' => $pendingOrders,
-                'ProcessingOrders' => $ProcessingOrders,
-                'completeOrders' => $completeOrders
-            ],
-        ], 200);
+            'status'  => true,
+            'message' => 'Dashboard Overview Data Fetched',
+            'data'    => $responseData
+        ]);
     }
 
     public function userProfile()
