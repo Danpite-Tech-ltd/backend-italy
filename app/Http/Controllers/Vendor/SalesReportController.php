@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Courier;
+use App\Models\OrderProduct;
+use App\Models\PurchaseProduct;
 use App\Models\VendorOrder;
 use App\Models\VendorOrderStatus;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -115,5 +118,52 @@ class SalesReportController extends Controller
         $statuses = VendorOrderStatus::where('status', 1)->get();
 
         return view('vendor.pages.sales_report.index', compact('statuses'));
+    }
+
+    public function salesreport(Request $request)
+    {
+        $query = OrderProduct::whereHas('order', function ($q) {
+            $q->where('order_status_id', 4)->where('vendor_id', auth()->guard('vendor')->id());
+        });
+
+
+        // Date filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+            } elseif ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+                }
+
+                $orderProducts = $query->latest()->get();
+                // dd('Hello');
+
+        // Profit Summary Calculation
+        $totalSale     = 0;
+        $totalPurchase = 0;
+
+        foreach ($orderProducts as $orderProduct) {
+            $purchase = PurchaseProduct::where('product_id', $orderProduct->product_id)
+                ->latest()
+                ->first();
+
+            $purchasePrice = $purchase ? $purchase->product_price : 0;
+
+            $totalSale     += $orderProduct->quantity * $orderProduct->product_price;
+            $totalPurchase += $orderProduct->quantity * $purchasePrice;
+        }
+
+        $totalProfit = $totalSale - $totalPurchase;
+
+        return view('admin.pages.report.sales.salesreport', compact(
+            'orderProducts',
+            'totalSale',
+            'totalPurchase',
+            'totalProfit'
+        ));
     }
 }

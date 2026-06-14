@@ -204,8 +204,10 @@
                 <ul class="nav flex-column sub-menu">
 
 
-                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.sales-reports.index') active @endif"
-                            href="{{ route('vendor.sales-reports.index') }}">Sales Report</a></li>
+                    {{-- <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.sales-reports.index') active @endif"
+                            href="{{ route('vendor.sales-reports.index') }}">Sales Report</a></li> --}}
+                    <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'vendor.salesreport') active @endif"
+                            href="{{ route('vendor.salesreport') }}">Sales Report</a></li>
 
 
                 </ul>

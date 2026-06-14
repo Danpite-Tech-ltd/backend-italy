@@ -46,6 +46,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
 
         //Sales Reports
         Route::resource('/sales-reports', SalesReportController::class)->names('sales-reports');
+        Route::get('/sales/report', [SalesReportController::class, 'salesreport'])->name('salesreport');
 
         // product Review
         Route::get('/review', [ReviewController::class, 'vendorReview'])->name('review.index');
