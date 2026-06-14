@@ -14,34 +14,33 @@
             cursor: pointer;
         }
     </style>
-
 @endpush
 
 
 @section('content')
 
-    {{--    <div class="row">--}}
-    {{--        <div class="col-12">--}}
-    {{--            <div class="page-title-box d-sm-flex align-items-center justify-content-end">--}}
-    {{--                <h4 class="mb-sm-0 font-size-18">Admins</h4>--}}
+    {{--    <div class="row"> --}}
+    {{--        <div class="col-12"> --}}
+    {{--            <div class="page-title-box d-sm-flex align-items-center justify-content-end"> --}}
+    {{--                <h4 class="mb-sm-0 font-size-18">Admins</h4> --}}
 
-    {{--                <div class="page-title-right">--}}
-    {{--                    <ol class="m-0 breadcrumb">--}}
-    {{--                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li>--}}
-    {{--                        <li class="breadcrumb-item active">Admins</li>--}}
-    {{--                    </ol>--}}
-    {{--                </div>--}}
+    {{--                <div class="page-title-right"> --}}
+    {{--                    <ol class="m-0 breadcrumb"> --}}
+    {{--                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li> --}}
+    {{--                        <li class="breadcrumb-item active">Admins</li> --}}
+    {{--                    </ol> --}}
+    {{--                </div> --}}
 
-    {{--            </div>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
+    {{--            </div> --}}
+    {{--        </div> --}}
+    {{--    </div> --}}
 
-    {{-- Table Starts--}}
+    {{-- Table Starts --}}
     <div class="row">
 
         @forelse($statuses as $status)
             <div class="col-xl-3 col-md-6 mb-4 status-card" data-status="{{ $status->id }}"
-                 data-status-name="{{ $status->status_name }}">
+                data-status-name="{{ $status->status_name }}">
                 <!-- card -->
 
                 <div class="card card-h-100 shadow">
@@ -53,8 +52,7 @@
                             </div>
 
                             <div class="col-8">
-                                <span
-                                    class="text-muted mb-3 lh-1 d-block text-truncate">{{ $status->status_name }}</span>
+                                <span class="text-muted mb-3 lh-1 d-block text-truncate">{{ $status->status_name }}</span>
                                 <h4 class="mb-3">
                                     <span class="">{{ $status->orders()->count() ?? 0 }}</span>
                                 </h4>
@@ -84,9 +82,9 @@
                             <label for="pathaostore" class="form-label">Store</label>
                             <select name="pathaostore" id="pathaostore" class="pathaostore form-control" required>
                                 <option value="">Select Store...</option>
-                                @if(isset($pathaostore['data']['data']))
-                                    @foreach($pathaostore['data']['data'] as $key=>$store)
-                                        <option value="{{$store['store_id']}}">{{$store['store_name']}}</option>
+                                @if (isset($pathaostore['data']['data']))
+                                    @foreach ($pathaostore['data']['data'] as $key => $store)
+                                        <option value="{{ $store['store_id'] }}">{{ $store['store_name'] }}</option>
                                     @endforeach
                                 @else
                                 @endif
@@ -96,11 +94,11 @@
                         <div class="form-group mt-3">
                             <label for="pathaocity" class="form-label">City</label>
                             <select name="pathaocity" id="pathaocity" class="chosen-select pathaocity form-control"
-                                    style="width:100%" required>
+                                style="width:100%" required>
                                 <option value="">Select City...</option>
-                                @if(isset($pathaocities['data']['data']))
-                                    @foreach($pathaocities['data']['data'] as $key=>$city)
-                                        <option value="{{$city['city_id']}}">{{$city['city_name']}}</option>
+                                @if (isset($pathaocities['data']['data']))
+                                    @foreach ($pathaocities['data']['data'] as $key => $city)
+                                        <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                                     @endforeach
                                 @else
                                 @endif
@@ -111,7 +109,7 @@
                         <div class="form-group mt-3">
                             <label for="" class="form-label">Zone</label>
                             <select name="pathaozone" id="pathaozone" class="pathaozone chosen-select form-control"
-                                    value="{{ old('pathaozone') }}" style="width:100%" required>
+                                value="{{ old('pathaozone') }}" style="width:100%" required>
                             </select>
 
                         </div>
@@ -119,13 +117,13 @@
                         <div class="form-group mt-3">
                             <label for="" class="form-label">Area</label>
                             <select name="pathaoarea" id="pathaoarea"
-                                    class="pathaoarea chosen-select form-control  {{ $errors->has('pathaoarea') ? ' is-invalid' : '' }}"
-                                    value="{{ old('pathaoarea') }}" style="width:100%">
+                                class="pathaoarea chosen-select form-control  {{ $errors->has('pathaoarea') ? ' is-invalid' : '' }}"
+                                value="{{ old('pathaoarea') }}" style="width:100%">
                             </select>
                             @if ($errors->has('pathaoarea'))
                                 <span class="invalid-feedback" role="alert">
-                <strong>{{ $errors->first('pathaoarea') }}</strong>
-              </span>
+                                    <strong>{{ $errors->first('pathaoarea') }}</strong>
+                                </span>
                             @endif
                         </div>
                         <!-- form group end -->
@@ -151,22 +149,24 @@
 
                         <div class="d-flex gap-3">
                             @isset($steadfastStatus)
-                                <a href="javascript:void(0)"
-                                   class="btn rounded-pill btn-info steadfast">
+                                <a href="javascript:void(0)" class="btn rounded-pill btn-info steadfast">
                                     <i class="fas fa-truck"></i> Steadfast
                                 </a>
                             @endisset
 
+                            <a href="javascript:void(0)" class="btn rounded-pill btn-info" id="invoice">
+                                <i class="fa-solid fa-file-invoice"></i> Invoice
+                            </a>
+
                             @isset($pathaoStatus)
                                 <a data-bs-toggle="modal" data-bs-target="#pathao"
-                                   class="btn rounded-pill btn-danger multi_order_courier pathao">
+                                    class="btn rounded-pill btn-danger multi_order_courier pathao">
                                     <i class="fas fa-truck"></i> Pathao
                                 </a>
                             @endisset
 
                             @can('Create Order')
-                                <a class="btn btn-md rounded-pill btn-secondary"
-                                   href="{{ route('admin.order.create') }}">
+                                <a class="btn btn-md rounded-pill btn-secondary" href="{{ route('admin.order.create') }}">
                                     Create Order
                                 </a>
                             @endcan
@@ -180,23 +180,22 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-bordered"
-                           id="adminTable">
+                    <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-bordered" id="adminTable">
                         <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="selectAll">
-                            </th>
-                            <th>Invoice No</th>
-                            <th>Customer info</th>
-                            <th>Products</th>
-                            <th>Total</th>
-                            <th>Customer Notes</th>
-                            <th>Payment Method</th>
-                            <th>Status</th>
-                            {{--                                <th>Assigned to</th>--}}
-                            <th>Actions</th>
-                        </tr>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll">
+                                </th>
+                                <th>Invoice No</th>
+                                <th>Customer info</th>
+                                <th>Products</th>
+                                <th>Total</th>
+                                <th>Customer Notes</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                {{--                                <th>Assigned to</th> --}}
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
 
@@ -216,12 +215,12 @@
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
-    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
+    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script> --}}
 
     <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -236,8 +235,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             let token = $("input[name='_token']").val();
 
@@ -264,8 +262,7 @@
                     '<"col-md-5"i>' +
                     '<"col-md-7"p>' +
                     '>',
-                buttons: [
-                    {
+                buttons: [{
                         extend: 'print',
                         text: 'Print Table',
                         className: 'btn btn-success btn-sm'
@@ -275,8 +272,16 @@
                         text: 'Download PDF',
                         className: 'btn btn-danger btn-sm'
                     },
-                    {extend: 'csv', className: 'btn btn-info btn-sm', text: 'CSV Export'},
-                    {extend: 'excel', className: 'btn btn-success btn-sm', text: 'Excel Export'},
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-info btn-sm',
+                        text: 'CSV Export'
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-success btn-sm',
+                        text: 'Excel Export'
+                    },
 
                 ],
 
@@ -285,17 +290,16 @@
                 ],
                 processing: true,
                 serverSide: true,
-                {{--ajax: "{{url('/admin/data')}}",--}}
+                {{-- ajax: "{{url('/admin/data')}}", --}}
                 ajax: "{{ route('admin.order.index') }}?status=" + currentStatus,
                 // pageLength: 30,
 
-                columns: [
-                    {
+                columns: [{
                         data: 'id',
                         orderable: false,
                         searchable: false,
                         className: 'text-center',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<input type="checkbox" class="rowCheckbox" value="${data}">`;
                         },
                         width: '5%'
@@ -343,14 +347,12 @@
                         data: 'payment_method',
                         className: 'text-center align-top',
                         width: '10%',
-                        render: function (data) {
-                       if(data)
-                       {
-                           return `<span class="badge bg-info">${data}</span>`
-                       }
-                       else {
-                           return `<span class="badge bg-info">COD</span>`
-                       }
+                        render: function(data) {
+                            if (data) {
+                                return `<span class="badge bg-info">${data}</span>`
+                            } else {
+                                return `<span class="badge bg-info">COD</span>`
+                            }
 
                         }
 
@@ -379,12 +381,13 @@
 
 
             // Update title on page load
-            let statusName = $('.status-card[data-status="' + currentStatus + '"]').find('span').text() || 'All Orders';
+            let statusName = $('.status-card[data-status="' + currentStatus + '"]').find('span').text() ||
+                'All Orders';
             $('#tableTitle').text(statusName);
 
 
             // Status Change
-            $(document).on('click', '.status-card', function () {
+            $(document).on('click', '.status-card', function() {
                 let status = $(this).data('status');
                 let statusName = $(this).data('status-name');
 
@@ -393,24 +396,27 @@
                 adminTable.ajax.url("{{ route('admin.order.index') }}?status=" + status).load();
 
                 // Update URL without reloading
-                let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?status=" + status;
-                window.history.pushState({path: newUrl}, '', newUrl);
+                let newUrl = window.location.protocol + "//" + window.location.host + window.location
+                    .pathname + "?status=" + status;
+                window.history.pushState({
+                    path: newUrl
+                }, '', newUrl);
             });
 
 
             // Delete Admin
-            $(document).on('click', '#deleteAdminBtn', function () {
+            $(document).on('click', '#deleteAdminBtn', function() {
                 let id = $(this).data('id');
 
                 swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this !",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                })
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this !",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    })
                     .then((result) => {
                         if (result.isConfirmed) {
 
@@ -422,7 +428,7 @@
                                 data: {
                                     '_token': token
                                 },
-                                success: function (res) {
+                                success: function(res) {
                                     Swal.fire({
                                         title: "Deleted!",
                                         text: "Order has been deleted.",
@@ -431,7 +437,7 @@
 
                                     adminTable.ajax.reload();
                                 },
-                                error: function (err) {
+                                error: function(err) {
                                     console.log('error')
                                 }
                             })
@@ -447,7 +453,7 @@
 
 
             // Change Order Status
-            $(document).on('change', '.order-status-change', function () {
+            $(document).on('change', '.order-status-change', function() {
 
                 let order_id = $(this).data('id');
                 let order_status_id = $(this).val();
@@ -462,12 +468,12 @@
                         order_status_id: order_status_id,
                         '_token': token
                     },
-                    success: function (res) {
+                    success: function(res) {
 
                         toastr.success(res.message);
                         adminTable.ajax.reload();
                     },
-                    error: function (err) {
+                    error: function(err) {
                         console.log('error')
                     }
                 })
@@ -477,12 +483,12 @@
 
             //Checkbox
             // Select/Deselect all checkboxes
-            $('#selectAll').on('click', function () {
+            $('#selectAll').on('click', function() {
                 $('.rowCheckbox').prop('checked', this.checked);
             });
 
             // If any row unchecked, uncheck the selectAll
-            $('#adminTable').on('click', '.rowCheckbox', function () {
+            $('#adminTable').on('click', '.rowCheckbox', function() {
                 if (!this.checked) {
                     $('#selectAll').prop('checked', false);
                 }
@@ -495,16 +501,30 @@
             // Example: get all selected IDs
             function getSelectedIds() {
                 let ids = [];
-                $('.rowCheckbox:checked').each(function () {
+                $('.rowCheckbox:checked').each(function() {
                     ids.push($(this).val());
                 });
 
                 return ids;
             }
 
+            // invoice
+            $(document).on('click', '#invoice', function() {
+
+                let ids = getSelectedIds();
+
+                if (ids.length === 0) {
+                    alert('Please select at least one order.');
+                    return;
+                }
+
+                let url = "{{ route('admin.invoice') }}" + '?ids=' + ids.join(',');
+
+                window.open(url, '_blank');
+            });
 
             //steadfast
-            $(document).on('click', '.steadfast', function () {
+            $(document).on('click', '.steadfast', function() {
 
                 let ids = getSelectedIds();
                 if (ids.length == 0) {
@@ -513,13 +533,13 @@
                 }
 
                 swal.fire({
-                    title: "Are you sure?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, Assign to SteadFast Courier!"
-                })
+                        title: "Are you sure?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, Assign to SteadFast Courier!"
+                    })
                     .then((result) => {
                         if (result.isConfirmed) {
 
@@ -531,25 +551,28 @@
                                     order_ids: ids
                                 },
                                 dataType: "json",
-                                beforeSend: function () {
-                                    $("#steadfastSubmitBtn").prop("disabled", true).text("Processing...");
+                                beforeSend: function() {
+                                    $("#steadfastSubmitBtn").prop("disabled", true).text(
+                                        "Processing...");
                                 },
-                                success: function (response) {
+                                success: function(response) {
                                     if (response.status === "success") {
                                         toastr.success(response.message);
                                         // Optionally reload page or update UI
                                         adminTable.ajax.reload();
                                     } else {
                                         toastr.error("Error: " + response.message);
-                                        console.log(response.data); // API response debugging
+                                        console.log(response
+                                        .data); // API response debugging
                                     }
                                 },
-                                error: function (xhr, status, error) {
+                                error: function(xhr, status, error) {
                                     toastr.error("Something went wrong: " + error);
                                     console.log(xhr.responseText);
                                 },
-                                complete: function () {
-                                    $("#steadfastSubmitBtn").prop("disabled", false).text("Submit to Steadfast");
+                                complete: function() {
+                                    $("#steadfastSubmitBtn").prop("disabled", false).text(
+                                        "Submit to Steadfast");
                                 }
                             });
 
@@ -562,20 +585,25 @@
             })
 
             //pathao
-            $(document).ready(function () {
-                $('.pathaocity').change(function () {
+            $(document).ready(function() {
+                $('.pathaocity').change(function() {
                     var id = $(this).val();
                     if (id) {
                         $.ajax({
                             type: "GET",
                             url: "{{ url('admin/pathao-zone') }}?city_id=" + id,
-                            success: function (res) {
+                            success: function(res) {
                                 if (res && res.data && res.data.data) {
                                     $(".pathaozone").empty();
-                                    $(".pathaozone").append('<option value="">Select..</option>');
-                                    $.each(res.data.data, function (index, zone) {
-                                        $(".pathaozone").append('<option value="' + zone.zone_id + '">' + zone.zone_name + '</option>');
-                                        $('.pathaozone').trigger("chosen:updated");
+                                    $(".pathaozone").append(
+                                        '<option value="">Select..</option>');
+                                    $.each(res.data.data, function(index, zone) {
+                                        $(".pathaozone").append(
+                                            '<option value="' + zone
+                                            .zone_id + '">' + zone
+                                            .zone_name + '</option>');
+                                        $('.pathaozone').trigger(
+                                            "chosen:updated");
                                     });
                                 } else {
                                     $(".pathaoarea").empty();
@@ -590,20 +618,25 @@
                 });
             });
 
-            $(document).ready(function () {
-                $('.pathaozone').change(function () {
+            $(document).ready(function() {
+                $('.pathaozone').change(function() {
                     var id = $(this).val();
                     if (id) {
                         $.ajax({
                             type: "GET",
                             url: "{{ url('admin/pathao-area') }}?zone_id=" + id,
-                            success: function (res) {
+                            success: function(res) {
                                 if (res && res.data && res.data.data) {
                                     $(".pathaoarea").empty();
-                                    $(".pathaoarea").append('<option value="">Select..</option>');
-                                    $.each(res.data.data, function (index, area) {
-                                        $(".pathaoarea").append('<option value="' + area.area_id + '">' + area.area_name + '</option>');
-                                        $('.pathaoarea').trigger("chosen:updated");
+                                    $(".pathaoarea").append(
+                                        '<option value="">Select..</option>');
+                                    $.each(res.data.data, function(index, area) {
+                                        $(".pathaoarea").append(
+                                            '<option value="' + area
+                                            .area_id + '">' + area
+                                            .area_name + '</option>');
+                                        $('.pathaoarea').trigger(
+                                            "chosen:updated");
                                     });
                                 } else {
                                     $(".pathaoarea").empty();
@@ -629,7 +662,7 @@
             // })
 
             //pathao
-            $('#pathaoOrderForm').submit(function (e) {
+            $('#pathaoOrderForm').submit(function(e) {
                 e.preventDefault();
 
                 // Collect selected order IDs
@@ -648,7 +681,7 @@
                     url: "{{ route('admin.pathao.order-submit') }}", // route in Laravel
                     type: "POST",
                     data: formData,
-                    success: function (response) {
+                    success: function(response) {
                         if (response.status === 'success') {
                             toastr.success(response.message, 'Success');
                             $('#pathaoOrderForm')[0].reset(); // reset form if needed
@@ -657,7 +690,7 @@
                             toastr.error(response.message, 'Failed');
                         }
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         toastr.error("Something went wrong!", "Error");
                         console.log(xhr.responseText);
                     }

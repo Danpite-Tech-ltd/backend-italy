@@ -203,6 +203,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     Route::get('/refund-cancel-order', [OrderController::class, 'refundCancelRequest'])->name('refund-cancel-order-request');
     Route::post('/refund-order/toggle-status', [OrderController::class, 'refundCancelChangeStatus']);
+    // invoice
+    Route::get('/invoice', [OrderController::class, 'invoice'])->name('invoice');
 
     //pathao
     Route::post('order-pathao', [OrderController::class, 'pathaoOrderSubmit'])->name('pathao.order-submit');
