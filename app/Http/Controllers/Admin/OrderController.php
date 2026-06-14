@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Adrianorosa\GeoLocation\GeoLocation;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusChange;
+use App\Models\BasicInfo;
 use App\Models\Cart;
 use App\Models\Courier;
 use App\Models\Courierapi;
@@ -189,6 +190,24 @@ class OrderController extends Controller implements HasMiddleware
             'pathaostore',
             'pathaocities'
         ));
+    }
+
+    public function invoice(Request $request)
+    { 
+        // dd("hello");
+        $ids = explode(',', $request->ids);
+
+        $orders = Order::with(['customer', 'orderProducts'])
+            ->whereIn('id', $ids)
+            ->get();
+
+        if ($orders->isEmpty()) {
+            abort(404);
+        }
+
+        $basicInfo = BasicInfo::first();
+
+        return view('admin.pages.order.invoice', compact('orders', 'basicInfo'));
     }
 
     /**
@@ -644,7 +663,7 @@ class OrderController extends Controller implements HasMiddleware
     public function refundCancelRequest()
     {
         $refundCancelOrders = RefundCancel::latest()->get();
-        return view('admin.pages.order.refund_cancel',compact('refundCancelOrders'));
+        return view('admin.pages.order.refund_cancel', compact('refundCancelOrders'));
     }
 
     public function refundCancelChangeStatus(Request $request)
@@ -667,6 +686,4 @@ class OrderController extends Controller implements HasMiddleware
             'message' => 'Order status updated successfully!'
         ]);
     }
-
-
 }

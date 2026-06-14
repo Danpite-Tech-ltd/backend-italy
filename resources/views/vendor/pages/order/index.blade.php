@@ -176,6 +176,9 @@
 
 
                         <div class="d-flex gap-3">
+                            <a href="javascript:void(0)" class="btn rounded-pill btn-info" id="invoice">
+                                <i class="fa-solid fa-file-invoice"></i> Invoice
+                            </a>
                             @isset($steadfastStatus)
                                 <a href="javascript:void(0)"
                                    class="btn rounded-pill btn-info steadfast">
@@ -529,6 +532,21 @@
 
                 return ids;
             }
+
+            // invoice
+            $(document).on('click', '#invoice', function() {
+
+                let ids = getSelectedIds();
+
+                if (ids.length === 0) {
+                    alert('Please select at least one order.');
+                    return;
+                }
+
+                let url = "{{ route('vendor.invoice') }}" + '?ids=' + ids.join(',');
+
+                window.open(url, '_blank');
+            });
 
 
             //steadfast

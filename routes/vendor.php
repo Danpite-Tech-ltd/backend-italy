@@ -46,6 +46,7 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
 
         //Sales Reports
         Route::resource('/sales-reports', SalesReportController::class)->names('sales-reports');
+        Route::get('/sales/report', [SalesReportController::class, 'salesreport'])->name('salesreport');
 
         // product Review
         Route::get('/review', [ReviewController::class, 'vendorReview'])->name('review.index');
@@ -56,6 +57,8 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::resource('/orders', OrderController::class)->names('order');
         Route::get('/order-by-status/{id}', [OrderController::class, 'orderByStatus'])->name('order.status');
         Route::post('/order-status-change', [OrderController::class, 'orderStatusChange'])->name('order.status-change');
+        // invoice
+        Route::get('/invoice', [OrderController::class, 'invoice'])->name('invoice');
 
         // Bank Setup
         Route::resource('/banks', BankSetupController::class)->names('bank');

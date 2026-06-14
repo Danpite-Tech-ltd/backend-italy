@@ -1,4 +1,4 @@
-@extends('admin.layout.app')
+@extends('vendor.layouts.master')
 
 @push('css')
     <link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use Adrianorosa\GeoLocation\GeoLocation;
 use App\Http\Controllers\Controller;
+use App\Models\BasicInfo;
 use App\Models\Cart;
 use App\Models\Courier;
 use App\Models\Courierapi;
@@ -143,6 +144,23 @@ class OrderController extends Controller
         return view('vendor.pages.order.index', compact('statuses', 'allOrderCount'));
     }
 
+    public function invoice(Request $request)
+    { 
+        // dd("hello");
+        $ids = explode(',', $request->ids);
+        $orders = VendorOrder::with(['order', 'order.customer', 'orderProducts'])
+        ->whereIn('id', $ids)
+        ->get();
+        // dd($orders);
+
+        if ($orders->isEmpty()) {
+            abort(404);
+        }
+
+        $basicInfo = BasicInfo::first();
+
+        return view('vendor.pages.order.invoice', compact('orders', 'basicInfo'));
+    }
 
     /**
      * Show the form for creating a new resource.

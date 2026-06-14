@@ -2,29 +2,27 @@
 
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
-
 @endpush
 
 
 @section('content')
+    {{--    <div class="row"> --}}
+    {{--        <div class="col-12"> --}}
+    {{--            <div class="page-title-box d-sm-flex align-items-center justify-content-end"> --}}
+    {{--                <h4 class="mb-sm-0 font-size-18">Admins</h4> --}}
 
-    {{--    <div class="row">--}}
-    {{--        <div class="col-12">--}}
-    {{--            <div class="page-title-box d-sm-flex align-items-center justify-content-end">--}}
-    {{--                <h4 class="mb-sm-0 font-size-18">Admins</h4>--}}
+    {{--                <div class="page-title-right"> --}}
+    {{--                    <ol class="breadcrumb m-0"> --}}
+    {{--                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li> --}}
+    {{--                        <li class="breadcrumb-item active">Admins</li> --}}
+    {{--                    </ol> --}}
+    {{--                </div> --}}
 
-    {{--                <div class="page-title-right">--}}
-    {{--                    <ol class="breadcrumb m-0">--}}
-    {{--                        <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li>--}}
-    {{--                        <li class="breadcrumb-item active">Admins</li>--}}
-    {{--                    </ol>--}}
-    {{--                </div>--}}
+    {{--            </div> --}}
+    {{--        </div> --}}
+    {{--    </div> --}}
 
-    {{--            </div>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
-
-    {{-- Table Starts--}}
+    {{-- Table Starts --}}
 
     <div class="row">
         <div class="col-lg-12">
@@ -38,28 +36,38 @@
                                 Create Product
                             </a>
                         @endcan
+                        <form action="{{ route('admin.products.import') }}" method="POST" enctype="multipart/form-data">
+
+                            @csrf
+
+                            <input type="file" name="file" style="margin-right: -60px;" required>
+
+                            <button type="submit" class="btn btn-primary">
+                                Import Products
+                            </button>
+
+                        </form>
                     </div>
 
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped"
-                               id="adminTable">
+                        <table class="table mb-0 w-100 dataTable no-footer dtr-inline table-striped" id="adminTable">
                             <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Vendor</th>
-                                <th>Branch</th>
-                                <th>Warehouse</th>
-                                <th>Price</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Vendor</th>
+                                    <th>Branch</th>
+                                    <th>Warehouse</th>
+                                    <th>Price</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
 
-                            </tr>
+                                </tr>
                             </thead>
                             <tbody>
 
@@ -75,19 +83,18 @@
         <!-- end col -->
     </div>
 
-    {{--    Table Ends--}}
-
+    {{--    Table Ends --}}
 @endsection
 
 
 @push('js')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
-    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>--}}
+    {{--    <script src="{{asset('backend')}}/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script> --}}
 
     <!-- DataTables Buttons -->
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
@@ -102,8 +109,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             var token = $("input[name='_token']").val();
             let baseAssetUrl = "{{ asset('') }}";
@@ -120,8 +126,7 @@
                     '<"col-md-5"i>' +
                     '<"col-md-7"p>' +
                     '>',
-                buttons: [
-                    {
+                buttons: [{
                         extend: 'print',
                         text: 'Print Table',
                         className: 'btn btn-success btn-sm'
@@ -131,8 +136,16 @@
                         text: 'Download PDF',
                         className: 'btn btn-danger btn-sm'
                     },
-                    {extend: 'csv', className: 'btn btn-info btn-sm', text: 'CSV Export'},
-                    {extend: 'excel', className: 'btn btn-success btn-sm', text: 'Excel Export'},
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-info btn-sm',
+                        text: 'CSV Export'
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-success btn-sm',
+                        text: 'Excel Export'
+                    },
 
                 ],
 
@@ -141,11 +154,10 @@
                 ],
                 processing: true,
                 serverSide: true,
-                ajax: "{{route('admin.product.index')}}",
+                ajax: "{{ route('admin.product.index') }}",
                 // pageLength: 30,
 
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -155,8 +167,9 @@
                     {
                         data: 'thumbnail_img',
                         name: 'thumbnail_img',
-                        render: function (data, type, row) {
-                            return '<img src="' + baseAssetUrl + row.thumbnail_img + '" width="200" height="200" alt="Image">';
+                        render: function(data, type, row) {
+                            return '<img src="' + baseAssetUrl + row.thumbnail_img +
+                                '" width="200" height="200" alt="Image">';
                         },
                         width: '10%'
 
@@ -171,7 +184,7 @@
                         data: 'category.name',
                         name: 'category.name',
                         width: '10%',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<span class="badge bg-info"> ${data} </span>`
                         },
 
@@ -181,7 +194,7 @@
                         data: 'vendor.company_name',
                         name: 'vendor.company_name',
                         width: '10%',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<span class="badge bg-info"> ${data} </span>`
                         },
 
@@ -191,17 +204,17 @@
                         data: 'branch.name',
                         name: 'branch.name',
                         width: '10%',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<span class="badge bg-info"> ${data} </span>`
                         },
 
 
                     },
-                     {
+                    {
                         data: 'warehouse.name',
                         name: 'warehouse.name',
                         width: '10%',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<span class="badge bg-info"> ${data} </span>`
                         },
 
@@ -216,7 +229,7 @@
 
                     {
                         data: 'type.name',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return `<span class="badge bg-primary"> ${data} </span>`
                         },
                         width: '10%'
@@ -241,18 +254,18 @@
 
 
             // Delete Admin
-            $(document).on('click', '#deleteAdminBtn', function () {
+            $(document).on('click', '#deleteAdminBtn', function() {
                 let id = $(this).data('id');
 
                 swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this !",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                })
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this !",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    })
                     .then((result) => {
                         if (result.isConfirmed) {
 
@@ -264,7 +277,7 @@
                                 data: {
                                     '_token': token
                                 },
-                                success: function (res) {
+                                success: function(res) {
                                     Swal.fire({
                                         title: "Deleted!",
                                         text: "Product has been deleted.",
@@ -273,7 +286,7 @@
 
                                     adminTable.ajax.reload();
                                 },
-                                error: function (err) {
+                                error: function(err) {
                                     console.log('error')
                                 }
                             })
@@ -289,44 +302,40 @@
             })
 
             // Change Admin Status
-            $(document).on('click', '#adminStatus', function () {
+            $(document).on('click', '#adminStatus', function() {
                 let id = $(this).data('id');
                 let status = $(this).data('status')
                 console.log(id + status)
-                $.ajax(
-                    {
-                        type: 'post',
-                        url: "{{route('admin.product.status')}}",
-                        data: {
-                            '_token': token,
-                            id: id,
-                            status: status
+                $.ajax({
+                    type: 'post',
+                    url: "{{ route('admin.product.status') }}",
+                    data: {
+                        '_token': token,
+                        id: id,
+                        status: status
 
-                        },
-                        success: function (res) {
-                            adminTable.ajax.reload();
+                    },
+                    success: function(res) {
+                        adminTable.ajax.reload();
 
-                            if (res.status == 1) {
+                        if (res.status == 1) {
 
-                                swal.fire(
-                                    {
-                                        title: 'Status Changed to Active',
-                                        icon: 'success'
-                                    })
-                            } else {
-                                swal.fire(
-                                    {
-                                        title: 'Status Changed to Inactive',
-                                        icon: 'success'
-                                    })
+                            swal.fire({
+                                title: 'Status Changed to Active',
+                                icon: 'success'
+                            })
+                        } else {
+                            swal.fire({
+                                title: 'Status Changed to Inactive',
+                                icon: 'success'
+                            })
 
-                            }
-                        },
-                        error: function (err) {
-                            console.log(err)
                         }
+                    },
+                    error: function(err) {
+                        console.log(err)
                     }
-                )
+                })
             })
         });
     </script>

@@ -25,6 +25,8 @@ use Illuminate\Support\Str;
 use Sabberworm\CSS\Value\Size;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -44,6 +46,21 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
+
+    // excel import
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(
+            new ProductsImport,
+            $request->file('file')
+        );
+
+        return back()->with('success', 'Products imported successfully.');
+    }
     public function index()
     {
         if (request()->ajax()) {
