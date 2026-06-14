@@ -147,4 +147,18 @@ class DashboardController extends Controller
             ]
         ]);
     }
+
+    public function withdrawHistory($id)
+    {
+        $withdrawals = AffiliateWithdraw::where('affiliate_id', $id)
+            ->with('user')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Withdraw history fetched successfully',
+            'data'    => $withdrawals
+        ]);
+    }
 }
