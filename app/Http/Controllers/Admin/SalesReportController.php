@@ -7,6 +7,9 @@ use App\Models\Courier;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\User;
+use App\Models\OrderProduct;
+use Carbon\Carbon;
+use App\Models\PurchaseProduct;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -29,12 +32,11 @@ class SalesReportController extends Controller implements HasMiddleware
     {
         if (request()->ajax()) {
 
-//            dd(request()->all());
+            //            dd(request()->all());
 
             if (request('filter') === 'all') {
                 $orders = Order::with(['orderProducts.product', 'customer', 'orderStatus', 'admin', 'courier'])->latest();
-            }
-            else {
+            } else {
 
                 $orders = Order::with(['orderProducts.product', 'customer', 'orderStatus', 'admin', 'courier'])
                     ->when(request()->start_date, function ($q) {
@@ -67,7 +69,6 @@ class SalesReportController extends Controller implements HasMiddleware
                 ->addColumn('status', function ($order) {
 
                     return "<div class='badge bg-success'>{$order->orderStatus->status_name}</div>";
-
                 })
                 ->rawColumns(['status', 'product'])
                 ->addIndexColumn()
@@ -82,6 +83,56 @@ class SalesReportController extends Controller implements HasMiddleware
 
         return view('admin.pages.report.sales.index', compact('couriers', 'admins', 'statuses'));
     }
+
+
+    public function salesreport(Request $request)
+    {
+        $query = OrderProduct::whereHas('order', function ($q) {
+            $q->where('order_status_id', 4);
+        });
+
+
+        // Date filter
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->start_date)->startOfDay(),
+                Carbon::parse($request->end_date)->endOfDay(),
+            ]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+            } elseif ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+                }
+
+                $orderProducts = $query->latest()->get();
+                // dd('Hello');
+
+        // Profit Summary Calculation
+        $totalSale     = 0;
+        $totalPurchase = 0;
+
+        foreach ($orderProducts as $orderProduct) {
+            $purchase = PurchaseProduct::where('product_id', $orderProduct->product_id)
+                ->latest()
+                ->first();
+
+            $purchasePrice = $purchase ? $purchase->product_price : 0;
+
+            $totalSale     += $orderProduct->quantity * $orderProduct->product_price;
+            $totalPurchase += $orderProduct->quantity * $purchasePrice;
+        }
+
+        $totalProfit = $totalSale - $totalPurchase;
+
+        return view('admin.pages.report.sales.salesreport', compact(
+            'orderProducts',
+            'totalSale',
+            'totalPurchase',
+            'totalProfit'
+        ));
+    }
+
+
 
     /**
      * Show the form for creating a new resource.
