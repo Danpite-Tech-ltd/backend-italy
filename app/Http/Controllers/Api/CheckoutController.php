@@ -157,6 +157,13 @@ class CheckoutController extends Controller
             $vat = Vat::firstOrFail();
             $tax = Tax::firstOrFail();
 
+            //check affiliate code
+            if ($request->ref_code) {
+                $ref_code = $request->ref_code;
+                $user = User::where('ref_code', $ref_code)->first();
+                $affiliate_id = $user->id;
+            }
+
             /* ================= CUSTOMER ================= */
             $customer = Customer::create([
                 'name' => $request->name,
@@ -173,6 +180,7 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'user_id' => auth()->id() ?? null,
+                'affiliate_id' => $affiliate_id ?? null,
                 'invoiceID' => (new Order())->invoiceGenerator(),
                 'customer_note' => $request->customer_note,
                 'shipping_charge_id' => $request->shipping_charge_id,
