@@ -256,10 +256,11 @@ class DashboardController extends Controller
         }
 
         $withdraw = new AffiliateWithdraw();
-        $withdraw->affiliate_id   = $affiliate->id;
+        $withdraw->affiliate_id   = auth()->user()->id;
         $withdraw->invoiceID      = uniqid();
         $withdraw->amount         = $request->amount;
         $withdraw->payment_method = $request->payment_method;
+        $withdraw->account_number = $request->account_number;
         $withdraw->payment_details = $request->payment_details;
         $withdraw->save();
 
