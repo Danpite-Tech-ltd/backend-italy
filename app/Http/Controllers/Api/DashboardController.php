@@ -121,4 +121,30 @@ class DashboardController extends Controller
             ]
         ]);
     }
+
+    public function affiliateOrder($id, $status_id)
+    {
+        $status = 'ALL';
+        if ($status_id) {
+            $status = OrderStatus::where('id', $status_id)->value('status_name') ?? 'ALL';
+        }
+
+        $query = Order::with(['orderProducts', 'orderStatus'])
+            ->where('affiliate_id', $id);
+
+        if ($status !== 'ALL') {
+            $query->where('order_status_id', $status_id);
+        }
+
+        $orders = $query->latest()->get();
+
+        return response()->json([
+            'status'  => true,
+            'message' => "{$status} Orders Fetched Successfully",
+            'data'    => [
+                'current_status_filter' => $status,
+                'orders'                => $orders
+            ]
+        ]);
+    }
 }

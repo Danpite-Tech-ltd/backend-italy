@@ -80,7 +80,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 
     //Affiliate
     Route::get('/affiliate-shop', [DashboardController::class, 'affiliateShop'])->name('affiliate-shop');
+    Route::get('/affiliate-order/{id}/{status_id?}', [DashboardController::class, 'affiliateOrder'])->name('affiliate-order');
     
+
 });
 
 Route::name('api.')->group(function () {
