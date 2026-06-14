@@ -12,6 +12,10 @@ class Coupon extends Model
     {
         $currentDate = now();
 
-        return $this->status === 1 && $currentDate->between($this->active_date, $this->expire_date);
+        return $this->status == 1
+            && $currentDate->between(
+                \Carbon\Carbon::parse($this->active_date),
+                \Carbon\Carbon::parse($this->expire_date)
+            );
     }
 }

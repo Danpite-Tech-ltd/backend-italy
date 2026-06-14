@@ -192,7 +192,7 @@ class FrontendController extends Controller
     }
     public function customerNotification()
     {
-        $notify = CustomerNotification::where('user_id',Auth::id())->paginate(12);
+        $notify = CustomerNotification::where('user_id',auth()->id())->paginate(12);
 
         return $this->success(
             message: 'Customer Notification',
