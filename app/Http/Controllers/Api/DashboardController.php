@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AffiliateProduct;
+use App\Models\AffiliateWithdraw;
+use App\Models\BasicInfo;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -65,7 +69,7 @@ class DashboardController extends Controller
                 'myShop'                => AffiliateProduct::where('affiliate_id', $userId)->count(),
                 'accountBalance'        => $user->account_balance ?? 0,
                 'withdrawalBalance'     => $user->withdrawal_balance ?? 0,
-                
+
                 // Today's statistics data block
                 'todayTotalOrders'      => Order::where('user_id', $userId)->whereDate('created_at', $today)->count(),
                 'todayPendingOrders'    => Order::where('user_id', $userId)->where('order_status_id', 1)->whereDate('created_at', $today)->count(),
@@ -157,7 +161,6 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $affiliateProducts = AffiliateProduct::with('product')->where('affiliate_id', Auth::id())->get();
 
         return response()->json([
             'status'  => true,
@@ -169,14 +172,13 @@ class DashboardController extends Controller
                 ],
 
                 'affiliate_links' => [
-                    'affiliate_url' => url('/') . "?ref=" . $user->ref_code,
-                ],
-                'products' => $affiliateProducts
+                    'affiliate_url' => BasicInfo::first()->website_url . "?ref=" . $user->ref_code,
+                ]
             ]
         ]);
     }
 
-    public function affiliateOrder($id, $status_id)
+    public function affiliateOrder($id, $status_id = null)
     {
         $status = 'ALL';
         if ($status_id) {
@@ -250,7 +252,7 @@ class DashboardController extends Controller
             return response()->json([
                 'status'  => false,
                 'message' => 'You do not have enough balance to withdraw'
-            ], 422); 
+            ], 422);
         }
 
         $withdraw = new AffiliateWithdraw();
