@@ -259,6 +259,9 @@
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.order.index') active @endif"
                                     href="{{ route('admin.order.index') }}">Orders</a></li>
 
+                            <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.stripe-payment-list') active @endif"
+                            href="{{ route('admin.stripe-payment-list') }}">Stripe Payment List</a></li>
+
                             <li class="nav-item"><a class="nav-link @if ($currentRouteName == 'admin.refund-cancel-order-request') active @endif"
                             href="{{ route('admin.refund-cancel-order-request') }}">Refund/Cancel Order Request</a></li>
                         @endcan

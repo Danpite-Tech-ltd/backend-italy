@@ -203,6 +203,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
     Route::get('/refund-cancel-order', [OrderController::class, 'refundCancelRequest'])->name('refund-cancel-order-request');
     Route::post('/refund-order/toggle-status', [OrderController::class, 'refundCancelChangeStatus']);
+
+    Route::get('/stripe-payment-list', [OrderController::class, 'stripePaymentList'])->name('stripe-payment-list');
     // invoice
     Route::get('/invoice', [OrderController::class, 'invoice'])->name('invoice');
 
