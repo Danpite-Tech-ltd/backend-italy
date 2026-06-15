@@ -20,6 +20,7 @@ use App\Models\VendorCommission;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ShippingCharge;
+use App\Models\Stripeorder;
 use App\Models\User;
 use Brian2694\Toastr\Facades\Toastr;
 use Exception;
@@ -97,7 +98,7 @@ class OrderController extends Controller implements HasMiddleware
 
                                         <p style="font-size: 18px;color:green;font-weight:bold;"> Variant: ' . $product->variant . '</p>
                                          ' . $preOrderText . '
-                                        
+
                                         </div>
                                         </div>
                                         <br>';
@@ -686,5 +687,11 @@ class OrderController extends Controller implements HasMiddleware
             'new_status' => $order->status,
             'message' => 'Order status updated successfully!'
         ]);
+    }
+
+    public function stripePaymentList()
+    {
+        $stripe_payment_lists = Stripeorder::latest()->get();
+        return view('admin.pages.order.stripe_payment_list', compact('stripe_payment_lists'));
     }
 }

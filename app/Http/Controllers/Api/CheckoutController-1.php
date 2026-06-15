@@ -11,14 +11,11 @@ use App\Models\CustomerNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use Stripe\Stripe;
-use Stripe\Charge;
 use App\Models\RefundCancel;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
-use App\Models\Stripeorder;
 use App\Models\Vat;
 use App\Models\Tax;
 use App\Models\User;
@@ -143,8 +140,6 @@ class CheckoutController extends Controller
             'customer_note' => 'nullable|string',
             'shipping_charge_id' => 'required|exists:shipping_charges,id',
             'products' => 'required|array',
-            'payment_method' => 'required|in:cod,stripe',
-            'stripeToken' => 'required_if:payment_method,stripe|string',
         ]);
 
         if ($validator->fails()) {
@@ -178,13 +173,12 @@ class CheckoutController extends Controller
             ]);
 
             /* ================= MAIN ORDER ================= */
-            $payment = $request->payment_method;
+            $payment = $request->payment;
             if ($payment == 'cod') {
                 $payment_method = "Cash on Delivery";
-            } elseif ($payment == 'stripe') {
+                }elseif($payment == 'stripe') {
                 $payment_method = "Stripe";
             }
-
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'user_id' => auth()->id() ?? null,
@@ -195,7 +189,7 @@ class CheckoutController extends Controller
                 'delivery_charge' => $shippingCharge->delivery_charge,
                 'order_date' => now(),
                 'order_status_id' => 1,
-                'payment' => 'Pending',
+                'payment' => $payment,
                 'payment_method' => $payment_method ?? null,
                 'vat_percentage' => $vat->rate,
                 'tax_percentage' => $tax->rate,
@@ -306,50 +300,21 @@ class CheckoutController extends Controller
 
             if ($request->points_redeem == 1 && $point_price > 0) {
 
+                // ইউজারের সব পয়েন্টের সমান টাকার পরিমাণ
                 $pointsValueAvailable = $rewardPoints * $point_price;
 
+                // total-এর বেশি কাটা যাবে না, তাই min() দিয়ে cap
                 $pointsValue = min($pointsValueAvailable, $total);
 
+                // total থেকে এই amount বাদ দেওয়া হলো
                 $total -= $pointsValue;
 
+                // কতটা পয়েন্ট actually use হলো (টাকা থেকে পয়েন্টে কনভার্ট)
                 $pointsUsed = $pointsValue / $point_price;
             }
             $user = User::find(auth()->id());
-            if ($user) {
-                $user->reward_point = $rewardPoints - $pointsUsed;
-                $user->save();
-            }
-
-            /* ================= STRIPE PAYMENT INTEGRATION ================= */
-            if ($payment == 'stripe') {
-                Stripe::setApiKey(env('STRIPE_SECRET'));
-
-                $charge = Charge::create([
-                    'source' => $request->stripeToken,
-                    'amount' => round($total * 100),
-                    'currency' => 'eur',
-                    'description' => 'Product Payment for Invoice: #' . $order->invoiceID,
-                ]);
-
-                if ($charge->status !== 'succeeded') {
-                    throw new \Exception('Stripe payment fell.');
-                }
-
-                $order->update([
-                    'payment' => 'Paid',
-                ]);
-
-                $stripeorder = new Stripeorder();
-                $stripeorder->order_id = $order->id;
-                $stripeorder->invoice_id = $order->invoiceID;
-                $stripeorder->amount = $total;
-                $stripeorder->customer_name = $customer->name;
-                $stripeorder->customer_email = $customer->email ?? '';
-                $stripeorder->customer_phone = $customer->phone ?? '';
-                $stripeorder->customer_address = $customer->address ?? '';
-                $stripeorder->status = 'Paid';
-                $stripeorder->save();
-            }
+            $user->reward_point = $rewardPoints - $pointsUsed;
+            $user->save();
 
             $order->update([
                 'vat' => $vat_amount,
@@ -373,8 +338,8 @@ class CheckoutController extends Controller
             // notification to cutomer
             $notify = new CustomerNotification();
             $notify->user_id = $order->user_id;
-            $notify->title = 'Order Placed Successfully! #' . $order->invoiceID;
-            $notify->message = 'Thank you for shopping with us! Your order #' . $order->invoiceID . ' has been successfully placed. Total Amount: ' . number_format($order->total, 2) . ' TK. We will process your order shortly.';
+            $notify->title = $notify->title = 'Order Placed Successfully! #' . $order->invoiceID;
+            $notify->message = $notify->message = 'Thank you for shopping with us! Your order #' . $order->invoiceID . ' has been successfully placed. Total Amount: ' . number_format($order->total, 2) . ' TK. We will process your order shortly.';
             $notify->save();
 
             DB::commit();
