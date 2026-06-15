@@ -224,8 +224,10 @@
                                     <strong>Invoice ID:</strong> #{{ $order->invoiceID }}<br>
                                     <strong>Date:</strong>
                                     {{ \Carbon\Carbon::parse($order->order_date)->format('M d, Y h:i A') }}<br>
+                                    <strong>Payment Method:</strong>
+                                    {{ $order->payment_method ?? '' }} <br>
                                     <strong>Payment:</strong>
-                                    {{ $order->payment_method ?? strtoupper($order->payment) }}
+                                    {{ $order->payment ?? '' }}
                                 </p>
                             </td>
                             <td width="4%">&nbsp;</td>

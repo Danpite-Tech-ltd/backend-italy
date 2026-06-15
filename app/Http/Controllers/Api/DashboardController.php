@@ -97,6 +97,7 @@ class DashboardController extends Controller
         $user_id = Auth()->user()->id;
 
         $customer = User::where('id', $user_id)->first();
+        $customer['per_reward_point_price'] = BasicInfo::first()->per_reward_point_price;
 
         return response()->json([
             'status' => true,

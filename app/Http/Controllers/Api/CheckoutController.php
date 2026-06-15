@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Productcolor;
 use App\Models\Productvariant;
 use App\Models\ShippingCharge;
+use App\Models\Stripeorder;
 use App\Models\Vat;
 use App\Models\Tax;
 use App\Models\User;
@@ -143,7 +144,7 @@ class CheckoutController extends Controller
             'shipping_charge_id' => 'required|exists:shipping_charges,id',
             'products' => 'required|array',
             'payment_method' => 'required|in:cod,stripe',
-            'stripeToken' => 'required_if:payment,stripe|string',
+            'stripeToken' => 'required_if:payment_method,stripe|string',
         ]);
 
         if ($validator->fails()) {
@@ -330,13 +331,24 @@ class CheckoutController extends Controller
                     'description' => 'Product Payment for Invoice: #' . $order->invoiceID,
                 ]);
 
+                if ($charge->status !== 'succeeded') {
+                    throw new \Exception('Stripe payment fell.');
+                }
+
                 $order->update([
                     'payment' => 'Paid',
                 ]);
 
-                if ($charge->status !== 'succeeded') {
-                    throw new \Exception('Stripe payment fell.');
-                }
+                $stripeorder = new Stripeorder();
+                $stripeorder->order_id = $order->id;
+                $stripeorder->invoice_id = $order->invoiceID;
+                $stripeorder->amount = $total;
+                $stripeorder->customer_name = $customer->name;
+                $stripeorder->customer_email = $customer->email ?? '';
+                $stripeorder->customer_phone = $customer->phone ?? '';
+                $stripeorder->customer_address = $customer->address ?? '';
+                $stripeorder->status = 'Paid';
+                $stripeorder->save();
             }
 
             $order->update([
