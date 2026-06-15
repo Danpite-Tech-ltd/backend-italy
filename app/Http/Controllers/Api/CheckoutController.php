@@ -26,6 +26,7 @@ use App\Models\VendorOrder;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Trait\ApiResponse;
 use Illuminate\Support\Facades\Auth;
@@ -132,7 +133,6 @@ class CheckoutController extends Controller
     // }
 
 
-
     public function orderPlace(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -157,16 +157,14 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-
             $shippingCharge = ShippingCharge::findOrFail($request->shipping_charge_id);
             $vat = Vat::firstOrFail();
             $tax = Tax::firstOrFail();
 
-            //check affiliate code
+            $affiliate_id = null;
             if ($request->ref_code) {
-                $ref_code = $request->ref_code;
-                $user = User::where('ref_code', $ref_code)->first();
-                $affiliate_id = $user->id;
+                $user = User::where('ref_code', $request->ref_code)->first();
+                $affiliate_id = $user ? $user->id : null;
             }
 
             /* ================= CUSTOMER ================= */
@@ -179,16 +177,15 @@ class CheckoutController extends Controller
 
             /* ================= MAIN ORDER ================= */
             $payment = $request->payment_method;
-            if ($payment == 'cod') {
-                $payment_method = "Cash on Delivery";
-            } elseif ($payment == 'stripe') {
+            $payment_method = "Cash on Delivery";
+            if ($payment == 'stripe') {
                 $payment_method = "Stripe";
             }
 
             $order = Order::create([
                 'customer_id' => $customer->id,
                 'user_id' => auth()->id() ?? null,
-                'affiliate_id' => $affiliate_id ?? null,
+                'affiliate_id' => $affiliate_id,
                 'invoiceID' => (new Order())->invoiceGenerator(),
                 'customer_note' => $request->customer_note,
                 'shipping_charge_id' => $request->shipping_charge_id,
@@ -196,7 +193,7 @@ class CheckoutController extends Controller
                 'order_date' => now(),
                 'order_status_id' => 1,
                 'payment' => 'Pending',
-                'payment_method' => $payment_method ?? null,
+                'payment_method' => $payment_method,
                 'vat_percentage' => $vat->rate,
                 'tax_percentage' => $tax->rate,
                 'subtotal' => 0,
@@ -207,11 +204,9 @@ class CheckoutController extends Controller
 
             /* ================= GROUP PRODUCTS BY VENDOR ================= */
             $vendorGroups = [];
-
             $userRewardPoints = 0;
 
             foreach ($request->products as $item) {
-
                 $product = Product::findOrFail($item['id']);
                 $variant = Productvariant::findOrFail($item['product_variant_id']);
                 $color = Productcolor::findOrFail($item['product_color_id']);
@@ -222,8 +217,7 @@ class CheckoutController extends Controller
                 $lineTotal = $price * $item['qty'];
 
                 $totalSubtotal += $lineTotal;
-
-                $userRewardPoints += $product->reward_point * $item['qty'];
+                $userRewardPoints += ($product->reward_point ?? 0) * $item['qty'];
 
                 $vendorGroups[$vendorId][] = [
                     'product' => $product,
@@ -238,21 +232,19 @@ class CheckoutController extends Controller
 
             /* ================= CREATE VENDOR ORDERS ================= */
             foreach ($vendorGroups as $vendorId => $items) {
-
                 $vendorSubtotal = collect($items)->sum('lineTotal');
 
                 $vendorOrder = VendorOrder::create([
                     'order_id' => $order->id,
                     'vendor_id' => $vendorId,
                     'subtotal' => $vendorSubtotal,
-                    'delivery_charge' => 0, // optional split later
+                    'delivery_charge' => 0,
                     'total' => $vendorSubtotal,
                     'vendor_order_status_id' => 1
                 ]);
 
                 /* ===== INSERT PRODUCTS ===== */
                 foreach ($items as $item) {
-
                     OrderProduct::create([
                         'order_id' => $order->id,
                         'vendor_order_id' => $vendorOrder->id,
@@ -264,10 +256,8 @@ class CheckoutController extends Controller
                         'slug' => $item['product']->slug,
                         'thumbnail_img' => $item['product']->thumbnail_img,
                         'product_SKU' => $item['product']->SKU,
-
                         'product_price' => $item['price'],
                         'quantity' => $item['qty'],
-
                         'color' => $item['color']->color_name,
                         'variant' => $item['variant']->variant_name,
                     ]);
@@ -275,17 +265,12 @@ class CheckoutController extends Controller
             }
 
             /* ================= UPDATE MAIN ORDER ================= */
-
-            // coupon
-            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            $coupon = null;
             $coupon_discount = 0;
 
             if (!empty($request->coupon_code)) {
-
                 $coupon = Coupon::where('code', $request->coupon_code)->first();
-
                 if ($coupon) {
-
                     if ($coupon->type == 'flat') {
                         $coupon_discount = $coupon->discount;
                     } elseif ($coupon->type == 'percentage') {
@@ -296,59 +281,78 @@ class CheckoutController extends Controller
 
             $vat_amount = $totalSubtotal * ($vat->rate / 100);
             $tax_amount = $totalSubtotal * ($tax->rate / 100);
+
             $total = $totalSubtotal + $shippingCharge->delivery_charge + $vat_amount + $tax_amount - $coupon_discount;
 
-            $rewardPoints = User::find(auth()->id())->reward_point ?? 0;
-            $point_price  = BasicInfo::first()->per_reward_point_price ?? 0;
+            $rewardPoints = 0;
+            if (auth()->check()) {
+                $currentUser = User::find(auth()->id());
+                $rewardPoints = $currentUser ? $currentUser->reward_point : 0;
+            }
+
+            $basicInfo = BasicInfo::first();
+            $point_price = $basicInfo ? $basicInfo->per_reward_point_price : 0;
 
             $pointsUsed  = 0;
             $pointsValue = 0;
 
-            if ($request->points_redeem == 1 && $point_price > 0) {
-
+            if ($request->points_redeem == 1 && $point_price > 0 && $rewardPoints > 0) {
                 $pointsValueAvailable = $rewardPoints * $point_price;
-
                 $pointsValue = min($pointsValueAvailable, $total);
-
                 $total -= $pointsValue;
-
                 $pointsUsed = $pointsValue / $point_price;
             }
-            $user = User::find(auth()->id());
-            if ($user) {
-                $user->reward_point = $rewardPoints - $pointsUsed;
-                $user->save();
+
+            if ($total < 0) {
+                $total = 0;
+            }
+
+            if (auth()->check()) {
+                $user = User::find(auth()->id());
+                if ($user) {
+                    $user->reward_point = max(0, $rewardPoints - $pointsUsed);
+                    $user->save();
+                }
             }
 
             /* ================= STRIPE PAYMENT INTEGRATION ================= */
             if ($payment == 'stripe') {
-                Stripe::setApiKey(env('STRIPE_SECRET'));
 
-                $charge = Charge::create([
-                    'source' => $request->stripeToken,
-                    'amount' => round($total * 100),
-                    'currency' => 'eur',
-                    'description' => 'Product Payment for Invoice: #' . $order->invoiceID,
-                ]);
+                $stripeAmount = round($total * 100);
 
-                if ($charge->status !== 'succeeded') {
-                    throw new \Exception('Stripe payment fell.');
+                if ($stripeAmount > 0) {
+                    Stripe::setApiKey(env('STRIPE_SECRET'));
+
+                    $charge = Charge::create([
+                        'source' => $request->stripeToken,
+                        'amount' => $stripeAmount,
+                        'currency' => 'eur',
+                        'description' => 'Product Payment for Invoice: #' . $order->invoiceID,
+                    ]);
+
+                    if ($charge->status !== 'succeeded') {
+                        throw new \Exception('Stripe payment failed.');
+                    }
+
+                    $order->update([
+                        'payment' => 'Paid',
+                    ]);
+
+                    $stripeorder = new Stripeorder();
+                    $stripeorder->order_id = $order->id;
+                    $stripeorder->invoice_id = $order->invoiceID;
+                    $stripeorder->amount = $total;
+                    $stripeorder->customer_name = $customer->name;
+                    $stripeorder->customer_email = $customer->email ?? '';
+                    $stripeorder->customer_phone = $customer->phone ?? '';
+                    $stripeorder->customer_address = $customer->address ?? '';
+                    $stripeorder->status = 'Paid';
+                    $stripeorder->save();
+                } else {
+                    $order->update([
+                        'payment' => 'Paid',
+                    ]);
                 }
-
-                $order->update([
-                    'payment' => 'Paid',
-                ]);
-
-                $stripeorder = new Stripeorder();
-                $stripeorder->order_id = $order->id;
-                $stripeorder->invoice_id = $order->invoiceID;
-                $stripeorder->amount = $total;
-                $stripeorder->customer_name = $customer->name;
-                $stripeorder->customer_email = $customer->email ?? '';
-                $stripeorder->customer_phone = $customer->phone ?? '';
-                $stripeorder->customer_address = $customer->address ?? '';
-                $stripeorder->status = 'Paid';
-                $stripeorder->save();
             }
 
             $order->update([
@@ -368,9 +372,10 @@ class CheckoutController extends Controller
 
             // email to customer
             if ($customer->email) {
-                Mail::to($customer->email)->send(new OrderPlace($order,$customer));
+                Mail::to($customer->email)->send(new OrderPlace($order, $customer));
             }
-            // notification to cutomer
+
+            // notification to customer
             $notify = new CustomerNotification();
             $notify->user_id = $order->user_id;
             $notify->title = 'Order Placed Successfully! #' . $order->invoiceID;
@@ -385,8 +390,13 @@ class CheckoutController extends Controller
                 'invoice_id' => $order->invoiceID,
             ]);
         } catch (\Exception $e) {
-
             DB::rollBack();
+
+            Log::error('Order Placement Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
                 'status' => false,
