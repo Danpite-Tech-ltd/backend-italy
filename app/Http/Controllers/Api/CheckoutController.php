@@ -379,7 +379,7 @@ class CheckoutController extends Controller
             $notify = new CustomerNotification();
             $notify->user_id = $order->user_id;
             $notify->title = 'Order Placed Successfully! #' . $order->invoiceID;
-            $notify->message = 'Thank you for shopping with us! Your order #' . $order->invoiceID . ' has been successfully placed. Total Amount: ' . number_format($order->total, 2) . ' TK. We will process your order shortly.';
+            $notify->message = 'Thank you for shopping with us! Your order #' . $order->invoiceID . ' has been successfully placed. Total Amount: €' . number_format($order->total, 2) . '. We will process your order shortly.';
             $notify->save();
 
             DB::commit();

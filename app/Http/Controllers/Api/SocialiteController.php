@@ -21,6 +21,7 @@ class SocialiteController extends Controller
 
     public function google_callback()
     {
+        $url = BasicInfo::first()->website_url;
         try {
 
             $googleUser = Socialite::driver('google')->stateless()->user();
@@ -43,7 +44,7 @@ class SocialiteController extends Controller
                 ];
 
                 return redirect()->to(
-                    'http://localhost:3000/auth/google/callback?' .
+                    $url.'/auth/google/callback?' .
                         'token=' . urlencode($token) .
                         '&user=' . urlencode(json_encode($userData))
                 );
@@ -65,7 +66,6 @@ class SocialiteController extends Controller
             $user->save();
 
             $token = $user->createToken('authToken')->plainTextToken;
-            $url = BasicInfo::first()->website_url;
 
             DB::commit();
 
